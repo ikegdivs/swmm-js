@@ -1,0 +1,12 @@
+How to open an EPA-SWMM file using SWMM-js.
+
+- Have a valid EPA-SWMM file available, or download <a href="#">this one</a>.
+
+- Open a SWMM-js browser, www.swmmjs.com.
+
+- Select 'File->Open' from the Main Menu.
+
+- Using the popup dialog, select your EPA-SWMM .inp file.
+
+- Your file should open and you should see your model.
+
