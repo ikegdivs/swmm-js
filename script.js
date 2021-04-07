@@ -106,7 +106,7 @@ document.addEventListener("DOMContentLoaded", function() {
     Module.onRuntimeInitialized = _ => {
         // Process the metadata file
         // Load info.json into an object
-        fetch('./data/info.json')
+        fetch('data/info.json')
             .then(response => response.json())
             .then((info) => {
                 authorName = info[0].Name;
