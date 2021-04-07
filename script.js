@@ -213,8 +213,8 @@ document.addEventListener("DOMContentLoaded", function() {
         })
     }
     // Listen for requests to open the default files.
-    const demoElement = document.getElementById("btn-cover-model-1");
-    demoElement.addEventListener('click', loadDemo, false);
+    const demoElement1 = document.getElementById("btn-cover-model-1");
+    demoElement1.addEventListener('click', loadDemo, false);
     function loadDemo1() {
         jQuery.get('./data/Mod.inp', function(contents){
             processInput(contents);
@@ -222,8 +222,8 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     // Listen for requests to open the default files.
-    const demoElement = document.getElementById("btn-cover-model-2");
-    demoElement.addEventListener('click', loadDemo, false);
+    const demoElement2 = document.getElementById("btn-cover-model-2");
+    demoElement2.addEventListener('click', loadDemo, false);
     function loadDemo2() {
         jQuery.get('./data/Mod.inp', function(contents){
             processInput(contents);
