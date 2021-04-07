@@ -204,7 +204,7 @@ document.addEventListener("DOMContentLoaded", function() {
         })*/
     }
 
-    // Listen for requests to open the default file.
+    // Listen for requests to open the default files.
     const demoElement = document.getElementById("nav-file-demo");
     demoElement.addEventListener('click', loadDemo, false);
     function loadDemo() {
@@ -212,6 +212,24 @@ document.addEventListener("DOMContentLoaded", function() {
             processInput(contents);
         })
     }
+    // Listen for requests to open the default files.
+    const demoElement = document.getElementById("btn-cover-model-1");
+    demoElement.addEventListener('click', loadDemo, false);
+    function loadDemo1() {
+        jQuery.get('./data/Mod.inp', function(contents){
+            processInput(contents);
+        })
+    }
+
+    // Listen for requests to open the default files.
+    const demoElement = document.getElementById("btn-cover-model-2");
+    demoElement.addEventListener('click', loadDemo, false);
+    function loadDemo2() {
+        jQuery.get('./data/Mod.inp', function(contents){
+            processInput(contents);
+        })
+    }
+    
 
     // Listen for requests to create a new file.
     const newFileElement = document.getElementById("nav-file-new");
