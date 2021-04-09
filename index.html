@@ -5,9 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>SWMM-js</title>
     <!-- Bootstrap core CSS -->
-    <link rel="stylesheet" href="./css/bootstrap.min.css">
-    <link rel="stylesheet" href="./css/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="./css/tabulator.min.css">
+    <link rel="stylesheet" href="/node_modules/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/node_modules/bootstrap-icons/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="/node_modules/tabulator-tables/dist/css/tabulator.min.css">
+    <!-- Custom styles for this template -->
+    <link rel="stylesheet" href="dashboard.css">
     <link rel="stylesheet" href="./style.css">
 
     <style>
@@ -163,7 +165,7 @@
                     <hr>
                     <a class="dropdown-item" href="#">Tutorial</a>
                     <hr>
-                    <a class="dropdown-item" href="#">About...</a>
+                    <a class="dropdown-item" href="https://www.swmm-js.org">About...</a>
                 </div>
             </li>
         </ul>
@@ -2770,8 +2772,8 @@
 <div id="modalPollutants" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalPollutantsTitle" aria-hidden="true" data-backdrop="false">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class= "modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="modalPollutantsTitle">Pollants</h5>
+            <div class="modal-header bg-dark text-white">
+                <h5 class="modal-title" id="modalPollutantsTitle">Pollutants</h5>
                 <button type="button" class="close close-modal" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -4108,13 +4110,11 @@
                 <h1 id="coverTitle">Early alpha demo of swmm-js software.</h1>
                 <p id="coverInfo" class="lead">This swmm-js software is in early alpha release. For demonstration purposes only.</p>
                 <p class="lead">
-                    <a href="https://www.swmm-js.org/index.html" class="btn btn-lg btn-secondary fw-bold border-white bg-dark">Learn more</a>
+                    <a href="https://www.swmm-js.org" class="btn btn-lg btn-secondary fw-bold border-white bg-dark">Learn more</a>
                 </p>
-                <div class="dropdown show">
+                <div class="dropdown show" >
                     <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="coverModelSelect" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Select Model</a>
-                    <div class="dropdown-menu" aria-labelledby="coverModelSelect">
-                        <a class="dropdown-item close-modal" id="btn-cover-model-1" data-dismiss="modal">Example 1</a>
-                        <a class="dropdown-item close-modal" id="btn-cover-model-2" data-dismiss="modal">Example 2</a>
+                    <div id="coverDropdown" class="dropdown-menu" aria-labelledby="coverModelSelect">
                     </div>
                 </div>
             </div>
@@ -4142,14 +4142,14 @@
 
 
 <!-- jQuery first, then Popper.js, then Bootstrap JS. -->
-<script src="./js/jquery.js"></script>
-<script src="./js/umd/popper.js"></script>
-<script src="./js/bootstrap.js"></script>
-<script src="./js/min/moment.min.js"></script>
-<script src="./js/tabulator.min.js"></script>
-<script src="./js/d3.min.js"></script>
-<script src='./js.js'></script>
-<script src='./js/swmm.js'></script>
+<script src="/node_modules/jquery/dist/jquery.js"></script>
+<script src="/node_modules/popper.js/dist/umd/popper.js"></script>
+<script src="/node_modules/bootstrap/dist/js/bootstrap.js"></script>
+<script type="text/javascript" src="/node_modules/moment/min/moment.min.js"></script>
+<script type="text/javascript" src="/node_modules/tabulator-tables/dist/js/tabulator.min.js"></script>
+<script src="js/d3.min.js"></script>
+<script src='js.js'></script>
+<script src='js/swmm.js'></script>
 <script src="./script.js"></script>
   </body>
 </html>

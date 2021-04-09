@@ -1,8 +1,12 @@
 [
     {
-        "Name": "Person Lastname",
-        "FileName": "input.inp",
-        "Description": "This is an example of using SWMM-js to create interactive output."
+        "Title": "Early alpha demo of swmm-js software.",
+        "Files": [
+            {"Title": "Example 1", "FileLoc": "./data/Example1.inp", "Description": ""},
+            {"Title": "Example 2", "FileLoc": "./data/Example2.inp", "Description": ""}
+        ],
+        "Phone": "",
+        "Email": ""
     }
     
 ]

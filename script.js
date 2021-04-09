@@ -109,102 +109,27 @@ document.addEventListener("DOMContentLoaded", function() {
         fetch('data/info.json')
             .then(response => response.json())
             .then((info) => {
-                authorName = info[0].Name;
-                fileName = info[0].FileName;
-                description = info[0].Description;
+                $('#coverTitle').text(info[0].Title);
+                // For each entry in info[0].Files: 
+                //  -- add the Title to the dropdown select
+                //  -- clicking on the select will:
+                //     -- close the modal.
+                //     -- load the selected file.
+                info[0].Files.forEach(function(value, i) {
+                    $('#coverDropdown').append('<a class="dropdown-item" id="coverModel'+i+'">'+ value.Title +'</a>')
+                    document.getElementById("coverModel"+i).addEventListener('click', 
+                    function () {
+                        jQuery.get(value.FileLoc, function(contents){
+                            processInput(contents);
+                        })
+                        $('#modalCover').modal('toggle');
+                    },
+                    false)
+                })
             })
-        //Get the input file for parsing:
-        /*fetch('data/Example1x.inp')
-            .then(response => response.text())
-            .then((data) => {
-                //console.log(data);
-                inpText = data;
-                input = new d3.inp();
-                val = input.parse(data);
-
-                //console.log(val.CONDUITS[1])
-                try
-                {
-                    FS.createPath('/', '/', true, true);
-                    FS.ignorePermissions = true;
-                    //var inp = document.getElementById('inpFile').value;
-                    var f = FS.findObject('input.inp');
-                    if (f) {
-                        FS.unlink('input.inp');
-                    }
-                    //FS.createDataFile('/', 'input.inp', inp, true, true);
-                    FS.createDataFile('/', 'input.inp', inpText, true, true);
-
-                    const swmm_run = Module.cwrap('swmm_run', 'number', ['string', 'string', 'string']);
-                    //data = swmm_run("data/Example1.inp", "data/Example1x.rpt", "data/Example1x.out")
-                    data = swmm_run("/input.inp", "data/Example1x.rpt", "data/Example1x.out")
-                } catch (e) {
-                    console.log('/input.inp creation failed');
-                }
-        })
-
-
-        fetch('data/Example1x.out')
-            .then(response => response.blob())
-            .then((data) => {
-
-                input = new d3.swmmresult();
-                val = input.parse('data/Example1x.out');
-
-                //console.log('--------------------------')
-                for(let i = 1; !!val[i]; i++){
-                    //console.log(val[i].LINK["1"][3]);
-                    dataObj.push(new DataElement(i, val[i].LINK["1"][3]));
-                }
-                //console.log('--------------------------')
-            
-                // Create a new chartSpecs object and populate it with the data.
-                theseSpecs = new ChartSpecs(dataObj);
-
-                // Prepare the chart and draw it.
-                representData(viz_svg01, theseSpecs);
-
-                // If the user changes the selection on the dropdown selection box, adjust the curve function of the chart line.
-                $('#formControlSelector').on('change', function(event){
-                    // Get the input from the drop down.
-                    userVal = $(event.currentTarget).prop('value');
-
-                    drawLine(theseSpecs, d3[userVal])
-                })
-        })
-
-        fetch('data/Example1.rpt')
-            .then(response => response.text())
-            .then((data) => {
-                //console.log(data);
-
-                input = new d3.swmmresult();
-                val = input.parse('data/Example1.rpt');
-
-                //console.log('--------------------------')
-                for(let i = 1; !!val[i]; i++){
-                    //console.log(val[i].LINK["1"][3]);
-                    dataObj.push(new DataElement(i, val[i].LINK["1"][3]));
-                }
-                //console.log('--------------------------')
-            
-                // Create a new chartSpecs object and populate it with the data.
-                theseSpecs = new ChartSpecs(dataObj);
-
-                // Prepare the chart and draw it.
-                representData(viz_svg01, theseSpecs);
-
-                // If the user changes the selection on the dropdown selection box, adjust the curve function of the chart line.
-                $('#formControlSelector').on('change', function(event){
-                    // Get the input from the drop down.
-                    userVal = $(event.currentTarget).prop('value');
-
-                    drawLine(theseSpecs, d3[userVal])
-                })
-        })*/
     }
 
-    // Listen for requests to open the default files.
+    // Listen for requests to open the default file.
     const demoElement = document.getElementById("nav-file-demo");
     demoElement.addEventListener('click', loadDemo, false);
     function loadDemo() {
@@ -212,24 +137,6 @@ document.addEventListener("DOMContentLoaded", function() {
             processInput(contents);
         })
     }
-    // Listen for requests to open the default files.
-    const demoElement1 = document.getElementById("btn-cover-model-1");
-    demoElement1.addEventListener('click', loadDemo1, false);
-    function loadDemo1() {
-        jQuery.get('./data/Mod.inp', function(contents){
-            processInput(contents);
-        })
-    }
-
-    // Listen for requests to open the default files.
-    const demoElement2 = document.getElementById("btn-cover-model-2");
-    demoElement2.addEventListener('click', loadDemo2, false);
-    function loadDemo2() {
-        jQuery.get('./data/Mod.inp', function(contents){
-            processInput(contents);
-        })
-    }
-    
 
     // Listen for requests to create a new file.
     const newFileElement = document.getElementById("nav-file-new");
@@ -505,7 +412,8 @@ function drawLine(theseSpecs, curveType){
     let join = d3.selectAll('#chartBody')
         .append('path')
         .attr('d', line(theseSpecs.data))
-        .attr('stroke', 'black')
+        .attr('stroke', 'rgba(255, 125, 125, 1)')
+        .attr('stroke-width', '2px')
         .style('fill', 'none')
 
     // Update the y axis.
