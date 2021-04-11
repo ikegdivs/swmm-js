@@ -254,7 +254,7 @@ Units      None
     const languageElement = document.getElementById("navbarLanguageLink");
     languageElement.addEventListener('click', displayLanguageModal, false);
     function displayLanguageModal() {
-        $('#navbarLanguageLink').modal('toggle');
+        $('#modalLanguage').modal('toggle');
     }
     
 
