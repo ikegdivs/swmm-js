@@ -167,12 +167,9 @@
                 </div>
             </li>
             <li class="nav-item dropdown">
-                <a class="nav-link" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <a class="nav-link" id="navbarLanguageLink" >
                 Language
                 </a>
-                <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                    <div id="google_translate_element"></div>
-                </div>
             </li>
         </ul>
     </div>
@@ -3813,6 +3810,26 @@
             </div>
             <div class="modal-body">
                 <svg id="viz_svgTS"></svg>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary close-modal" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--Language Selection Modal.-->
+<div id="modalLanguage" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalLanguageTitle" aria-hidden="true" data-backdrop="false">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+        <div class= "modal-content">
+            <div class="modal-header bg-dark text-white">
+                <h5 class="modal-title" id="modalLanguageTitle">Language</h5>
+                <button type="button" class="close close-modal" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="google_translate_element"></div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary close-modal" data-dismiss="modal">Close</button>

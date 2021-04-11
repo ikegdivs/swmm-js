@@ -250,6 +250,14 @@ Units      None
         fr.readAsText(fileList[0]);
     }
 
+    // Listen for requests to change the language:
+    const languageElement = document.getElementById("navbarLanguageLink");
+    languageElement.addEventListener('click', displayLanguageModal, false);
+    function displayLanguageModal() {
+        $('#navbarLanguageLink').modal('toggle');
+    }
+    
+
     // Listen for requests to request an .inp file from a server.
     /*const serverRequestElement = document.getElementById("nav-file-server");
     serverRequestElement.addEventListener('click', handleServerFiles, false);
