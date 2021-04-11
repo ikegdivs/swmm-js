@@ -251,7 +251,7 @@ Units      None
     }
 
     // Listen for requests to request an .inp file from a server.
-    const serverRequestElement = document.getElementById("nav-file-server");
+    /*const serverRequestElement = document.getElementById("nav-file-server");
     serverRequestElement.addEventListener('click', handleServerFiles, false);
     function handleServerFiles() {
         // Show the modal.
@@ -283,7 +283,7 @@ Units      None
         }
 
         xhr.send();
-    }
+    }*/
 
     // Listen for requests to save an .inp file.
     const saveElement = document.getElementById("save");
