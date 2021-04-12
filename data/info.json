@@ -1,6 +1,6 @@
 [
     {
-        "Title": "Early alpha demo of swmm-js software.",
+        "Title": "Early alpha demo of swmm-js software",
         "Files": [
             {"Title": "Example 1", "FileLoc": "./data/Example1.inp", "Description": ""},
             {"Title": "Example 2", "FileLoc": "./data/Example2.inp", "Description": ""}
