@@ -485,7 +485,7 @@ function runModelClick(){
             inpText = swmmjs.svg.dataToInpString();
 
             // Pop up the processing modal.
-            $('#modalSpinner').modal('toggle');
+            $('#modalSpinner').modal('show');
 
             try
             {
