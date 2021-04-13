@@ -498,7 +498,7 @@ function runModelClick(){
                 FS.createDataFile('/', 'input.inp', inpText, true, true);
 
                 async function processModel(){
-                        resolve(swmm_run("/input.inp", "data/Example1x.rpt", "data/out.out"));
+                        swmm_run("/input.inp", "data/Example1x.rpt", "data/out.out");
                         return 1;
                 }
 
