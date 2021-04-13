@@ -504,12 +504,12 @@ function runModelClick(){
                 document.getElementById('rptFile').innerHTML = rpt;
 
                 // Remove the processing modal.
-                $('#modalSpinner').modal('toggle');
+                $('#modalSpinner').modal('hide');
             } catch (e) {
                 console.log('/input.inp creation failed');
                 
                 // Remove the processing modal.
-                $('#modalSpinner').modal('toggle');
+                $('#modalSpinner').modal('hide');
             }
             console.log('runran')
     //})
