@@ -484,6 +484,9 @@ function runModelClick(){
         .then((data) => {
             inpText = swmmjs.svg.dataToInpString();
 
+            // Pop up the processing modal.
+            $('#modalSpinner').modal('toggle');
+
             try
             {
                 FS.createPath('/', '/', true, true);
@@ -499,8 +502,14 @@ function runModelClick(){
 
                 let rpt = Module.intArrayToString(FS.findObject('data/Example1x.rpt').contents);
                 document.getElementById('rptFile').innerHTML = rpt;
+                
+                // Remove the processing modal.
+                $('#modalSpinner').modal('toggle');
             } catch (e) {
                 console.log('/input.inp creation failed');
+                
+                // Remove the processing modal.
+                $('#modalSpinner').modal('toggle');
             }
             console.log('runran')
     })
