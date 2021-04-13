@@ -497,13 +497,15 @@ function runModelClick(){
                 }
                 FS.createDataFile('/', 'input.inp', inpText, true, true);
 
-                //data = swmm_run("/input.inp", "data/Example1x.rpt", "data/out.out")
-                swmm_run("/input.inp", "data/Example1x.rpt", "data/out.out").then(() =>{
-                    // Remove the processing modal.
-                    $('#modalSpinner').modal('hide');
+                var processModel = new Promise(function(resolve, reject){
+                        resolve(swmm_run("/input.inp", "data/Example1x.rpt", "data/out.out"));
+                })
+
+                processModel.then(function (){
                     let rpt = Module.intArrayToString(FS.findObject('data/Example1x.rpt').contents);
                     document.getElementById('rptFile').innerHTML = rpt;
-                
+                    // Remove the processing modal.
+                    $('#modalSpinner').modal('hide');
                 })
 
             } catch (e) {
