@@ -479,9 +479,9 @@ function runModelClick(){
     //      need to be saved (though it would be a good idea to save a file before you run it, right?)
     // --3: New function is called svg.dataToInpString().
     // --4: How can I send the inpString to the swmm_run file? it looks like inpText can be used for that.
-    fetch('data/tendays.inp')
+    /*fetch('data/tendays.inp')
         .then(response => response.text())
-        .then((data) => {
+        .then((data) => {*/
             inpText = swmmjs.svg.dataToInpString();
 
             // Pop up the processing modal.
@@ -502,7 +502,7 @@ function runModelClick(){
 
                 let rpt = Module.intArrayToString(FS.findObject('data/Example1x.rpt').contents);
                 document.getElementById('rptFile').innerHTML = rpt;
-                
+
                 // Remove the processing modal.
                 $('#modalSpinner').modal('toggle');
             } catch (e) {
@@ -512,6 +512,6 @@ function runModelClick(){
                 $('#modalSpinner').modal('toggle');
             }
             console.log('runran')
-    })
+    //})
 }
 
