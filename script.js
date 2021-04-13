@@ -217,6 +217,8 @@ Units      None
     runElement.addEventListener('click', runSimulation, false);
     function runSimulation() {
         //processInput(document.getElementById('inpFile').value);
+        // Pop up the processing modal.
+        $('#modalSpinner').modal('show');
         runModelClick();
     }
 
@@ -483,9 +485,6 @@ function runModelClick(){
         .then(response => response.text())
         .then((data) => {*/
             inpText = swmmjs.svg.dataToInpString();
-
-            // Pop up the processing modal.
-            $('#modalSpinner').modal('show');
 
             try
             {
