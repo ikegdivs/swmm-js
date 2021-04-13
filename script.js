@@ -498,7 +498,7 @@ function runModelClick(){
                 FS.createDataFile('/', 'input.inp', inpText, true, true);
 
                 //data = swmm_run("/input.inp", "data/Example1x.rpt", "data/out.out")
-                swmm_run("/input.inp", "data/Example1x.rpt", "data/out.out").then(function(){
+                swmm_run("/input.inp", "data/Example1x.rpt", "data/out.out").then(() =>{
                     // Remove the processing modal.
                     $('#modalSpinner').modal('hide');
                     let rpt = Module.intArrayToString(FS.findObject('data/Example1x.rpt').contents);
