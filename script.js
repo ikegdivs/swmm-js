@@ -497,11 +497,12 @@ function runModelClick(){
                 }
                 FS.createDataFile('/', 'input.inp', inpText, true, true);
 
-                var processModel = new Promise(function(resolve, reject){
+                async function processModel(){
                         resolve(swmm_run("/input.inp", "data/Example1x.rpt", "data/out.out"));
-                })
+                        return 1;
+                }
 
-                processModel.then(function (){
+                processModel().then(function (){
                     let rpt = Module.intArrayToString(FS.findObject('data/Example1x.rpt').contents);
                     document.getElementById('rptFile').innerHTML = rpt;
                     // Remove the processing modal.
