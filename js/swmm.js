@@ -38,105 +38,6 @@ function drawTimeseries(){
     })*/
 }
 
-/*
-function doStuff(location, theseSpecs){
-    // Create the viewbox. This viewbox helps define the visible portions
-    // of the chart, but it also helps when making the chart responsive.
-    location.attr('viewBox', ` 0 0 ${theseSpecs.xScaleWidth + theseSpecs.chartBodyX + theseSpecs.textBuffer} ${theseSpecs.yScaleHeight + theseSpecs.textBuffer + theseSpecs.topMargin}`);
-
-    // Add groups to the svg for the body of the chart, the x axis, and the y axis.
-    body = location.append('g')
-        .attr('id', 'chartBody')
-        .attr('transform', `translate(${theseSpecs.chartBodyX}, ${theseSpecs.topMargin})`);
-    location.append('g')
-        .attr('id', 'yAxis')
-        .call(d3.axisLeft(theseSpecs.scaleY))
-        .attr('transform', `translate(${theseSpecs.chartBodyX}, ${theseSpecs.topMargin})`);
-    location.append('g')
-        .attr('id', 'xAxis')
-        .call(d3.axisBottom(theseSpecs.scaleX))
-        .attr('transform', `translate(${theseSpecs.chartBodyX}, ${theseSpecs.yScaleHeight + theseSpecs.topMargin})`);
-
-    // Create the location for the line
-    body.append('path')
-
-    drawLine(theseSpecs, d3.curveLinear);
-}*/
-
-// representData draws the chart
-// location is an svg where the chart will be drawn.
-// theseSpecs is an object of class ChartSpecs
-/*function representData(location, theseSpecs){
-    // Create the viewbox. This viewbox helps define the visible portions
-    // of the chart, but it also helps when making the chart responsive.
-    location.attr('viewBox', ` 0 0 ${theseSpecs.xScaleWidth + theseSpecs.chartBodyX + theseSpecs.textBuffer} ${theseSpecs.yScaleHeight + theseSpecs.textBuffer + theseSpecs.topMargin}`);
-
-    // Add groups to the svg for the body of the chart, the x axis, and the y axis.
-    body = location.append('g')
-        .attr('id', 'chartBody')
-        .attr('transform', `translate(${theseSpecs.chartBodyX}, ${theseSpecs.topMargin})`);
-    location.append('g')
-        .attr('id', 'yAxis')
-        .call(d3.axisLeft(theseSpecs.scaleY))
-        .attr('transform', `translate(${theseSpecs.chartBodyX}, ${theseSpecs.topMargin})`);
-    location.append('g')
-        .attr('id', 'xAxis')
-        .call(
-            d3.axisBottom(theseSpecs.scaleX)
-                .tickFormat(d3.timeFormat('%b'))
-        )
-        .attr('transform', `translate(${theseSpecs.chartBodyX}, ${theseSpecs.yScaleHeight + theseSpecs.topMargin})`)
-
-    // Create the location for the line
-    body.append('path')
-
-    drawLine(theseSpecs, d3.curveLinear);
-}*/
-
-// drawLine creates the line.
-// theseSpecs: an object of class ChartSpecs
-// curveType: a d3 curve type
-/*function drawLine(theseSpecs, curveType){
-    // Create the line
-    let line = d3.line()
-        .x(function(d) { return theseSpecs.scaleX(d.cat); })
-        .y(function(d) { return theseSpecs.scaleY(d.y); })
-        .curve(curveType)
-
-    // Create a join on 'path' and the data
-    let join = d3.selectAll('#chartBody path')
-        .data([theseSpecs.data]);
-
-    // Establish the styles for the line
-    join.style('stroke', 'rgba(255, 0, 0, 1')
-        .style('fill', 'none')
-        .style('stroke-width', '0.2vw')
-
-    // Perform a transition, if there is any data to transition.
-    join.transition()
-        .duration(1000)
-        .attr('d', line)
-    
-    // Remove any unnecesary objects.
-    join.exit()
-        .remove()
-
-    // Update the y axis.
-    d3.selectAll('#yAxis')
-        .call(d3.axisLeft(theseSpecs.scaleY))
-
-    // Update the x axis.
-    d3.selectAll('#xAxis')
-        .call(d3.axisBottom(theseSpecs.scaleX)
-            .tickFormat(d3.timeFormat('%b'))
-        )
-}*/
-
-
-
-
-
-
 // Parser for SWMM INP files
 d3.inp = function() {
     function inp() {
@@ -628,6 +529,7 @@ d3.inp = function() {
             // Create a new chartSpecs object and populate it with the data.
             theseSpecs = new ChartSpecs(dataObj);
 
+            $("#viz_svgTS").empty();
             // Prepare the chart and draw it.
             representData(viz_svg01, theseSpecs);
         })
