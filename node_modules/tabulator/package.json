@@ -1,0 +1,41 @@
+{
+  "name": "tabulator",
+  "description": "Put data into tables",
+  "version": "0.2.40",
+  "author": "Codenautas <codenautas@googlegroups.com>",
+  "license": "MIT",
+  "repository": "codenautas/tabulator",
+  "contributors": [
+    {
+      "name": "Emilio Platzer",
+      "email": "emilioplatzer@gmail.com"
+    }
+  ],
+  "main": "tabulator.js",
+  "dependencies": {
+    "file-saver": "~2.0.0",
+    "js-to-html": "~1.0.4",
+    "best-globals": "~0.10.10",
+    "like-ar": "~0.2.9",
+    "codenautas-xlsx": "0.11.12"
+  },
+  "devDependencies": {
+    "express": "~4.16.4",
+    "istanbul": "~0.4.5",
+    "mocha": "~5.2.0",
+    "supertest": "~3.4.1",
+    "expect.js": "~0.3.1",
+    "expect-called": "~0.4.0",
+    "require-bro": "~0.1.13",
+    "serve-content": "~0.3.10"
+  },
+  "engines": {
+    "node": ">= 0.8.0"
+  },
+  "scripts": {
+    "test": "mocha --reporter spec --bail --check-leaks test/",
+    "test-ci": "istanbul cover node_modules/mocha/bin/_mocha --report lcovonly -- --reporter spec --check-leaks test/",
+    "test-cov": "istanbul cover node_modules/mocha/bin/_mocha -- --reporter dot --check-leaks test/",
+    "start": "node example/server.js"
+  }
+}

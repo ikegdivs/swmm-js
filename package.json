@@ -1,0 +1,27 @@
+{
+  "name": "swmmnpm",
+  "version": "0.0.3",
+  "description": "build config for swmm-js",
+  "main": "index.html",
+  "scripts": {
+    "dev": "lite-server",
+    "build": "node ./deploy/index.html"
+  },
+  "author": "Issac Gardner",
+  "license": "MIT",
+  "dependencies": {
+    "bootstrap": "^4.6.0",
+    "bootstrap-icons": "^1.4.1",
+    "d3": "^6.6.2",
+    "jquery": "^3.6.0",
+    "light-server": "^2.9.1",
+    "lodash": "^4.17.21",
+    "moment": "^2.29.1",
+    "popper": "^1.0.1",
+    "tabulator": "^0.2.40",
+    "tabulator-tables": "^4.9.3"
+  },
+  "devDependencies": {
+    "lite-server": "^2.6.1"
+  }
+}

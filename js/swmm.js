@@ -650,7 +650,7 @@ d3.inp = function() {
                 // Set the click effect to 'createJunction'
                 switchContext('createRaingage');
 
-                svg.on('click', function() {
+                svg.on('click', function(event) {
                     // If the model is not in create junction mode, return.
                     if(swmmjs.model.clickEffect !== 'createRaingage'){
                         svg.on('click', null);
@@ -660,7 +660,7 @@ d3.inp = function() {
                         switchContext('edit');
                     }
 
-                    let xy = d3.mouse(this);
+                    let xy = d3.pointer(this);
                     let transform = d3.zoomTransform(svg.node());
                     let xy1 = transform.invert(xy);
                     let id = 0;
@@ -701,7 +701,7 @@ d3.inp = function() {
                 // Set the click effect to 'createJunction'
                 switchContext('createJunction');
 
-                svg.on('click', function() {
+                svg.on('click', function(event) {
                     // If the model is not in create junction mode, return.
                     if(swmmjs.model.clickEffect !== 'createJunction'){
                         svg.on('click', null);
@@ -711,7 +711,7 @@ d3.inp = function() {
                         switchContext('edit');
                     }
 
-                    let xy = d3.mouse(this);
+                    let xy = d3.pointer(event);
                     let transform = d3.zoomTransform(svg.node());
                     let xy1 = transform.invert(xy);
                     let id = 0;
@@ -753,7 +753,7 @@ d3.inp = function() {
                 // Set the click effect to 'createOutfall'
                 switchContext('createOutfall');
 
-                svg.on('click', function() {
+                svg.on('click', function(event) {
                     // If the model is not in create outfall mode, return.
                     if(swmmjs.model.clickEffect !== 'createOutfall'){
                         svg.on('click', null);
@@ -763,7 +763,7 @@ d3.inp = function() {
                         switchContext('edit');
                     }
 
-                    let xy = d3.mouse(this);
+                    let xy = d3.pointer(event);
                     let transform = d3.zoomTransform(svg.node());
                     let xy1 = transform.invert(xy);
                     let id = 0;
@@ -807,7 +807,7 @@ d3.inp = function() {
                 // Set the click effect to 'createDivider'
                 switchContext('createDivider');
 
-                svg.on('click', function() {
+                svg.on('click', function(event) {
                     // If the model is not in create divider mode, return.
                     if(swmmjs.model.clickEffect !== 'createDivider'){
                         svg.on('click', null);
@@ -817,7 +817,7 @@ d3.inp = function() {
                         switchContext('edit');
                     }
 
-                    let xy = d3.mouse(this);
+                    let xy = d3.pointer(event);
                     let transform = d3.zoomTransform(svg.node());
                     let xy1 = transform.invert(xy);
                     let id = 0;
@@ -875,7 +875,7 @@ d3.inp = function() {
                 // Set the click effect to 'createDivider'
                 switchContext('createStorage');
 
-                svg.on('click', function() {
+                svg.on('click', function(event) {
                     // If the model is not in create storage mode, return.
                     if(swmmjs.model.clickEffect !== 'createStorage'){
                         svg.on('click', null);
@@ -885,7 +885,7 @@ d3.inp = function() {
                         switchContext('edit');
                     }
 
-                    let xy = d3.mouse(this);
+                    let xy = d3.pointer(event);
                     let transform = d3.zoomTransform(svg.node());
                     let xy1 = transform.invert(xy);
                     let id = 0;
@@ -1247,7 +1247,7 @@ d3.inp = function() {
                 //   -- if there are only two points in point list
                 //     -- else push the points to swmmjs.model['Polygons'][id].push({Subcatchment: id, x: xy1[0] - swmmjs.svg.nodeSize/transform.k, y: swmmjs.svg.top - xy1[1] + swmmjs.svg.nodeSize/transform.k}).
                 //   -- delete temporary points and lines, set clickEffect to 'edit'
-                svg.on('click', function() {
+                svg.on('click', function(event) {
                     // If the model is not in create subcatchment mode, 
                     // delete the temporary polygon and return.
                     if(swmmjs.model.clickEffect !== 'createSubcatchment'){
@@ -1257,7 +1257,7 @@ d3.inp = function() {
                     }
 
                     // Add a point to pointList and to the svg 
-                    let xy = d3.mouse(this);
+                    let xy = d3.pointer(event);
                     let transform = d3.zoomTransform(svg.node());
                     let xy1 = transform.invert(xy);
                     
@@ -4956,7 +4956,7 @@ INFLOWS: function(section, key, line) {
 	    if ('object' !== typeof model.COORDINATES)
 		return;
             
-            var coords = d3.values(model.COORDINATES),
+            var coords = Object.values(model.COORDINATES),
 		    x = function(c) {
                 return c.x
             },
@@ -5276,21 +5276,21 @@ INFLOWS: function(section, key, line) {
 
         // zoom behaviour
         var zoom = d3.zoom().scaleExtent([0.1, 50]);
-        zoom.on('zoom', function() { swmmjs.currentScale = d3.event.transform.k; swmmjs.applyScale(svg); });
+        zoom.on('zoom', function(event) { swmmjs.currentScale = event.transform.k; swmmjs.applyScale(svg, event); });
         vis.call(zoom);
 
-        swmmjs.applyScale(svg);
+        swmmjs.applyScale(svg, event);
         
-        vis.on('mousemove', function() {
-            swmmjs.currentPosition = [d3.event.pageX, d3.event.pageY]; // log the mouse x,y position
+        vis.on('mousemove', function(event) {
+            swmmjs.currentPosition = [event.pageX, event.pageY]; // log the mouse x,y position
             let svgEl = document.getElementById('svgSimple');
             let pt = svgEl.createSVGPoint();
-            pt.x = d3.event.pageX;
-            pt.y = d3.event.pageY;
+            pt.x = event.pageX;
+            pt.y = event.pageY;
             let globalPoint = pt.matrixTransform(svgEl.getScreenCTM().inverse());
             document.getElementById('xy').innerHTML = 'X: ' + (pt.x) + ', Y: ' + (pt.y);
 
-            var xy = d3.mouse(this);
+            var xy = d3.pointer(event);
             var transform = d3.zoomTransform(vis.node());
             let xy1 = transform.invert(xy);
             
@@ -5302,7 +5302,7 @@ INFLOWS: function(section, key, line) {
         return svg;
     };
     
-    swmmjs.applyScale = function(svg) {
+    swmmjs.applyScale = function(svg, event) {
         var scaleFactor = 1;
         // vertices
         d3.select('#svgSimple > g').selectAll('.vertice').each(function() { 
@@ -5382,9 +5382,9 @@ INFLOWS: function(section, key, line) {
             this.setAttribute('y', svg.top - (parseFloat(this.dataset.y)?parseFloat(this.dataset.y):0) + svg.nodeSize / swmmjs.currentScale * 2);
             this.setAttribute('style', 'font-family: Verdana, Arial, sans; font-size:' + (svg.nodeSize / swmmjs.currentScale * 2) + 'px;')
         });
-        if (d3.event) {
+        if (event) {
             d3.select('#svgSimple > g')
-              .attr('transform', d3.event.transform);
+              .attr('transform', event.transform);
         }
     };
     
