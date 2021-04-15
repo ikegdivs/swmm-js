@@ -218,9 +218,10 @@ Units      None
     function runSimulation() {
         //processInput(document.getElementById('inpFile').value);
         // Pop up the processing modal.
-        $('#modalSpinner').modal('show');
+        $('#modalSpinner').modal('show')
         runModelClick();
     }
+
 
     // Listen for requests to display a project summary.
     const summaryElement = document.getElementById("nav-project-summary");
@@ -466,7 +467,6 @@ const swmm_run = Module.cwrap('swmm_run', 'number', ['string', 'string', 'string
 function runModelClick(){
     // dataObj is an array of dataElement objects.
     dataObj = [];
-    let viz_svg01 = d3.select("#viz_svg01");
     let inpText = null;
     // Create a set of dataElements.
 
@@ -481,40 +481,41 @@ function runModelClick(){
     //      need to be saved (though it would be a good idea to save a file before you run it, right?)
     // --3: New function is called svg.dataToInpString().
     // --4: How can I send the inpString to the swmm_run file? it looks like inpText can be used for that.
-    /*fetch('data/tendays.inp')
+    fetch('data/info.json')
         .then(response => response.text())
-        .then((data) => {*/
-            inpText = swmmjs.svg.dataToInpString();
-
-            try
-            {
-                FS.createPath('/', '/', true, true);
-                FS.ignorePermissions = true;
-                var f = FS.findObject('input.inp');
-                if (f) {
-                    FS.unlink('input.inp');
-                }
-                FS.createDataFile('/', 'input.inp', inpText, true, true);
-
-                async function processModel(){
-                        swmm_run("/input.inp", "data/Example1x.rpt", "data/out.out");
-                        return 1;
-                }
-
-                processModel().then(function (){
-                    let rpt = Module.intArrayToString(FS.findObject('data/Example1x.rpt').contents);
-                    document.getElementById('rptFile').innerHTML = rpt;
-                    // Remove the processing modal.
-                    $('#modalSpinner').modal('hide');
-                })
-
-            } catch (e) {
-                console.log('/input.inp creation failed');
-                
-                // Remove the processing modal.
-                $('#modalSpinner').modal('hide');
+        .then((data) => {
+        inpText = swmmjs.svg.dataToInpString();
+        
+        try
+        {
+            FS.createPath('/', '/', true, true);
+            FS.ignorePermissions = true;
+            var f = FS.findObject('input.inp');
+            if (f) {
+                FS.unlink('input.inp');
             }
-            console.log('runran')
-    //})
+            FS.createDataFile('/', 'input.inp', inpText, true, true);
+
+            async function processModel(){
+                    swmm_run("/input.inp", "data/Example1x.rpt", "data/out.out");
+                    return 1;
+            }
+
+            processModel().then(function (){
+                let rpt = Module.intArrayToString(FS.findObject('data/Example1x.rpt').contents);
+                document.getElementById('rptFile').innerHTML = rpt;
+            })
+
+        } catch (e) {
+            console.log('/input.inp creation failed');
+            // Remove the processing modal.
+            $('#modalSpinner').modal('hide')
+            
+        } finally{
+            // Remove the processing modal.
+            $('#modalSpinner').modal('hide')
+        }
+        console.log('runran')
+    })
 }
 

@@ -499,15 +499,6 @@ d3.inp = function() {
             
             // First: Utilize the start and end times of the model, along with the time step in order to create the fully realized chart.
             // These values are controlled in the 'Dates' editor and the 'Time Steps' editor.
-            /*
-            $('#dates-startdateanalysis').val(translateDate(swmmjs.model['OPTIONS']['START_DATE'].Value))
-            $('#dates-starttimeanalysis').val(swmmjs.model['OPTIONS']['START_TIME'].Value)
-            $('#dates-startdatereport').val(translateDate(swmmjs.model['OPTIONS']['REPORT_START_DATE'].Value))
-            $('#dates-starttimereport').val(swmmjs.model['OPTIONS']['REPORT_START_TIME'].Value)
-            */
-           /*
-            $('#timesteps-reportingperiod').val(swmmjs.model['OPTIONS']['REPORT_STEP'].Value)
-           */
             let reportStartDate = swmmjs.model['OPTIONS']['REPORT_START_DATE'].Value;
             let reportStartTime = swmmjs.model['OPTIONS']['REPORT_START_TIME'].Value;
             let reportStep =      swmmjs.model['OPTIONS']['REPORT_STEP'].Value

@@ -112,7 +112,7 @@
                     <a class="dropdown-item disabled" href="#">Defaults</a>
                     <a class="dropdown-item disabled" href="#">Calibration Data...</a>
                     <hr>
-                    <a class="dropdown-item" id="nav-project-runsimulation" href="#">Run Simulation</a>
+                    <a class="dropdown-item" id="nav-project-runsimulation">Run Simulation</a>
                 </div>
             </li>
             <li class="nav-item dropdown">
@@ -4163,9 +4163,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                <div class="spinner-border" role="status">
-                    <span class="sr-only">Processing...</span>
-                </div>
+                <div id="processSpinner" class="spinner-border" role="status"></div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary close-modal" data-dismiss="modal">Close</button>
