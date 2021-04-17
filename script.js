@@ -507,7 +507,7 @@ function runModelClick(){
             processModel().then(function (){
                 let rpt = Module.intArrayToString(FS.findObject('data/Example1x.rpt').contents);
                 document.getElementById('rptFile').innerHTML = rpt;
-                $('#modalReport').modal('show');
+                modalReportStatus();
             })
 
         } catch (e) {
