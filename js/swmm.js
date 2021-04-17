@@ -675,7 +675,7 @@ d3.inp = function() {
                     .attr('data-x', xy1[0])
                     .attr('data-y', xy1[1])
                     .attr('data-y0', swmmjs.svg.top - xy1[1])
-                    .attr('onclick', 'modalEditOutfalls('+id+');')
+                    .attr('onclick', 'modalEditOutfalls("'+id+'");')
                     .attr('onmouseover', 'swmmjs.svg.tooltip(evt.target)')
                     .attr('onmouseout', 'swmmjs.svg.clearTooltips(evt.target)')
                         .attr('class', 'outfall')
@@ -743,7 +743,7 @@ d3.inp = function() {
                     .attr('data-x', xy1[0])
                     .attr('data-y', xy1[1])
                     .attr('data-y0', swmmjs.svg.top - xy1[1])
-                    .attr('onclick', 'modalEditDividers('+id+');')
+                    .attr('onclick', 'modalEditDividers("'+id+'");')
                     .attr('onmouseover', 'swmmjs.svg.tooltip(evt.target)')
                     .attr('onmouseout', 'swmmjs.svg.clearTooltips(evt.target)')
                         .attr('class', 'divider')
@@ -811,7 +811,7 @@ d3.inp = function() {
                     .attr('data-x', xy1[0])
                     .attr('data-y', xy1[1])
                     .attr('data-y0', swmmjs.svg.top - xy1[1])
-                    .attr('onclick', 'modalEditStorageunits('+id+');')
+                    .attr('onclick', 'modalEditStorageunits("'+id+'");')
                     .attr('onmouseover', 'swmmjs.svg.tooltip(evt.target)')
                     .attr('onmouseout', 'swmmjs.svg.clearTooltips(evt.target)')
                         .attr('class', 'storage')
@@ -4981,7 +4981,7 @@ INFLOWS: function(section, key, line) {
                                     .attr('class', 'link_ gconduit')
                                 d3.select('[id="'+link+'"].gconduit').select('path')
                                     .attr('title', link)
-                                    .attr('onclick', 'modalEditConduits('+link+');')
+                                    .attr('onclick', 'modalEditConduits("'+link+'");')
                                     .attr('onmouseover', 'swmmjs.svg.tooltip(evt.target)')
                                     .attr('onmouseout', 'swmmjs.svg.clearTooltips(evt.target)')
                                     .attr('stroke', color)
@@ -4994,7 +4994,7 @@ INFLOWS: function(section, key, line) {
                                     .attr('x2', c2.x)
                                     .attr('y2', svg.top - c2.y)
                                     .attr('title', link)
-                                    .attr('onclick', 'modalEditConduits('+link+');')
+                                    .attr('onclick', 'modalEditConduits("'+link+'");')
                                     .attr('onmouseover', 'swmmjs.svg.tooltip(evt.target)')
                                     .attr('onmouseout', 'swmmjs.svg.clearTooltips(evt.target)')
                                     .attr('stroke', color)
@@ -5009,29 +5009,12 @@ INFLOWS: function(section, key, line) {
                                 .attr('x2', c2.x)
                                 .attr('y2', svg.top - c2.y)
                                 .attr('title', link)
-                                .attr('onclick', 'modalEditPumps('+link+');')
+                                .attr('onclick', 'modalEditPumps("'+link+'");')
                                 .attr('onmouseover', 'swmmjs.svg.tooltip(evt.target)')
                                 .attr('onmouseout', 'swmmjs.svg.clearTooltips(evt.target)')
                                 .attr('stroke', '#eeaa99')
                                 .attr('class', 'pump')
                                 .attr('stroke-width', svg.strokeWidth);
-                            // pump
-                            /*el.append('g').attr('id', 'id'+link).attr('class', 'link_ gpump1').append('circle')
-                                .attr('cx', centerx)
-                                .attr('cy', svg.top - centery)
-                                .attr('r', svg.nodeSize)
-                                .attr('class', 'pump1')
-                                .attr('style', 'fill:'+color+';');
-                            el.append('g').attr('id', 'id'+link).attr('class', 'link_ gpump2').append('rect')
-                                .attr('width', svg.nodeSize * 1.5)
-                                .attr('height', svg.nodeSize)
-                                .attr('x', centerx)
-                                .attr('y', svg.top - centery - svg.nodeSize)
-                                .attr('data-x', centerx)
-                                .attr('data-y', centery)
-                                .attr('transform', transform)
-                                .attr('class', 'pump2')
-                                .attr('style', 'fill:'+color+';');*/
                         } else if ('ORIFICES' === s) {
                             // line
                             el.append('g').attr('id', link).attr('class', 'link_ gorifice').append('line')
@@ -5040,7 +5023,7 @@ INFLOWS: function(section, key, line) {
                                 .attr('x2', c2.x)
                                 .attr('y2', svg.top - c2.y)
                                 .attr('title', link)
-                                .attr('onclick', 'modalEditOrifices('+link+');')
+                                .attr('onclick', 'modalEditOrifices("'+link+'");')
                                 .attr('onmouseover', 'swmmjs.svg.tooltip(evt.target)')
                                 .attr('onmouseout', 'swmmjs.svg.clearTooltips(evt.target)')
                                 .attr('stroke', '#aaee99')
@@ -5054,7 +5037,7 @@ INFLOWS: function(section, key, line) {
                                 .attr('x2', c2.x)
                                 .attr('y2', svg.top - c2.y)
                                 .attr('title', link)
-                                .attr('onclick', 'modalEditWeirs('+link+');')
+                                .attr('onclick', 'modalEditWeirs("'+link+'");')
                                 .attr('onmouseover', 'swmmjs.svg.tooltip(evt.target)')
                                 .attr('onmouseout', 'swmmjs.svg.clearTooltips(evt.target)')
                                 .attr('stroke', '#99aaee')
@@ -5068,7 +5051,7 @@ INFLOWS: function(section, key, line) {
                                 .attr('x2', c2.x)
                                 .attr('y2', svg.top - c2.y)
                                 .attr('title', link)
-                                .attr('onclick', 'modalEditOutlets('+link+');')
+                                .attr('onclick', 'modalEditOutlets("'+link+'");')
                                 .attr('onmouseover', 'swmmjs.svg.tooltip(evt.target)')
                                 .attr('onmouseout', 'swmmjs.svg.clearTooltips(evt.target)')
                                 .attr('stroke', '#ee99ee')
@@ -5097,7 +5080,7 @@ INFLOWS: function(section, key, line) {
                     .attr('data-y', svg.top - c.y)
                                 .attr('data-y0', c.y)
                     .attr('title', coordinate)
-                    .attr('onclick', 'modalEditStorageunits('+coordinate+');')
+                    .attr('onclick', 'modalEditStorageunits("'+coordinate+'");')
                     .attr('onmouseover', 'swmmjs.svg.tooltip(evt.target)')
                     .attr('onmouseout', 'swmmjs.svg.clearTooltips(evt.target)')
                         .attr('class', 'storage')
@@ -5111,7 +5094,7 @@ INFLOWS: function(section, key, line) {
                     .attr('data-x', c.x)
                     .attr('data-y', svg.top - c.y)
                                 .attr('data-y0', c.y)
-                    .attr('onclick', 'modalEditOutfalls('+coordinate+');')
+                    .attr('onclick', 'modalEditOutfalls("'+coordinate+'");')
                     .attr('onmouseover', 'swmmjs.svg.tooltip(evt.target)')
                     .attr('onmouseout', 'swmmjs.svg.clearTooltips(evt.target)')
                         .attr('class', 'outfall')
@@ -5127,7 +5110,7 @@ INFLOWS: function(section, key, line) {
                     .attr('data-x', c.x)
                     .attr('data-y', svg.top - c.y)
                                 .attr('data-y0', c.y)
-                    .attr('onclick', 'modalEditDividers('+coordinate+');')
+                    .attr('onclick', 'modalEditDividers("'+coordinate+'");')
                     .attr('onmouseover', 'swmmjs.svg.tooltip(evt.target)')
                     .attr('onmouseout', 'swmmjs.svg.clearTooltips(evt.target)')
                         .attr('class', 'divider')
@@ -5414,6 +5397,7 @@ INFLOWS: function(section, key, line) {
     };
 
     swmmjs.loadModel = function() {
+        $('#modalSpinner').modal('show');
         swmmjs.model = d3.inp().parse(document.getElementById('inpFile').value)
         
         swmmjs.render();
@@ -5423,6 +5407,7 @@ INFLOWS: function(section, key, line) {
         d3.inp().bindVals();
 
         /////////////////////////////////////////
+        $('#modalSpinner').modal('hide');
     };
 
     swmmjs.formatDate = function(date) {
