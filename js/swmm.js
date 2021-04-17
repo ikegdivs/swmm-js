@@ -3100,6 +3100,7 @@ d3.inp = function() {
                 let timeseriesTabulator = new Tabulator("#tableTimeseries", {
                     data: timeseriesTabulatorData,
                     selectable: true,
+                    clipboard: true,
                     layout: "fitColumns",
                     columns:[{title:"Date", sorter:"date", field:"Date", editor:"input"},
                             {title:"Time", sorter:"number", field:"Time", editor:"input"},
