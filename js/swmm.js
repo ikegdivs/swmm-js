@@ -8,10 +8,6 @@ function drawTimeseries(){
     dataObj = [];
     let viz_svg01 = d3.select("#viz_svg01");
 
-    // Create a set of 10 dataElements.
-    /*for(i = 0; i < 10; i++){
-        dataObj.push(new DataElement(i, i));
-    }*/
     let table = Tabulator.prototype.findTable('#tableTimeseries')[0];
     id = $('#timeseries-name').val()
 
@@ -3094,13 +3090,22 @@ d3.inp = function() {
                 }
             })
 
-            let timeseriesTabulator = new Tabulator("#tableTimeseries", {
-                data: timeseriesTabulatorData,
-                layout: "fitColumns",
-                columns:[{title:"Date", sorter:"date", field:"Date", editor:"input"},
-                        {title:"Time", sorter:"number", field:"Time", editor:"input"},
-                        {title:"Value", field:"Value", editor:"number", editorParams:{min:0, step:0.01}},],
-            } );
+            // If the tabulator object already exists, load new data. Else create a tabulator table.
+            
+    ;
+            if(Tabulator.prototype.findTable('#tableTimeseries')){
+                let table = Tabulator.prototype.findTable('#tableTimeseries')[0];
+                table.replaceData(timeseriesTabulatorData);
+            } else {
+                let timeseriesTabulator = new Tabulator("#tableTimeseries", {
+                    data: timeseriesTabulatorData,
+                    selectable: true,
+                    layout: "fitColumns",
+                    columns:[{title:"Date", sorter:"date", field:"Date", editor:"input"},
+                            {title:"Time", sorter:"number", field:"Time", editor:"input"},
+                            {title:"Value", field:"Value", editor:"number", editorParams:{min:0, step:0.01}},],
+                } );
+            }
         }
 
         // Clicking on the timeseries-view button will bring up the timeseries chart modal.
@@ -3114,6 +3119,20 @@ d3.inp = function() {
             id = $('#timeseries-name').val()
 
             table.addRow(Object.assign({}, {Date: '', Time: '00:00', Value: 0}))
+        })
+
+        // Clicking on the timeseries-delete-row button will delete the selected row in the given timeseries
+        $('#timeseries-delete-row').click(function(e){
+            let table = Tabulator.prototype.findTable('#tableTimeseries')[0];
+            id = $('#timeseries-name').val()
+
+            // Get the selected rows
+            var selectedRows = table.getSelectedRows();
+
+            // Delete all of the selected rows
+            selectedRows.forEach(function(thisRow){
+                thisRow.delete()
+            })
         })
 
         function modalDisplayTimeseries(){
