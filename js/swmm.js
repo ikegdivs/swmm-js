@@ -333,27 +333,27 @@ d3.inp = function() {
             return id;
         }
 
-        // When creating new nodes, you will need a unique node id
+        // When creating new links, you will need a unique link id
         function getUniqueLinkID(){
             let id = 0;
             let idList = [];
-            // Push indexes from JUNCTIONS to numlist
+            // Push indexes from CONDUITS to numlist
             swmmjs.model.CONDUITS.forEach(function(value, i){
                 idList.push(i);
             })
-            // Push indexes from SUBCATCHMENTS to numlist
+            // Push indexes from PUMPS to numlist
             swmmjs.model.PUMPS.forEach(function(value, i){
                 idList.push(i);
             })
-            // Push indexes from OUTFALLS to numlist
+            // Push indexes from ORIFICES to numlist
             swmmjs.model.ORIFICES.forEach(function(value, i){
                 idList.push(i);
             })
-            // Push indexes from DIVIDERS to numlist
+            // Push indexes from WEIRS to numlist
             swmmjs.model.WEIRS.forEach(function(value, i){
                 idList.push(i);
             })
-            // Push indexes from STORAGE to numlist
+            // Push indexes from OUTLETS to numlist
             swmmjs.model.OUTLETS.forEach(function(value, i){
                 idList.push(i);
             })
@@ -3167,10 +3167,6 @@ d3.inp = function() {
         }
     }
 
-    /////////////////////////////////////////////////////////////
-    // .inp parsing function.
-    /////////////////////////////////////////////////////////////
-
     inp.parse = function(text) {
         var regex = {
             section: /^\s*\[\s*([^\]]*)\s*\].*$/,
@@ -3217,10 +3213,10 @@ d3.inp = function() {
                         section[key] = {Value: m[1].trim()};
             },
             RAINGAGES: function(section, key, line) {
-                    var m = line.match(/\s+([a-zA-Z0-9\.]+)\s+([:0-9\.]+)\s+([0-9\.]+)\s+([A-Za-z0-9\.]+)\s+([A-Za-z0-9\.]+)/);
-                    if (m && m.length)
-                        section[key] = {Format: m[1], Interval: m[2], SCF: m[3], Source: m[4], SeriesName: m[5], Description: curDesc};
-                        //swmmjs.model.RAINGAGES[id] = {Description: '', Format: 'INTENSITY', Interval: '1:00', SCF: 1.0, Source: 'TIMESERIES', SeriesName: '*', FileName: '*', StationID: '*', RainUnits: 'IN'}
+                var m = line.match(/\s+([a-zA-Z0-9\.]+)\s+([:0-9\.]+)\s+([0-9\.]+)\s+([A-Za-z0-9\.]+)\s+([A-Za-z0-9\.]+)/);
+                if (m && m.length)
+                    section[key] = {Format: m[1], Interval: m[2], SCF: m[3], Source: m[4], SeriesName: m[5], Description: curDesc};
+                    //swmmjs.model.RAINGAGES[id] = {Description: '', Format: 'INTENSITY', Interval: '1:00', SCF: 1.0, Source: 'TIMESERIES', SeriesName: '*', FileName: '*', StationID: '*', RainUnits: 'IN'}
             },
             INFILTRATION: function(section, key, line) {
                     var m = line.match(/\s+([0-9\.]+)\s+([0-9\.]+)\s+([0-9\.]+)\s+([0-9\.]+)\s+([0-9\.]+)/);
@@ -3754,6 +3750,7 @@ d3.inp = function() {
         lines = text.split(/\r\n|\r|\n/),
             section = null;
         let curDesc = '';
+        swmm_read_files(text, 'rpt.rpt', 'out.out');
         lines.forEach(function(line) {
             // If the entry is a comment, then attempt to assign it as the description for the current
             // object, or return nothing.

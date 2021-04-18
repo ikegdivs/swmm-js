@@ -1,0 +1,200 @@
+body{
+    background-color: rgba(255, 255, 250);
+}
+
+.inpanel {
+    top: 0%;
+    left: 0%;
+    height: 100%;
+    width: 100%;
+}
+
+.d3viz {
+    position: absolute;
+    top: 15%;
+    left: 10%;
+    width: 60%;
+}
+
+.viz_legend {
+    position: absolute;
+    top: 15%;
+    left: 72%;
+    width: 23%;
+    height: 72%;
+}
+
+/*
+ *
+ * Scenery
+ *
+ */
+.whiteboard {
+    position: absolute;
+    top:5%;
+    left: 10%;
+    width: 80%;
+    height: 60%;
+    background-color: rgba(252, 252, 252, 1);
+    border-radius: 2vw;
+    box-shadow: 0 0 0vw 0.4vw rgba(0, 0, 0, 1),
+            0 0 0vw 1vw rgba(200, 200, 200, 1),
+            0 0 0vw 1.4vw rgba(0, 0, 0, 1),
+            0 0 0.8vw 1.4vw rgba(0, 0, 0, 1)
+}
+
+.paneltop {
+    background: rgba(220, 230, 255, 1.0);
+}
+
+.strawberryDonut {
+    position: absolute;
+    top: 55%;
+    left: 2%;
+    width: 30%;
+}
+
+.chocolateDonut {
+    position: absolute;
+    top: 55%;
+    right: 2%;
+    width: 30%;
+}
+
+.wall {
+    position: absolute;
+    top: -5%;
+    left: -5%;
+    width: 120%;
+    height: 85%;
+    background: rgba(230, 210, 210);
+    border: 0.3vw solid rgba(0, 0, 0, 1.0);
+}
+
+.floor {
+    position: absolute;
+    top: 80%;
+    left: -5%;
+    width: 120%;
+    height: 85%;
+    background: rgba(230, 230, 210);
+    border: 0.3vw solid rgba(0, 0, 0, 1.0);
+}
+
+/*
+ *
+ * chat
+ *
+ */
+.chatbubble {
+    border: 4vw solid rgb(0, 0, 0, 1);
+}
+
+.chatarrow {
+    transform-origin: top left;
+}
+
+.chatbubble.chocolatesays {
+    position: absolute;
+    top: 25%;
+    right: 10%;
+    width: 25%;
+}
+
+.chatarrow.chocolatesays {
+    position: absolute;
+    border-right: 0.4vw solid transparent;
+    border-left: 1.2vw solid transparent;
+    border-top: 3vw solid;
+    top: calc(100% + 1px);
+    right: 40%;
+}
+
+.chatbubble.strawberrysays {
+    top: 20%;
+    left: 5%;
+    width: 25%;
+}
+
+.chatarrow.strawberrysays {
+    position: absolute;
+    border-right: 1.2vw solid transparent;
+    border-left: 0.4vw solid transparent;
+    border-top: 3vw solid;
+    top: calc(100% + 1px);
+    left: 50%;
+}
+
+/*
+*
+* Animations
+*
+*/
+.whiteboard {
+    /* move the clouds to the right. */
+    -webkit-animation: bgd01 20s alternate infinite;
+            animation: bgd01 20s alternate infinite;
+    -webkit-animation-play-state: running;
+            animation-play-state: running; }
+  
+  /* slightly move the whiteboard */
+  @-webkit-keyframes bgd01 {
+    from {
+        -webkit-transform: translateX(5%);
+        transform: translateX(5%); } 
+    to {
+        -webkit-transform: translateX(7%);
+        transform: translateX(7%); }  }
+  @keyframes bgd01 {
+    from {
+        -webkit-transform: translateX(5%);
+        transform: translateX(5%); } 
+    to {
+        -webkit-transform: translateX(7%);
+        transform: translateX(7%); }  }
+
+.strawberryDonut {
+    /* just a little bit of breathing life, alternate forever. */
+    -webkit-animation: bgd02 3s alternate infinite;
+            animation: bgd02 3s alternate infinite;
+    -webkit-animation-play-state: running;
+            animation-play-state: running; }
+    
+    /* Expand and sway to simulate breath. */
+    @-webkit-keyframes bgd02 {
+        from {
+            -webkit-transform: translateX(0%) scale(1);
+            transform: translateX(0%) scale(1); } 
+        to {
+            -webkit-transform: translateX(0.5%) scale(1.01);
+            transform: translateX(0.5%) scale(1.01); }  }
+      @keyframes bgd02 {
+        from {
+            -webkit-transform: translateX(0%) scale(1);
+            transform: translateX(0%) scale(1); } 
+        to {
+            -webkit-transform: translateX(0.5%) scale(1.01);
+            transform: translateX(0.5%) scale(1.01); }  }
+
+.chocolateDonut {
+    /* just a little bit of breathing life, alternate forever. */
+    -webkit-animation: bgd03 3s alternate infinite;
+            animation: bgd03 3s alternate infinite;
+    -webkit-animation-play-state: running;
+            animation-play-state: running; }
+    
+    /* Expand and sway to simulate breath. */
+    @-webkit-keyframes bgd03 {
+        from {
+            -webkit-transform: translateX(0%) scale(1);
+            transform: translateX(0%) scale(1); } 
+        to {
+            -webkit-transform: translateX(0.5%) scale(1.01);
+            transform: translateX(0.5%) scale(1.01); }  }
+        @keyframes bgd02 {
+        from {
+            -webkit-transform: translateX(0%) scale(1);
+            transform: translateX(0%) scale(1); } 
+        to {
+            -webkit-transform: translateX(0.5%) scale(1.01);
+            transform: translateX(0.5%) scale(1.01); }  }

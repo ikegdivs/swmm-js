@@ -1,0 +1,146 @@
+<!doctype html>
+
+<!-- this is a comment for human! -->
+
+<html lang="en">
+
+  <header>
+    <title>PJ Divs</title><!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="/node_modules/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="./style.css">
+    <link rel="stylesheet" href="/css/assets.css">
+    <link rel="FaviconIcon" href="/favicon.ico" type="image/x-icon">
+    <link rel="shortcut" href="/favicon.ico" type="image/x-icon">
+    <link href="/node_modules/prismjs/themes/prism-okaidia.css" rel="stylesheet" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="name" content="PJ Divs">
+    <meta name="robots" content="noindex, nofollow">
+  </header>
+
+  <body>
+    <div class="jumbotron">
+        <div id="particles-js" class="particles-js"></div>
+        <img id="jumboimage" src="/svg/cleanfront.svg" alt="banner">
+    </div>
+    
+    <h1 style="text-align: center">don3ts: D3 chart panning.</h1>
+
+    <div class="container nomargin">
+        <div class="row">
+            <div class="col-md-8 col-sm-12 mx-auto">
+                <div id="outSpot"></div>
+            </div>
+        </div>
+    </div>
+      
+    <div class="container nomargin">
+        <div class="row">
+            <div class="col-md-8 col-sm-12 mx-auto">
+                <div id="workspace">
+                    <div id="panel-a" class="workview">
+                        <div class="wall"></div>
+                        <div class="floor"></div>
+                        <div class="whiteboard">
+                            <div id="d3viz002" class="d3viz chartcontainer">
+                                <svg id="viz_svg01" class="chart"></svg>
+                            </div>
+                            <div class="viz_legend">
+                                <svg id="legend_01"></svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-sm-12 d-flex offset-md-2 justify-content-center">
+                <form style="width: 25%;">
+                    <div class="form-group" style="margin-top: 10px;">
+                        <label for="formControlSelector">Choose the style of d3 curve:</label>
+                        <select class="form-control theme-purple" id="formControlSelector">
+                            <option>curveLinear</option>
+                            <option>curveBasis</option>
+                            <option>curveBasisClosed</option>
+                            <option>curveBundle</option>
+                            <option>curveCardinal</option>
+                            <option>curveCatmullRom</option>
+                            <option>curveMonotoneX</option>
+                            <option>curveMonotoneY</option>
+                            <option>curveNatural</option>
+                            <option>curveStep</option>
+                            <option>curveStepAfter</option>
+                            <option>curveStepBefore</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+  </body>
+
+<footer class="row footer justify-content-center">
+  <code>Copyright (c) 2020 Issac Gardner</code>
+</footer>
+<!-- jQuery first, then Popper.js, then Bootstrap JS. -->
+<script src="/node_modules/jquery/dist/jquery.min.js"></script>
+<script src="/node_modules/popper.js/dist/umd/popper.min.js"></script>
+<script src="/node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="/particles/particles.js"></script>
+<script> particlesJS.load('particles-js', '/particles/particles.json', function() {
+  console.log('callback - particles.js config loaded');
+});</script>
+<script src="/node_modules/d3/dist/d3.js"></script>
+<!--<script src="https://d3js.org/d3.v5.min.js"></script>-->
+<script src="/node_modules/prismjs/prism.js"></script>
+<script src='./consts.js'></script>
+<script src='./macros.js'></script>
+<script src='./enums.js'></script>
+<script src='./error.js'></script>
+<script src='./datetime.js'></script>
+<script src='./mathexpr.js'></script>
+<script src='./infil.js'></script>
+<script src='./exfil.js'></script>
+<script src='./objects.js'></script>
+<script src='./text.js'></script>
+<script src='./keywords.js'></script>
+<script src='./globals.js'></script>
+<script src='./hash.js'></script>
+<script src='./table.js'></script>
+<script src='./input.js'></script>
+<script src='./odesolve.js'></script>
+<script src='./hotstart.js'></script>
+<script src='./treatmnt.js'></script>
+<script src='./routing.js'></script>
+<script src='./flowroute.js'></script>
+<script src='./qualroute.js'></script>
+<script src='./massbal.js'></script>
+<script src='./inflow.js'></script>
+<script src='./snow.js'></script>
+<script src='./toposort.js'></script>
+<script src='./mempool.js'></script>
+<script src='./output.js'></script>
+<script src='./surfqual.js'></script>
+<script src='./rdii.js'></script>
+<script src='./rain.js'></script>
+<script src='./landuse.js'></script>
+<script src='./findroot.js'></script>
+<script src='./xsect.js'></script>
+<script src='./runoff.js'></script>
+<script src='./gage.js'></script>
+<script src='./gwater.js'></script>
+<script src='./transect.js'></script>
+<script src='./climate.js'></script>
+<script src='./lid.js'></script>
+<script src='./subcatch.js'></script>
+<script src='./stats.js'></script>
+<script src='./kinwave.js'></script>
+<script src='./controls.js'></script>
+<script src='./project.js'></script>
+<script src='./report.js'></script>
+<script src='./statsrpt.js'></script>
+<script src="./link.js"></script>
+<script src="./node.js"></script>
+<script src='./iface.js'></script>
+<script src="./swmm.js"></script>
+<script src="./script.js"></script>
+<script src="/script.js"></script>
+</html>

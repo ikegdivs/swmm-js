@@ -1,0 +1,230 @@
+
+  EPA STORM WATER MANAGEMENT MODEL - VERSION 5.1 (Build 5.1.015)
+  --------------------------------------------------------------
+
+  Example 1
+  
+  
+  *********************************************************
+  NOTE: The summary statistics displayed in this report are
+  based on results found at every computational time step,  
+  not just on results from each reporting time step.
+  *********************************************************
+  
+  ****************
+  Analysis Options
+  ****************
+  Flow Units ............... CFS
+  Process Models:
+    Rainfall/Runoff ........ YES
+    RDII ................... NO
+    Snowmelt ............... NO
+    Groundwater ............ NO
+    Flow Routing ........... YES
+    Ponding Allowed ........ NO
+    Water Quality .......... YES
+  Infiltration Method ...... HORTON
+  Flow Routing Method ...... KINWAVE
+  Starting Date ............ 01/01/1998 00:00:00
+  Ending Date .............. 01/02/1998 12:00:00
+  Antecedent Dry Days ...... 5.0
+  Report Time Step ......... 01:00:00
+  Wet Time Step ............ 00:15:00
+  Dry Time Step ............ 01:00:00
+  Routing Time Step ........ 60.00 sec
+  
+  
+  **************************        Volume         Depth
+  Runoff Quantity Continuity     acre-feet        inches
+  **************************     ---------       -------
+  Total Precipitation ......        15.679         2.650
+  Evaporation Loss .........         0.000         0.000
+  Infiltration Loss ........         7.208         1.218
+  Surface Runoff ...........         0.000         0.000
+  Final Storage ............         0.078         0.013
+  Continuity Error (%%) .....53.5281783665272
+  
+  
+  **************************           TSS          Lead
+  Runoff Quality Continuity            lbs           lbs
+  **************************    ----------    ----------
+  Initial Buildup ..........           NaN         0.000
+  Surface Buildup ..........           NaN         0.000
+  Wet Deposition ...........         0.000         0.000
+  Sweeping Removal .........         0.000         0.000
+  Infiltration Loss ........         0.000         0.000
+  BMP Removal ..............           NaN           NaN
+  Surface Runoff ...........         0.000         0.000
+  Remaining Buildup ........           NaN         0.000
+  Continuity Error (%%) .....         0.000         0.000
+  
+  
+  **************************        Volume        Volume
+  Flow Routing Continuity        acre-feet      10^6 gal
+  **************************     ---------     ---------
+  Dry Weather Inflow .......         0.000         0.000
+  Wet Weather Inflow .......         0.000         0.000
+  Groundwater Inflow .......         0.000         0.000
+  RDII Inflow ..............         0.000         0.000
+  External Inflow ..........         0.000         0.000
+  External Outflow .........         0.000         0.000
+  Flooding Loss ............         0.000         0.000
+  Evaporation Loss .........         0.000         0.000
+  Exfiltration Loss ........         0.000         0.000
+  Initial Stored Volume ....         0.000         0.000
+  Final Stored Volume ......         0.000         0.000
+  Continuity Error (%%) .....         0.000
+  
+  
+  **************************           TSS          Lead
+  Quality Routing Continuity           lbs           lbs
+  **************************    ----------    ----------
+  Dry Weather Inflow .......         0.000         0.000
+  Wet Weather Inflow .......         0.000         0.000
+  Groundwater Inflow .......         0.000         0.000
+  RDII Inflow ..............           NaN           NaN
+  External Inflow ..........         0.000         0.000
+  External Outflow .........         0.000         0.000
+  Flooding Loss ............         0.000         0.000
+  Exfiltration Loss ........         0.000         0.000
+  Mass Reacted .............         0.000         0.000
+  Initial Stored Mass ......         0.000         0.000
+  Final Stored Mass ........           NaN           NaN
+  Continuity Error (%%) .....         0.000         0.000
+  
+  
+  ********************************
+  Highest Flow Instability Indexes
+  ********************************
+  All links are stable.
+  
+  
+  *************************
+  Routing Time Step Summary
+  *************************
+  Minimum Time Step           :    60.00 sec
+  Average Time Step           :    60.00 sec
+  Maximum Time Step           :    60.00 sec
+  Percent in Steady State     :     0.00
+  Average Iterations per Step :     1.50
+  Percent Not Converging      :     0.00
+  
+  
+  ***************************
+  Subcatchment Runoff Summary
+  ***************************
+  
+  ------------------------------------------------------------------------------------------------------------------------------
+                            Total      Total      Total      Total     Imperv       Perv      Total       Total     Peak  Runoff
+                           Precip      Runon       Evap      Infil     Runoff     Runoff     Runoff      Runoff   Runoff   Coeff
+  Subcatchment                 in         in         in         in         in         in         in    10^6 gal      CFS
+  ------------------------------------------------------------------------------------------------------------------------------
+                     1       2.65       0.00       0.00       0.84       0.00       0.00       0.00         0.00     0.00    0.000
+                     2       2.65       0.00       0.00       0.96       0.00       0.00       0.00         0.00     0.00    0.000
+                     3       2.65       0.00       0.00       0.96       0.00       0.00       0.00         0.00     0.00    0.000
+                     4       2.65       0.00       0.00       0.96       0.00       0.00       0.00         0.00     0.00    0.000
+                     5       2.65       0.00       0.00       0.96       0.00       0.00       0.00         0.00     0.00    0.000
+                     6       2.65       0.00       0.00       1.72       0.00       0.00       0.00         0.00     0.00    0.000
+                     7       2.65       0.00       0.00       1.72       0.00       0.00       0.00         0.00     0.00    0.000
+                     8       2.65       0.00       0.00       1.72       0.00       0.00       0.00         0.00     0.00    0.000
+  
+
+  ***********************
+  LID Performance Summary
+  ***********************
+
+  --------------------------------------------------------------------------------------------------------------------
+                                         Total      Evap     Infil   Surface    Drain    Initial     Final  Continuity
+                                        Inflow      Loss      Loss   Outflow   Outflow   Storage   Storage       Error
+  Subcatchment      LID Control             in        in        in        in        in        in        in           %%NaN
+  
+  ****************************
+  Subcatchment Washoff Summary
+  ****************************
+  
+  --------------------%s--------------%s--------------
+                                 TSS          Lead
+  Subcatchment                   lbs           lbs
+  ------------------------------------------------
+  1                              NaN           NaN
+  2                              NaN           NaN
+  3                              NaN           NaN
+  4                              NaN           NaN
+  5                              NaN           NaN
+  6                              NaN           NaN
+  7                              NaN           NaN
+  8                              NaN           NaN
+  ------------------------------------------------
+  System                         NaN           NaN
+  
+  
+  ******************
+  Node Depth Summary
+  ******************
+  
+  ---------------------------------------------------------------------------------
+                                 Average  Maximum  Maximum  Time of Max    Reported
+                                   Depth    Depth      HGL   Occurrence   Max Depth
+  Node                 Type         Feet     Feet     Feet  days hr:min        Feet
+  ---------------------------------------------------------------------------------
+  9                    %-9s    0.00     0.00  1000.00     0  00:00        0.00
+  10                   %-9s    0.00     0.00   995.00     0  00:00        0.00
+  13                   %-9s    0.00     0.00   995.00     0  00:00        0.00
+  14                   %-9s    0.00     0.00   990.00     0  00:00        0.00
+  15                   %-9s    0.00     0.00   987.00     0  00:00        0.00
+  16                   %-9s    0.00     0.00   985.00     0  00:00        0.00
+  17                   %-9s    0.00     0.00   980.00     0  00:00        0.00
+  19                   %-9s    0.00     0.00  1010.00     0  00:00        0.00
+  20                   %-9s    0.00     0.00  1005.00     0  00:00        0.00
+  21                   %-9s    0.00     0.00   990.00     0  00:00        0.00
+  22                   %-9s    0.00     0.00   987.00     0  00:00        0.00
+  23                   %-9s    0.00     0.00   990.00     0  00:00        0.00
+  24                   %-9s    0.00     0.00   984.00     0  00:00        0.00
+  18                   %-9s    0.00     0.00   975.00     0  00:00        0.00
+  
+  
+  *******************
+  Node Inflow Summary
+  *******************
+  
+  -------------------------------------------------------------------------------------------------
+                                  Maximum  Maximum                  Lateral       Total        Flow
+                                  Lateral    Total  Time of Max      Inflow      Inflow     Balance
+                                   Inflow   Inflow   Occurrence      Volume      Volume       Error
+  Node                 Type           CFS       CFS  days hr:min    10^6 gals    10^6 gal     Percent
+  -------------------------------------------------------------------------------------------------
+  9                    JUNCTION      0.00     0.00     0  00:000.00000000e+00.00000000e+0         NaN
+  10                   JUNCTION      0.00     0.00     0  00:000.00000000e+00.00000000e+0         NaN
+  13                   JUNCTION      0.00     0.00     0  00:000.00000000e+00.00000000e+0         NaN
+  14                   JUNCTION      0.00     0.00     0  00:000.00000000e+00.00000000e+0         NaN
+  15                   JUNCTION      0.00     0.00     0  00:000.00000000e+00.00000000e+0         NaN
+  16                   JUNCTION      0.00     0.00     0  00:000.00000000e+00.00000000e+0         NaN
+  17                   JUNCTION      0.00     0.00     0  00:000.00000000e+00.00000000e+0         NaN
+  19                   JUNCTION      0.00     0.00     0  00:000.00000000e+00.00000000e+0         NaN
+  20                   JUNCTION      0.00     0.00     0  00:000.00000000e+00.00000000e+0         NaN
+  21                   JUNCTION      0.00     0.00     0  00:000.00000000e+00.00000000e+0         NaN
+  22                   JUNCTION      0.00     0.00     0  00:000.00000000e+00.00000000e+0         NaN
+  23                   JUNCTION      0.00     0.00     0  00:000.00000000e+00.00000000e+0         NaN
+  24                   JUNCTION      0.00     0.00     0  00:000.00000000e+00.00000000e+0         NaN
+  18                   OUTFALL       0.00     0.00     0  00:000.00000000e+00.00000000e+0         NaN
+  
+  
+  *********************
+  Node Flooding Summary
+  *********************
+  
+  No nodes were flooded.
+  
+  
+  ***********************
+  Outfall Loading Summary
+  ***********************
+  
+  ---------------------------------------------------------------------------------------
+                         Flow       Avg       Max       Total         Total         Total
+                         Freq      Flow      Flow      Volume           TSS          Lead
+  Outfall Node           Pcnt       CFS       CFS    10^6 gal           lbs           lbs
+  ---------------------------------------------------------------------------------------
+  18                     0.00      0.00      0.00       0.000         0.000         0.000
+  ---------------------------------------------------------------------------------------
+  System                 0.00      0.00      0.00
