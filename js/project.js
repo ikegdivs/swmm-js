@@ -1433,9 +1433,9 @@ function createHashTables()
         if ( Htable[j] == null ) report_writeErrorMsg(ERR_MEMORY, "");
     }
     
-    root.first = AllocHdr();
+    /*root.first = AllocHdr();
     root.current = root.first;
-    newpool = root;
+    newpool = root;*/
 
 
     // --- initialize memory pool used to store object ID's

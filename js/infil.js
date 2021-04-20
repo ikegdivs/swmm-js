@@ -184,6 +184,7 @@ function infil_create(n)
 //
 {
     //Infil = (TInfil *) calloc(n, sizeof(TInfil));
+    Infil = [];
     for(let i = 0; i < n; i++){Infil.push(new TInfil())}
     if (Infil == null) ErrorCode = ERR_MEMORY;
     InfilFactor = 1.0;

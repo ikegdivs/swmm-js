@@ -123,7 +123,7 @@ function AllocHdr()
     hdr.next  = null;
     hdr.end   = block + ALLOC_BLOCK_SIZE;
 
-    return(hdr);
+    return hdr;
 }
 
 
