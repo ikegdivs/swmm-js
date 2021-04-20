@@ -207,7 +207,7 @@ function createRainFile(count)
     if ( ErrorCode || !Frain.file ) return;
 
     // --- write file stamp & # gages to file
-    fwrite(fileStamp, sizeof(char), strlen(fileStamp), Frain.file);
+    fwrite(fileStamp, sizeof(char), fileStamp.length, Frain.file);
     fwrite(kount, sizeof(int), 1, Frain.file);
     filePos1 = ftell(Frain.file);
 
@@ -343,7 +343,7 @@ function initRainFile()
 
     // --- check that interface file contains proper file stamp
     rewind(Frain.file);
-    fread(fStamp, sizeof(char), strlen(fileStamp), Frain.file);
+    fread(fStamp, sizeof(char), fileStamp.length, Frain.file);
     if ( strcmp(fStamp, fileStamp) != 0 )
     {
         report_writeErrorMsg(ERR_RAIN_IFACE_FORMAT, "");
@@ -516,7 +516,7 @@ function findFileFormat(f, i, hdrLines)
         n = sscanf(line, "%7ld%3d%2d%2d%3d", sn2, year, month, day, elem);
         if ( n == 5 )
         {
-            if ( elem == 123 && strlen(line) >= 185 )
+            if ( elem == 123 && line.length >= 185 )
             {
                 fileFormat = AES_HLY;
                 Interval = 3600;
@@ -530,12 +530,12 @@ function findFileFormat(f, i, hdrLines)
         n = sscanf(line, "%7ld%4d%2d%2d%3d", sn2, year, month, day, elem);
         if ( n == 5 )
         {
-            if ( elem == 159 && strlen(line) >= 691 )
+            if ( elem == 159 && line.length >= 691 )
             {
                 fileFormat = CMC_FIF;
                 Interval = 900;
             }
-            else if ( elem == 123 && strlen(line) >= 186 )
+            else if ( elem == 123 && line.length >= 186 )
             {
                 fileFormat = CMC_HLY;
                 Interval = 3600;

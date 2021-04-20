@@ -805,11 +805,12 @@ function   match(str, substr)
     }
 
     // --- check if substr matches remainder of str
-    for (i = i,j = 0; substr[j]; i++,j++)
+    //for (i = i,j = 0; substr[j] !== undefined && str[i] !== undefined; i++,j++)
+    for (i = i,j = 0; j < substr.length && i < str.length; i++,j++)
     {
-        if (!str[i] || str[i].toUpperCase() != substr[j].toUpperCase()) return(0);
+        if (!str[i] || str[i].toUpperCase() != substr[j].toUpperCase()) return 0;
     }
-    return(1);
+    return 1;
 }
 
 //=============================================================================

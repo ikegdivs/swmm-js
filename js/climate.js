@@ -1144,7 +1144,7 @@ function  getFileFormat()
          strcmp(filler, "9999")  == 0 ) return TD3200;
 
     // --- check for DLY0204 format
-    if ( strlen(line) >= 233 )
+    if ( line.length >= 233 )
     {
         sstrncpy(elemType, line[13], 3);
         n = parseInt(elemType);
@@ -1172,7 +1172,7 @@ function readFileLine(y, m)
 //
 {
     // --- read next line from climate data file
-    while ( strlen(FileLine) == 0 )
+    while ( FileLine.length == 0 )
     {
         if ( fgets(FileLine, MAXLINE, Fclimate.file) == null ) return;
      	if ( FileLine[0] == '\n' ) FileLine[0] = '\0';
@@ -1223,7 +1223,7 @@ function readTD3200FileLine(y, m)
     let  len;
 
     // --- check for minimum number of characters
-    len = strlen(FileLine);
+    len = FileLine.length;
     if ( len < 30 )
     {
         report_writeErrorMsg(ERR_CLIMATE_FILE_READ, Fclimate.name);
@@ -1260,7 +1260,7 @@ function readDLY0204FileLine(y, m)
     let  len;
 
     // --- check for minimum number of characters
-    len = strlen(FileLine);
+    len = FileLine.length;
     if ( len < 16 )
     {
         report_writeErrorMsg(ERR_CLIMATE_FILE_READ, Fclimate.name);
@@ -1337,7 +1337,7 @@ function parseUserFileLine()
     if ( d < 1 || d > 31 ) return;
 
     // --- process TMAX
-    if ( strlen(s0) > 0 && s0 != '*' )
+    if ( s0.length > 0 && s0 != '*' )
     {
         x = atof(s0);
         if ( UnitSystem == SI ) x = 9./5.*x + 32.0;
@@ -1345,7 +1345,7 @@ function parseUserFileLine()
     }
 
     // --- process TMIN
-    if ( strlen(s1) > 0 && s1 != '*' )
+    if ( s1.length > 0 && s1 != '*' )
     {
         x = atof(s1);
         if ( UnitSystem == SI ) x = 9./5.*x + 32.0;
@@ -1353,10 +1353,10 @@ function parseUserFileLine()
     }
 
     // --- process EVAP
-    if ( strlen(s2) > 0 && s2 != '*' ) FileData[EVAP][d] = atof(s2);
+    if ( s2.length > 0 && s2 != '*' ) FileData[EVAP][d] = atof(s2);
 
     // --- process WIND
-    if ( strlen(s3) > 0 && s3 != '*' ) FileData[WIND][d] = atof(s3);
+    if ( s3.length > 0 && s3 != '*' ) FileData[WIND][d] = atof(s3);
 }
 
 //=============================================================================

@@ -107,14 +107,14 @@ function openHotstartFile1()
     }
 
     // --- check that file contains proper header records
-    fread(fStampx, sizeof(char), strlen(fileStamp2), Fhotstart1.file);
+    fread(fStampx, sizeof(char), fileStamp2.length, Fhotstart1.file);
     if      ( strcmp(fStampx, fileStamp4) == 0 ) fileVersion = 4;
     else if ( strcmp(fStampx, fileStamp3) == 0 ) fileVersion = 3;
     else if ( strcmp(fStampx, fileStamp2) == 0 ) fileVersion = 2;
     else
     {
         rewind(Fhotstart1.file);
-        fread(fStamp, sizeof(char), strlen(fileStamp), Fhotstart1.file);
+        fread(fStamp, sizeof(char), fileStamp.length, Fhotstart1.file);
         if ( strcmp(fStamp, fileStamp) != 0 )
         {
             report_writeErrorMsg(ERR_HOTSTART_FILE_FORMAT, "");
@@ -194,7 +194,7 @@ function openHotstartFile2()
     nLinks = Nobjects[LINK];
     nPollut = Nobjects[POLLUT];
     flowUnits = FlowUnits;
-    fwrite(fileStamp, sizeof(char), strlen(fileStamp), Fhotstart2.file);
+    fwrite(fileStamp, sizeof(char), fileStamp.length, Fhotstart2.file);
     fwrite(nSubcatch, sizeof(int), 1, Fhotstart2.file);
     fwrite(nLandUses, sizeof(int), 1, Fhotstart2.file);
     fwrite(nNodes, sizeof(int), 1, Fhotstart2.file);

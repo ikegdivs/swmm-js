@@ -1,0 +1,40 @@
+[TITLE]
+     Example 1 of Extran Manual
+
+[OPTIONS]
+ FLOW_UNITS            CFS
+ INFILTRATION          HORTON
+ FLOW_ROUTING          DW
+ START_DATE            01/01/2002
+ START_TIME            00:00:00
+ REPORT_START_DATE     01/01/2002
+ REPORT_START_TIME     00:00:00
+ END_DATE              01/01/2002
+ END_TIME              08:00:00
+ DRY_DAYS              0
+ WET_STEP              00:15:00
+ DRY_STEP              01:00:00
+ ROUTING_STEP          00:00:20
+ REPORT_STEP           00:15:00
+ ALLOW_PONDING         NO
+ INERTIAL_DAMPING      PARTIAL
+ VARIABLE_STEP         0.75
+ LENGTHENING_STEP      0
+ MIN_SURFAREA          12.557
+
+[JUNCTIONS]
+;;                 Invert     Max.       Init.      Surcharge  Ponded    
+;;Name             Elev.      Depth      Depth      Depth      Area      
+;;------------------------------------------------------------------------
+  80408            124.6      13.4       0          0          0         
+
+[OUTFALLS]
+;;                 Invert     Outfall      Stage/Table
+;;Name             Elev.      Type         Time Series
+;;----------------------------------------------------
+  10208            89.9       FREE       NO
+
+[COORDINATES]
+;;Node             X-Coord          Y-Coord
+  80408            10115.79         7536.84              
+  10208            -578.95          4947.37         

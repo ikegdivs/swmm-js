@@ -281,7 +281,7 @@ function project_validate()
         for (i=0; i<Nobjects[LINK]; i++) Link[i].rptFlag = true;
 
     // --- validate dynamic wave options
-    if ( RouteModel == DW ) dynwave_validate();
+    //if ( RouteModel == DW ) dynwave_validate();
 
     if ( Nobjects[LINK] < 4 * NumThreads ) NumThreads = 1;                     //(5.1.008)
 

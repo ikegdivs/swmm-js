@@ -21,7 +21,6 @@
  VARIABLE_STEP         0.00
  LENGTHENING_STEP      0
  MIN_SURFAREA          0
- COMPATIBILITY         5
 
 [JUNCTIONS]
 ;;                 Invert     Max.       Init.      Surcharge  Ponded    

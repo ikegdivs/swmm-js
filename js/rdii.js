@@ -439,7 +439,7 @@ function rdii_openRdii()
     }
 
     // --- check for valid file stamp
-    fread(fStamp, sizeof(char), strlen(FileStamp), Frdii.file);
+    fread(fStamp, sizeof(char), FileStamp.length, Frdii.file);
     if ( strcmp(fStamp, FileStamp) == 0 )
     {
         RdiiFileType = BINARY;
@@ -1147,7 +1147,7 @@ function openNewRdiiFile()
     }
 
     // --- write file stamp to RDII file
-    fwrite(FileStamp, sizeof(char), strlen(FileStamp), Frdii.file);
+    fwrite(FileStamp, sizeof(char), FileStamp.length, Frdii.file);
 
     // --- initialize the contents of the file with RDII time step (sec),
     //     number of RDII nodes, and index of each node

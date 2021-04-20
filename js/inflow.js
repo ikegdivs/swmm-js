@@ -59,12 +59,16 @@ function inflow_readExtInflow(tok, ntoks)
     param = project_findObject(POLLUT, tok[1]);
     if ( param < 0 )
     {
-        if ( match(tok[1], w_FLOW) ) param = -1;
-        else return error_setInpError(ERR_NAME, tok[1]);
+        if ( match(tok[1], w_FLOW) === 1){
+            param = -1;
+        }
+        else{
+            return error_setInpError(ERR_NAME, tok[1]);
+        } 
     }
 
     // --- find index of inflow time series (if supplied) in data base
-    if ( strlen(tok[2]) > 0 )
+    if ( tok[2].length > 0 )
     {
         tseries = project_findObject(TSERIES, tok[2]);
         if ( tseries < 0 ) return error_setInpError(ERR_NAME, tok[2]);
@@ -223,7 +227,7 @@ function inflow_setExtInflow(j, param, type, tseries, basePat, cf, baseline, sf)
     // Validate Inflow
     ////////////////////////////////////
     returnObj = {cf: cf}
-    returnVal = inflow_validate(param, type, tseries, basePat, inObj)
+    returnVal = inflow_validate(param, type, tseries, basePat, returnObj)
     cf = returnObj.cf;
     ////////////////////////////////////
     errcode = returnVal
@@ -390,7 +394,7 @@ function inflow_readDwfInflow(tok, ntoks)
     for (i=3; i<7; i++)
     {
         if ( i >= ntoks ) break;
-        if ( strlen(tok[i]) == 0 ) continue;
+        if ( tok[i].length == 0 ) continue;
         m = project_findObject(TIMEPATTERN, tok[i]);
         if ( m < 0 ) return error_setInpError(ERR_NAME, tok[i]);
         pats[i-3] = m;

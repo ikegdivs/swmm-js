@@ -337,7 +337,7 @@ function runoff_initFile()
         nSubcatch = Nobjects[SUBCATCH];
         nPollut = Nobjects[POLLUT];
         flowUnits = FlowUnits;
-        fwrite(fileStamp, sizeof(char), strlen(fileStamp), Frunoff.file);
+        fwrite(fileStamp, sizeof(char), ileStamp.length, Frunoff.file);
         fwrite(nSubcatch, sizeof(int), 1, Frunoff.file);
         fwrite(nPollut, sizeof(int), 1, Frunoff.file);
         fwrite(flowUnits, sizeof(int), 1, Frunoff.file);
@@ -348,7 +348,7 @@ function runoff_initFile()
     if ( Frunoff.mode == USE_FILE )
     {
         // --- check that interface file contains proper header records
-        fread(fStamp, sizeof(char), strlen(fileStamp), Frunoff.file);
+        fread(fStamp, sizeof(char), fileStamp.length, Frunoff.file);
         if ( strcmp(fStamp, fileStamp) != 0 )
         {
             report_writeErrorMsg(ERR_RUNOFF_FILE_FORMAT, "");

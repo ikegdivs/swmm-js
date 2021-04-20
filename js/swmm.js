@@ -34,6 +34,66 @@ function drawTimeseries(){
     })*/
 }
 
+// Translate a date from the datetime input format (yyyy-MM-dd) to model format (MM/DD/YYYY) 
+function untranslateDate(date){
+    let dateArray = date.split('-');
+    let dateString = dateArray[1]+'/'+dateArray[2]+'/'+dateArray[0];
+
+    return dateString;
+}
+
+// Translate a date from the model format (days since 12/30/1899) to datetime input format (yyyy-MM-dd)
+/*function translateDate(days){
+    let thisDate = new Date('12/30/1899');
+    thisDate.setDate(thisDate.getDate() + days);
+    let outVal = thisDate.toLocaleDateString('en-CA', {year: 'numeric', month: '2-digit', day: '2-digit'});
+    return outVal;
+}*/
+function translateDate(days){
+    let thisDate = new Date('12/30/1899');
+    thisDate.setDate(thisDate.getDate() + days);
+    let outVal = thisDate.toLocaleDateString('en-US', {year: 'numeric', month: '2-digit', day: '2-digit'});
+    return outVal;
+}
+
+// Translate a date from the datetime input format (yyyy-MM-dd) to sweep format (MM/DD) 
+function untranslateSweepDate(date){
+    let dateArray = date.split('-');
+    let dateString = dateArray[0]+'/'+dateArray[1];
+
+    return dateString;
+}
+
+// Translate a sweep date from the model format (days since 12/31/1899) to datetime input format (MM-dd)
+function translateSweepDate(days){
+    let thisDate = new Date('12/31/1899');
+    thisDate.setDate(thisDate.getDate() + days);
+    let outVal = thisDate.toLocaleDateString('en-US', {month: '2-digit', day: '2-digit'});
+    return outVal;
+}
+
+// Translate a time from the model format (fraction of a day) to clock format (HH:MM)
+function translateTime(days){
+    let duration = moment.utc(days*24*60*60*1000).format('HH:mm:ss');
+    return duration;
+}
+
+// Translate a duration from the model format (seconds) to precise clock format (HH:MM:SS)
+function translateToHMS(seconds){
+    let duration = moment.utc(seconds*1000).format('HH:mm:ss');
+    return duration;
+}
+// Translate a duration from the model format (seconds) to precise clock format (H:MM:SS)
+function translateTohMS(seconds){
+    let duration = moment.utc(seconds*1000).format('H:mm:ss');
+    return duration;
+}
+
+// Translate a time from clock format (HH:MM) to the model format (fraction of a day)
+function untranslateTime(theTime){
+    return theTime;
+}
+
 // Parser for SWMM INP files
 d3.inp = function() {
     function inp() {
@@ -1585,26 +1645,7 @@ d3.inp = function() {
             })
         }
      
-        // Translate a date from the datetime input format (yyyy-MM-dd) to model format (MM/DD/YYYY) 
-        function untranslateDate(date){
-            let thisDate = date.split('-');
-            let outVal = thisDate[1]+'/'+thisDate[2]+'/'+thisDate[0]
-            return outVal;
-        }
-
-        // Translate a date from the model format (MM/DD/YYYY) to datetime input format (yyyy-MM-dd)
-        function translateDate(date){
-            let thisDate = new Date(date.split('/'));
-            let outVal = thisDate.toLocaleDateString('en-CA', {year: 'numeric', month: '2-digit', day: '2-digit'});
-            return outVal;
-        }
-
-        // Translate a date from the datetime input format (yyyy-MM-dd) to sweep format (MM/DD) 
-        function untranslateSweepDate(date){
-            let thisDate = date.split('-');
-            let outVal = thisDate[1]+'/'+thisDate[2]
-            return outVal;
-        }
+        
 
         /////////////////////////////////////////////////////////////
         // Title/Notes Modal 
@@ -1893,14 +1934,14 @@ d3.inp = function() {
             // Show the modal.
             $('#modalDates').modal('toggle');
 
-            $('#dates-startdateanalysis').val(translateDate(swmmjs.model['OPTIONS']['START_DATE'].Value))
-            $('#dates-starttimeanalysis').val(swmmjs.model['OPTIONS']['START_TIME'].Value)
-            $('#dates-startdatereport').val(translateDate(swmmjs.model['OPTIONS']['REPORT_START_DATE'].Value))
-            $('#dates-starttimereport').val(swmmjs.model['OPTIONS']['REPORT_START_TIME'].Value)
-            $('#dates-enddateanalysis').val(translateDate(swmmjs.model['OPTIONS']['END_DATE'].Value))
-            $('#dates-endtimeanalysis').val(swmmjs.model['OPTIONS']['END_TIME'].Value)
-            $('#dates-startsweeping').val(translateDate(swmmjs.model['OPTIONS']['SWEEP_START'].Value))
-            $('#dates-endsweeping').val(translateDate(swmmjs.model['OPTIONS']['SWEEP_END'].Value))
+            $('#dates-startdateanalysis').val((swmmjs.model['OPTIONS']['START_DATE'].Value))
+            $('#dates-starttimeanalysis').val((swmmjs.model['OPTIONS']['START_TIME'].Value))
+            $('#dates-startdatereport').val((swmmjs.model['OPTIONS']['REPORT_START_DATE'].Value))
+            $('#dates-starttimereport').val((swmmjs.model['OPTIONS']['REPORT_START_TIME'].Value))
+            $('#dates-enddateanalysis').val((swmmjs.model['OPTIONS']['END_DATE'].Value))
+            $('#dates-endtimeanalysis').val((swmmjs.model['OPTIONS']['END_TIME'].Value))
+            $('#dates-startsweeping').val((swmmjs.model['OPTIONS']['SWEEP_START'].Value))
+            $('#dates-endsweeping').val((swmmjs.model['OPTIONS']['SWEEP_END'].Value))
             $('#dates-antecedentdrydays').val(swmmjs.model['OPTIONS']['DRY_DAYS'].Value)
 
             $('#save-modal-dates').click(function(e){
@@ -1910,11 +1951,11 @@ d3.inp = function() {
 
         function saveModalDates(){
             swmmjs.model['OPTIONS']['START_DATE'].Value = untranslateDate($('#dates-startdateanalysis').val())
-            swmmjs.model['OPTIONS']['START_TIME'].Value = $('#dates-starttimeanalysis').val()
+            swmmjs.model['OPTIONS']['START_TIME'].Value = untranslateTime($('#dates-starttimeanalysis').val())
             swmmjs.model['OPTIONS']['REPORT_START_DATE'].Value = untranslateDate($('#dates-startdatereport').val())
-            swmmjs.model['OPTIONS']['REPORT_START_TIME'].Value = $('#dates-starttimereport').val()
+            swmmjs.model['OPTIONS']['REPORT_START_TIME'].Value = untranslateTime($('#dates-starttimereport').val())
             swmmjs.model['OPTIONS']['END_DATE'].Value = untranslateDate($('#dates-enddateanalysis').val())
-            swmmjs.model['OPTIONS']['END_TIME'].Value = $('#dates-endtimeanalysis').val()
+            swmmjs.model['OPTIONS']['END_TIME'].Value = untranslateTime($('#dates-endtimeanalysis').val())
             swmmjs.model['OPTIONS']['SWEEP_START'].Value = untranslateSweepDate($('#dates-startsweeping').val())
             swmmjs.model['OPTIONS']['SWEEP_END'].Value = untranslateSweepDate($('#dates-endsweeping').val())
             swmmjs.model['OPTIONS']['DRY_DAYS'].Value = $('#dates-antecedentdrydays').val()
@@ -3190,14 +3231,10 @@ d3.inp = function() {
             // TITLE Title/Notes needs to consume all of the lines until the next section.
             // Older code just takes in a single line.
             TITLE: function(section, key, line) {
-                var m = line.match(/(.*)+/);
-                if (m && m.length > 1)
-                    section[Object.keys(section).length] = {TitleNotes: key + line};
+                return;
             },
             OPTIONS: function(section, key, line) {
-                    var m = line.match(/\s+([//\-:a-zA-Z0-9\.]+)/);
-                    if (m && m.length)
-                        section[key] = {Value: m[1]};
+                return;
             },
             EVAPORATION: function(section, key, line) {
                     var m = line.match(/\s+([//\-:a-zA-Z0-9\.]+)/);
@@ -3749,8 +3786,81 @@ d3.inp = function() {
                     clickEffect: 'edit'},
         lines = text.split(/\r\n|\r|\n/),
             section = null;
-        let curDesc = '';
+        
+        // Open the files and translate to a model.
         swmm_read_files(text, 'rpt.rpt', 'out.out');
+
+        ///////////////////////////////////////////////////////
+        // raw swmm-js translations
+        ///////////////////////////////////////////////////////
+
+        // Translate the Title
+        // TITLE
+        model['TITLE'] = [];
+        Title.forEach(function(line){
+            model['TITLE'].push({TitleNotes: line})
+        })
+
+        // Translate the Options
+        // Options
+        /*OPTIONS: function(section, key, line) {
+                    var m = line.match(/\s+([//\-:a-zA-Z0-9\.]+)/);
+                    if (m && m.length)
+                        section[key] = {Value: m[1]};
+            },*/
+        model['OPTIONS'] = [];
+        model['OPTIONS']['FLOW_UNITS']   = {Value: FlowUnitWords[FlowUnits]};
+        model['OPTIONS']['INFILTRATION'] = {Value: InfilModelWords[InfilModel]};
+        model['OPTIONS']['FLOW_ROUTING'] = {Value: RouteModelWords[RouteModel]};
+        model['OPTIONS']['START_DATE']   = {Value: translateDate(StartDate)};
+        model['OPTIONS']['START_TIME']   = {Value: translateTime(StartTime)};
+        model['OPTIONS']['END_DATE']     = {Value: translateDate(EndDate)};
+        model['OPTIONS']['END_TIME']     = {Value: translateTime(EndTime)};
+        model['OPTIONS']['REPORT_START_DATE'] = {Value: translateDate(ReportStartDate)};
+        model['OPTIONS']['REPORT_START_TIME'] = {Value: translateTime(ReportStartTime)};
+        model['OPTIONS']['SWEEP_START']       = {Value: translateSweepDate(SweepStart)};
+        model['OPTIONS']['SWEEP_END']         = {Value: translateSweepDate(SweepEnd)};
+        model['OPTIONS']['DRY_DAYS']          = {Value: StartDryDays};
+        model['OPTIONS']['WET_STEP']          = {Value: translateToHMS(WetStep)};
+        model['OPTIONS']['DRY_STEP']          = {Value: translateToHMS(DryStep)};
+        model['OPTIONS']['REPORT_STEP']       = {Value: translateToHMS(ReportStep)};
+        model['OPTIONS']['RULE_STEP']         = {Value: translateToHMS(RuleStep)};
+        model['OPTIONS']['INERTIAL_DAMPING']     = {Value: InertDampingWords[InertDamping]};
+        model['OPTIONS']['ALLOW_PONDING']     = {Value: NoYesWords[Number(AllowPonding)]};
+        model['OPTIONS']['SLOPE_WEIGHTING']   = {Value: NoYesWords[Number(SlopeWeighting)]};
+        model['OPTIONS']['SKIP_STEADY_STATE'] = {Value: NoYesWords[Number(SkipSteadyState)]};
+        model['OPTIONS']['IGNORE_RAINFALL']   = {Value: NoYesWords[Number(IgnoreRainfall)]};
+        model['OPTIONS']['IGNORE_SNOWMELT']   = {Value: NoYesWords[Number(IgnoreSnowmelt)]};
+        model['OPTIONS']['IGNORE_GROUNDWATER']= {Value: NoYesWords[Number(IgnoreGwater)]};
+        model['OPTIONS']['IGNORE_ROUTING']    = {Value: NoYesWords[Number(IgnoreRouting)]};
+        model['OPTIONS']['IGNORE_QUALITY']    = {Value: NoYesWords[Number(IgnoreQuality)]};
+        model['OPTIONS']['IGNORE_RDII']       = {Value: NoYesWords[Number(IgnoreRDII)]};
+        model['OPTIONS']['NORMAL_FLOW_LIMITED'] = {Value: NormalFlowWords[NormalFlowLtd]};
+        model['OPTIONS']['FORCE_MAIN_EQUATION'] = {Value: ForceMainEqnWords[ForceMainEqn]};
+        model['OPTIONS']['LINK_OFFSETS']        = {Value: LinkOffsetWords[LinkOffsets]};
+        //model['OPTIONS']['COMPATIBILITY']       = {Value: Compatibility};
+        model['OPTIONS']['ROUTING_STEP']        = {Value: translateToHMS(RouteStep)};
+        model['OPTIONS']['LENGTHENING_STEP']    = {Value: LengtheningStep};
+        model['OPTIONS']['MINIMUM_STEP']        = {Value: MinRouteStep};
+        model['OPTIONS']['THREADS']             = {Value: NumThreads};
+        model['OPTIONS']['VARIABLE_STEP']       = {Value: CourantFactor};
+        model['OPTIONS']['MIN_SURFAREA']        = {Value: MinSurfArea};
+        model['OPTIONS']['MIN_SLOPE']           = {Value: MinSlope*100}; // Percent in file, fraction in exe
+        model['OPTIONS']['MAX_TRIALS']          = {Value: MaxTrials};
+        model['OPTIONS']['HEAD_TOLERANCE']      = {Value: HeadTol};
+        model['OPTIONS']['SYS_FLOW_TOL']        = {Value: SysFlowTol*100}; // Percent in file, fraction in exe
+        model['OPTIONS']['LAT_FLOW_TOL']        = {Value: LatFlowTol*100}; // Percent in file, fraction in exe
+        model['OPTIONS']['SURCHARGE_METHOD']    = {Value: SurchargeWords[SurchargeMethod]}; 
+        model['OPTIONS']['TEMPDIR']             = {Value: TempDir}; 
+
+        // Recover all memory from parsing the input.
+        swmm_close();
+
+        //////////////////////////////////////////////////////////
+        // wasm swmm-js translations
+        //////////////////////////////////////////////////////////
+
+        let curDesc = '';
         lines.forEach(function(line) {
             // If the entry is a comment, then attempt to assign it as the description for the current
             // object, or return nothing.
