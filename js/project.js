@@ -896,7 +896,7 @@ function initPointers()
     Aquifer    = [];
     UnitHyd    = [];
     Snowmelt   = [];
-    Event      = [];
+    swmm_Event      = [];
     MemPoolAllocated = [];
 }
 
@@ -1147,12 +1147,12 @@ function createObjects()
 
     //thing.item = 0;
     // --- create array of detailed routing event periods
-    Event = new Array(NumEvents+1);
+    swmm_Event = new Array(NumEvents+1);
     for(let i = 0; i < NumEvents+1; i++){
-        Event[i] = new TEvent();
+        swmm_Event[i] = new TEvent();
     }
-    Event[NumEvents].start = BIG;
-    Event[NumEvents].end = BIG + 1.0;
+    swmm_Event[NumEvents].start = BIG;
+    swmm_Event[NumEvents].end = BIG + 1.0;
 
     // --- create LID objects
     lid_create(Nobjects[LID], Nobjects[SUBCATCH]);
@@ -1402,7 +1402,7 @@ function deleteObjects()
     FREE(UnitHyd);
     FREE(Snowmelt);
     FREE(Shape);
-    FREE(Event);
+    FREE(swmm_Event);
 }
 
 //=============================================================================

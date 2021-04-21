@@ -755,9 +755,9 @@ function  readEvent(tok, ntoks)
     if(!returnVal)
         return error_setInpError(ERR_DATETIME, tok[3]);
 
-    Event[Mevents].start = x[0] + x[1];
-    Event[Mevents].end = x[2] + x[3];
-    if ( Event[Mevents].start >= Event[Mevents].end )
+    swmm_Event[Mevents].start = x[0] + x[1];
+    swmm_Event[Mevents].end = x[2] + x[3];
+    if ( swmm_Event[Mevents].start >= swmm_Event[Mevents].end )
        return error_setInpError(ERR_DATETIME, " - start date exceeds end date");
     Mevents++;
     return 0;

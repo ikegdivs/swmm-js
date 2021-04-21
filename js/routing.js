@@ -145,14 +145,14 @@ function routing_getRoutingStep(routingModel, fixedStep)
         nextTime = MIN(NewRunoffTime, ReportTime);
         date1 = getDateTime(NewRoutingTime);
         date2 = getDateTime(nextTime);
-        if ( date2 > date1 && date2 < Event[NextEvent].start )
+        if ( date2 > date1 && date2 < swmm_Event[NextEvent].start )
         {
             routingStep = (nextTime - NewRoutingTime) / 1000.0;
         }
         else
         {
             date1 = getDateTime(NewRoutingTime + 1000.0 * fixedStep);
-            if ( date1 < Event[NextEvent].start ) return fixedStep;
+            if ( date1 < swmm_Event[NextEvent].start ) return fixedStep;
         }
     }
 
@@ -259,12 +259,12 @@ function routing_execute(routingModel, routingStep)
     // --- check if can skip non-event periods
     if ( NumEvents > 0 )
     {
-        if ( currentDate > Event[NextEvent].end )
+        if ( currentDate > swmm_Event[NextEvent].end )
         {
             BetweenEvents = true;
             NextEvent++;
         }
-        else if ( currentDate >= Event[NextEvent].start && BetweenEvents == true )
+        else if ( currentDate >= swmm_Event[NextEvent].start && BetweenEvents == true )
         {
 			BetweenEvents = false;
         }
@@ -871,11 +871,11 @@ function sortEvents()
     {
         for (j = i+1; j < NumEvents; j++)
         {
-            if ( Event[i].start > Event[j].start )
+            if ( swmm_Event[i].start > swmm_Event[j].start )
             {
-                temp = Event[j];
-                Event[j] = Event[i];
-                Event[i] = temp;
+                temp = swmm_Event[j];
+                swmm_Event[j] = swmm_Event[i];
+                swmm_Event[i] = temp;
             }
         }
     }
@@ -883,7 +883,7 @@ function sortEvents()
     // Adjust for overlapping events
     for (i = 0; i < NumEvents-1; i++)
     {
-        if ( Event[i].end > Event[i+1].start ) Event[i].end = Event[i+1].start;
+        if ( swmm_Event[i].end > swmm_Event[i+1].start ) swmm_Event[i].end = swmm_Event[i+1].start;
     }
 }
 

@@ -3195,6 +3195,8 @@ d3.inp = function() {
 
             // - 2: for every row in the '#tableTimeseries' table
             let table = Tabulator.prototype.findTable('#tableTimeseries')[0];
+            if(!table) return;
+
             id = $('#timeseries-name').val()
 
             table.getData().forEach(function(el){

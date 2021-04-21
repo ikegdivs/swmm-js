@@ -169,7 +169,7 @@ var Curve = []                    // Array of curve tables
 var Tseries = []                  // Array of time series tables
 var Transect = []                 // Array of transect data
 var Shape = []                    // Array of custom conduit shapes
-var Event = []                    // Array of routing events
+var swmm_Event = []                    // Array of routing events
 
 /*
 var Snowmelt    = new TSnowmelt();                 // Array of snow melt objects
@@ -194,6 +194,6 @@ var Curve       = new TTable();                    // Array of curve tables
 var Tseries     = new TTable();                    // Array of time series tables
 var Transect    = new TTransect();                 // Array of transect data
 var Shape       = new TShape();                    // Array of custom conduit shapes
-var Event       = new TEvent();                    // Array of routing events
+var swmm_Event       = new TEvent();                    // Array of routing events
 */
 
