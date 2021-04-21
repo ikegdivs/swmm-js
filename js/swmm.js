@@ -3204,7 +3204,7 @@ d3.inp = function() {
                 swmmjs.model['TIMESERIES'].push({TimeSeries:id, Value:el.Value, Date:el.Date, Time:el.Time})
             })
             // Hide the modal.
-            $('#modalTimeseries').modal('toggle');
+            //$('#modalTimeseries').modal('toggle');
 
             populateTimeseriesList();
         }
