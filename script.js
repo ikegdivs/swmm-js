@@ -106,7 +106,7 @@ document.addEventListener("DOMContentLoaded", function() {
     Module.onRuntimeInitialized = _ => {
         // Process the metadata file
         // Load info.json into an object
-        fetch('./data/info.json')
+        fetchRetry('./data/info.json', 500, 20)
             .then(response => response.json())
             .then((info) => {
                 $('#coverTitle').text(info[0].Title);
