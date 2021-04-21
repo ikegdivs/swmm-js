@@ -1,6 +1,6 @@
 // Chartspecs and DataElement should be eliminated, so do not do anything with it.
 
-const { data } = require("jquery");
+//const { data } = require("jquery");
 
 // dataElements are classes for data row/objects.
 class DataElement{
@@ -518,15 +518,14 @@ function fetchRetry(url, delay, tries, fetchOptions = {}){
     $.ajax({
         url: url,
         dataType: 'json',
-        data: data,
         success: function(json){
-            $('#coverTitle').text(info[0].Title);
+            $('#coverTitle').text(json[0].Title);
             // For each entry in info[0].Files: 
             //  -- add the Title to the dropdown select
             //  -- clicking on the select will:
             //     -- close the modal.
             //     -- load the selected file.
-            info[0].Files.forEach(function(value, i) {
+            json[0].Files.forEach(function(value, i) {
                 $('#coverDropdown').append('<a class="dropdown-item" id="coverModel'+i+'">'+ value.Title +'</a>')
                 document.getElementById("coverModel"+i).addEventListener('click', 
                 function () {
