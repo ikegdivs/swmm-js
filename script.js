@@ -1,4 +1,7 @@
 // Chartspecs and DataElement should be eliminated, so do not do anything with it.
+
+const { data } = require("jquery");
+
 // dataElements are classes for data row/objects.
 class DataElement{
     constructor(cat, y){
@@ -512,6 +515,57 @@ function wait(delay){
 }
 
 function fetchRetry(url, delay, tries, fetchOptions = {}){
+    $.ajax({
+        url: url,
+        dataType: 'json',
+        data: data,
+        success: function(json){
+            $('#coverTitle').text(info[0].Title);
+            // For each entry in info[0].Files: 
+            //  -- add the Title to the dropdown select
+            //  -- clicking on the select will:
+            //     -- close the modal.
+            //     -- load the selected file.
+            info[0].Files.forEach(function(value, i) {
+                $('#coverDropdown').append('<a class="dropdown-item" id="coverModel'+i+'">'+ value.Title +'</a>')
+                document.getElementById("coverModel"+i).addEventListener('click', 
+                function () {
+                    jQuery.get(value.FileLoc, function(contents){
+                        processInput(contents);
+                    })
+                    $('#modalCover').modal('toggle');
+                },
+                false)
+            })
+        },
+        error: function(xhr, textStatus, errorThrown){
+            if(textStatus == 'timeout'){
+                this.tryCount++;
+                if(this.tryCount <= this.retryLimit){
+                    //try again
+                    $.ajax(this);
+                    return;
+                }
+                return;
+            }
+            if(xhr.status == 500){
+                this.tryCount++;
+                if(this.tryCount <= this.retryLimit){
+                    //try again
+                    $.ajax(this);
+                    return;
+                }
+                return;
+            }else {
+                alert('Cannot find data file: info.json')
+            }
+        },
+        tryCount: 0,
+        retryLimit: 5
+    })
+}
+
+/*function fetchRetry(url, delay, tries, fetchOptions = {}){
     function onError(err){
         triesLeft = tries - 1;
         if(!triesLeft){
@@ -549,7 +603,7 @@ function fetchRetry(url, delay, tries, fetchOptions = {}){
             false)
         })
     }).catch(onError)
-}
+}*/
 
 function runModelClick(){
     // dataObj is an array of dataElement objects.
