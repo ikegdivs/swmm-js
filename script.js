@@ -519,7 +519,7 @@ function fetchRetry(url, delay, tries, fetchOptions = {}){
         url: url,
         dataType: 'json',
         success: function(json){
-            alert('Loaded file: info.json')
+            //alert('Loaded file: info.json')
             $('#coverTitle').text(json[0].Title);
             // For each entry in info[0].Files: 
             //  -- add the Title to the dropdown select
