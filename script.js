@@ -84,6 +84,24 @@ document.addEventListener("DOMContentLoaded", function() {
     /////////////////////////////////////////////
     $('#modalCover').modal('toggle');
 
+    document.getElementById("defaultModel1").addEventListener('click', 
+                function () {
+                    jQuery.get('./data/Example1.inp', function(contents){
+                        processInput(contents);
+                    })
+                    $('#modalCover').modal('toggle');
+                },
+                false)
+
+    document.getElementById("defaultModel2").addEventListener('click', 
+                function () {
+                    jQuery.get('./data/Example2.inp', function(contents){
+                        processInput(contents);
+                    })
+                    $('#modalCover').modal('toggle');
+                },
+                false)
+
     /////////////////////////////////////////////
     // Visualization elements - temporary
     /////////////////////////////////////////////
@@ -242,42 +260,6 @@ Units      None
     function displayLanguageModal() {
         $('#modalLanguage').modal('toggle');
     }
-    
-
-    // Listen for requests to request an .inp file from a server.
-    /*const serverRequestElement = document.getElementById("nav-file-server");
-    serverRequestElement.addEventListener('click', handleServerFiles, false);
-    function handleServerFiles() {
-        // Show the modal.
-        $('#remote-modal').modal('toggle');
-        let xhr = new XMLHttpRequest();
-        xhr.open('GET', 'https://raw.githubusercontent.com/ikegdivs/ikegdivs.github.io/main/swmm_multimodel/data/input.inp', true);
-        xhr.responseType = 'text';
-        $('#remoteModalOutput').text('XX10');
-
-        xhr.onload = function(e) {
-            window.requestFileSystem = window.requestFileSystem || window.webkitRequestFileSystem
-            $('#remoteModalOutput').text('XX12');
-            window.requestFileSystem(TEMPORARY, 0, function(fs){
-            //window.requestFileSystem(LocalFileSystem.TEMPORARY, 0, function(fs){
-                $('#remoteModalOutput').text('XX13');
-                fs.root.getFile('input.inp', {create: true}, function(fileEntry){
-                    $('#remoteModalOutput').text('XX14');
-                    fileEntry.createWriter(function(writer) {
-                        writer.onwrite = function(e){}
-                        writer.onerror = function(e){}
-
-                        let blob = xhr.response
-                        $('#remoteModalOutput').text('XX15');
-                        processInput(blob);
-                        $('#remoteModalOutput').text('XX16');
-                    })
-                })
-            })
-        }
-
-        xhr.send();
-    }*/
 
     // Listen for requests to save an .inp file.
     const saveElement = document.getElementById("save");
@@ -333,69 +315,6 @@ function representData(location, theseSpecs){
     drawLine(theseSpecs, d3.curveLinear);
 }
 
-// drawLine creates the line.
-// theseSpecs: an object of class ChartSpecs
-// curveType: a d3 curve type
-/*function drawLine(theseSpecs, curveType){
-    // Create the line
-    let line = d3.line()
-        .x(function(d) { return theseSpecs.scaleX(d.cat); })
-        .y(function(d) { return theseSpecs.scaleY(d.y); })
-        .curve(curveType)
-
-    // Create a join on 'path' and the data
-    let join = d3.selectAll('#chartBody path')
-        .data([theseSpecs.data]);
-
-    // Establish the styles for the line
-    join.style('stroke', 'rgba(255, 0, 0, 1')
-        .style('fill', 'none')
-        .style('stroke-width', '0.2vw')
-
-    // Perform a transition, if there is any data to transition.
-    join.transition()
-        .duration(1000)
-        .attr('d', line)
-    
-    // Remove any unnecesary objects.
-    join.exit()
-        .remove()
-
-    // Update the y axis.
-    d3.selectAll('#yAxis')
-        .call(d3.axisLeft(theseSpecs.scaleY))
-
-    // Update the x axis.
-    d3.selectAll('#xAxis')
-        .call(
-            d3.axisBottom(theseSpecs.scaleX)
-            .ticks(5)
-            .tickFormat(d3.timeFormat('%Y-%m-%d %H:%M'))
-        )
-        .selectAll('text')
-        //split the date and time onto two lines for the xAxis
-        .call(function(t){
-            t.each(function(d){
-                let self = d3.select(this);
-                var s = self.text().split(' ');
-                self.text('');
-                self.append('tspan')
-                    .attr('x', 0)
-                    .attr('dy', 0)
-                    .text(s[0]);
-                self.append('tspan')
-                    .attr('x', '-2em')
-                    .attr('dy', '1em')
-                    .text(s[1]);
-            })
-        })
-        .style('text-anchor', 'end')
-        .attr('dx', '-0.8em')
-        .attr('dy', '0.15em')
-        .attr('transform', 'rotate(-65)');
-
-}*/
-
 function drawLine(theseSpecs, curveType){
     theseSpecs.setMax();
     theseSpecs.setExtents();
@@ -450,62 +369,6 @@ function drawLine(theseSpecs, curveType){
 
 const swmm_run = Module.cwrap('swmm_run', 'number', ['string', 'string', 'string']);
 
-/*function runModelClick(){
-    // dataObj is an array of dataElement objects.
-    dataObj = [];
-    let inpText = null;
-    // Create a set of dataElements.
-
-    //Get the input file for parsing:
-    // Since we are running a model, it would be a good idea to
-    // instead, write the current model objects into a string field,
-    // then send that string field to the executable.
-    // --1: How does save translate the model to a string:
-    //   A: Via svg.save() in swmm.js
-    // --2: Can I modify svg.save to instead call a string creation function.
-    //      This function can then be called by this click event as well, so no files
-    //      need to be saved (though it would be a good idea to save a file before you run it, right?)
-    // --3: New function is called svg.dataToInpString().
-    // --4: How can I send the inpString to the swmm_run file? it looks like inpText can be used for that.
-    fetch('data/info.json')
-        .then(response => response.text())
-        .then((data) => {
-        inpText = swmmjs.svg.dataToInpString();
-        
-        try
-        {
-            FS.createPath('/', '/', true, true);
-            FS.ignorePermissions = true;
-            var f = FS.findObject('input.inp');
-            if (f) {
-                FS.unlink('input.inp');
-            }
-            FS.createDataFile('/', 'input.inp', inpText, true, true);
-
-            async function processModel(){
-                    swmm_run("/input.inp", "data/Example1x.rpt", "data/out.out");
-                    return 1;
-            }
-
-            processModel().then(function (){
-                let rpt = Module.intArrayToString(FS.findObject('data/Example1x.rpt').contents);
-                document.getElementById('rptFile').innerHTML = rpt;
-                modalReportStatus();
-            })
-
-        } catch (e) {
-            console.log('/input.inp creation failed');
-            // Remove the processing modal.
-            $('#modalSpinner').modal('hide')
-            
-        } finally{
-            // Remove the processing modal.
-            $('#modalSpinner').modal('hide')
-        }
-        console.log('runran')
-    })
-}*/
-
 /////////////////////////////////////////////////////////////////////////
 // Network file functions
 /////////////////////////////////////////////////////////////////////////
@@ -526,6 +389,7 @@ function fetchRetry(url, delay, tries, fetchOptions = {}){
             //  -- clicking on the select will:
             //     -- close the modal.
             //     -- load the selected file.
+            $('#coverDropdown').empty();
             json[0].Files.forEach(function(value, i) {
                 $('#coverDropdown').append('<a class="dropdown-item" id="coverModel'+i+'">'+ value.Title +'</a>')
                 document.getElementById("coverModel"+i).addEventListener('click', 
@@ -540,7 +404,6 @@ function fetchRetry(url, delay, tries, fetchOptions = {}){
         },
         error: function(xhr, textStatus, errorThrown){
             if(textStatus == 'timeout'){
-                alert('Retrying file: info.json');
                 this.tryCount++;
                 if(this.tryCount <= this.retryLimit){
                     //try again
@@ -550,7 +413,6 @@ function fetchRetry(url, delay, tries, fetchOptions = {}){
                 return;
             }
             if(xhr.status == 500){
-                alert('You have won a 500 error.')
                 this.tryCount++;
                 if(this.tryCount <= this.retryLimit){
                     //try again
@@ -567,45 +429,6 @@ function fetchRetry(url, delay, tries, fetchOptions = {}){
     })
 }
 
-/*function fetchRetry(url, delay, tries, fetchOptions = {}){
-    function onError(err){
-        triesLeft = tries - 1;
-        if(!triesLeft){
-            throw err;
-        }
-        return wait(delay).then(() => fetchRetry(url, delay, triesLeft, fetchOptions));
-    }
-
-    fetch(url, fetchOptions).then(response => response.json())
-    .then((info) => {
-        try{
-            $('#loadInfo').text(JSON.stringify(info))
-        } catch{
-            $('#loadInfo').text(info)
-        }
-        if(info[0] === '<'){
-            fetchRetry(url, delay, triesLeft, fetchOptions);
-            return;
-        }
-        $('#coverTitle').text(info[0].Title);
-        // For each entry in info[0].Files: 
-        //  -- add the Title to the dropdown select
-        //  -- clicking on the select will:
-        //     -- close the modal.
-        //     -- load the selected file.
-        info[0].Files.forEach(function(value, i) {
-            $('#coverDropdown').append('<a class="dropdown-item" id="coverModel'+i+'">'+ value.Title +'</a>')
-            document.getElementById("coverModel"+i).addEventListener('click', 
-            function () {
-                jQuery.get(value.FileLoc, function(contents){
-                    processInput(contents);
-                })
-                $('#modalCover').modal('toggle');
-            },
-            false)
-        })
-    }).catch(onError)
-}*/
 
 function runModelClick(){
     // dataObj is an array of dataElement objects.
