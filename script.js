@@ -529,6 +529,7 @@ function fetchRetry(url, delay, tries, fetchOptions = {}){
         }
         if(info[0] === '<'){
             fetchRetry(url, delay, triesLeft, fetchOptions);
+            return;
         }
         $('#coverTitle').text(info[0].Title);
         // For each entry in info[0].Files: 
