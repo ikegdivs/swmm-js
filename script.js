@@ -541,23 +541,23 @@ function fetchRetry(url, delay, tries, fetchOptions = {}){
         },
         error: function(xhr, textStatus, errorThrown){
             if(textStatus == 'timeout'){
+                alert('Retrying file: info.json');
                 this.tryCount++;
                 if(this.tryCount <= this.retryLimit){
                     //try again
                     $.ajax(this);
                     return;
                 }
-                alert('Retrying file: info.json')
                 return;
             }
             if(xhr.status == 500){
+                alert('You have won a 500 error.')
                 this.tryCount++;
                 if(this.tryCount <= this.retryLimit){
                     //try again
                     $.ajax(this);
                     return;
                 }
-                alert('You have won a 500 error.')
                 return;
             }else {
                 alert('Cannot find data file: info.json')
