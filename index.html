@@ -235,8 +235,12 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary close-modal" data-dismiss="modal">Close</button>
-                <button type="button" id="save-modal-titlenotes" class="btn btn-primary">Save changes</button>
+                <div class="col-md-12 mb-12">
+                    <button type="button" class="btn btn-secondary btn-block close-modal ripplebutton" data-dismiss="modal">Close</button>
+                </div>
+                <div class="col-md-12 mb-12">
+                    <button type="button" id="save-modal-titlenotes" class="btn btn-primary btn-block ripplebutton">Save changes</button>
+                </div>
             </div>
         </div>
     </div>
@@ -399,8 +403,12 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary close-modal" data-dismiss="modal">Close</button>
-                <button type="button" id="save-modal-inflows" class="btn btn-primary">Save changes</button>
+                <div class="col-md-12 mb-12">
+                    <button type="button" class="btn btn-secondary close-modal ripplebutton" data-dismiss="modal">Close</button>
+                </div>
+                <div class="col-md-12 mb-12">
+                    <button type="button" id="save-modal-inflows ripplebutton" class="btn btn-primary">Save changes</button>
+                </div>
             </div>
         </div>
     </div>
@@ -480,13 +488,14 @@
                         </div>
                     </div>
                 </form>
-
-
-
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary close-modal" data-dismiss="modal">Close</button>
-                <button type="button" id="save-modal-inflows" class="btn btn-primary">Save changes</button>
+                <div class="col-md-12 mb-12">
+                    <button type="button" class="btn btn-secondary close-modal ripplebutton" data-dismiss="modal">Close</button>
+                </div>
+                <div class="col-md-12 mb-12">
+                    <button type="button" id="save-modal-timepatterns class="btn btn-primary ripplebutton">Save changes</button>
+                </div>
             </div>
         </div>
     </div>
@@ -3433,57 +3442,6 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary close-modal" data-dismiss="modal">Close</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!--Time Patterns-->
-<div id="modalTimepatterns" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalTimepatternsTitle" aria-hidden="true" data-backdrop="false">
-    <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class= "modal-content">
-            <div class="modal-header bg-dark text-white">
-                <h5 class="modal-title" id="modalTimepatternsTitle">Time Patterns</h5>
-                <button type="button" class="close close-modal" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form class="needs-validation" id="timepatterns-form" novalidate="">
-                    <p class="modalinfo" id="timepatterns-form-id"></p>
-                    <div class="form-row">
-                        <div class="col-md-12 mb-12">
-                            <label class="modallabel" id="timepatterns-name-label" for="timepatterns-name">Name</label>
-                            <input class="form-control modaledit" id="timepatterns-name" name="timepatterns-name" type="text">
-                            <div class="valid-tooltip">Valid entry</div>
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="col-md-12 mb-12">
-                            <label class="modallabel" id="timepatterns-type-label" for="timepatterns-type">Type</label>
-                            <input class="form-control modaledit" id="timepatterns-type" name="timepatterns-type" type="text">
-                            <div class="valid-tooltip">Valid entry</div>
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="col-md-12 mb-12">
-                            <label class="modallabel" id="timepatterns-description-label" for="timepatterns-description">Description</label>
-                            <input class="form-control modaledit" id="timepatterns-description" name="timepatterns-description" type="text">
-                            <div class="valid-tooltip">Valid entry</div>
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="col-md-12 mb-12">
-                            <label class="modallabel" id="timepatterns-table-label" for="timepatterns-table">Multipliers Table</label>
-                            <input class="form-control modaledit" id="timepatterns-table" name="timepatterns-table" type="text">
-                            <div class="valid-tooltip">Valid entry</div>
-                        </div>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary close-modal" data-dismiss="modal">Close</button>
-                <button type="button" id="save-modal-timepatterns" class="btn btn-primary">Save changes</button>
             </div>
         </div>
     </div>

@@ -1597,6 +1597,31 @@ d3.inp = function() {
             populateSelectList(listJSON);
         }
 
+        $('#pmTimePattern').click(function(e){
+            populateTimePatternList();
+        })
+
+        function populateTimePatternList(){
+            // Place 'Time SEries' in the subselectcaption text.
+            $('#subselectcaption').text('Time Patterns');
+            let listJSON = [];
+            let listVals = []
+
+            // Create the structure of the subselect list.
+            if(!!swmmjs.model.TIMEPATTERNS){
+                Object.entries(swmmjs.model.TIMEPATTERNS).forEach(item => {
+                    // If this time pattern isn't in the list yet, add it to listJSON
+                    if(listVals.indexOf(item[1].TimePattern) === -1){
+                        listVals.push(item[1].TimePattern)
+                        listJSON.push({labelText: item[1].TimePattern,    elementId: 'subselectlist-timepattern' + item.key, function: modalEditTimepattern});
+                    }
+                })
+            }
+
+            populateSelectList(listJSON);
+        }
+        
+
         //Add input and label elements to modal using an ID structure.
         // Input to this function is an array of objects of the format:
         //
@@ -1678,7 +1703,7 @@ d3.inp = function() {
                 swmmjs.model['TITLE'].push({TitleNotes: lines[line]});
             }
             // Show the modal.
-            $('#modalTitlenotes').modal('toggle');
+            //$('#modalTitlenotes').modal('toggle');
         }
 
         /////////////////////////////////////////////////////////////
@@ -3111,6 +3136,109 @@ d3.inp = function() {
         /////////////////////////////////////////////////////////////
 
         var modalEditTimeseries = function(id){
+            // Show the modal.
+            $('#modalTimeseries').modal('toggle');
+            $('#timeseries-form-id').val(id);
+            $('#timeseries-form-id').text(id);
+            $('#timeseries-name').val(id);
+
+            // Make sure to check if the TIMESERIES object exists.
+            if(typeof swmmjs.model['TIMESERIES'] === 'undefined'){
+                swmmjs.model['TIMESERIES'] = [];
+            }
+
+            // Create an editable object type for the time series table
+            // because the time series tables are all just one table in the data so:
+            let timeseriesTabulatorData = [];
+            swmmjs.model['TIMESERIES'].forEach(function(el){
+                if(el.TimeSeries === id){
+                    timeseriesTabulatorData.push({Date: el.Date, Time: el.Time, Value:el.Value})
+                }
+            })
+
+            // If the tabulator object already exists, load new data. Else create a tabulator table.
+            
+    ;
+            if(Tabulator.prototype.findTable('#tableTimeseries')){
+                let table = Tabulator.prototype.findTable('#tableTimeseries')[0];
+                table.replaceData(timeseriesTabulatorData);
+            } else {
+                let timeseriesTabulator = new Tabulator("#tableTimeseries", {
+                    data: timeseriesTabulatorData,
+                    selectable: true,
+                    clipboard: true,
+                    layout: "fitColumns",
+                    columns:[{title:"Date", sorter:"date", field:"Date", editor:"input"},
+                            {title:"Time", sorter:"number", field:"Time", editor:"input"},
+                            {title:"Value", field:"Value", editor:"number", editorParams:{min:0, step:0.01}},],
+                } );
+            }
+        }
+
+        // Clicking on the timeseries-view button will bring up the timeseries chart modal.
+        $('#timeseries-view').click(function(e){
+            modalDisplayTimeseries();
+        })
+
+        // Clicking on the timeseries-create-row button will create a new row in the given timeseries
+        $('#timeseries-create-row').click(function(e){
+            let table = Tabulator.prototype.findTable('#tableTimeseries')[0];
+            id = $('#timeseries-name').val()
+
+            table.addRow(Object.assign({}, {Date: '', Time: '00:00', Value: 0}))
+        })
+
+        // Clicking on the timeseries-delete-row button will delete the selected row in the given timeseries
+        $('#timeseries-delete-row').click(function(e){
+            let table = Tabulator.prototype.findTable('#tableTimeseries')[0];
+            id = $('#timeseries-name').val()
+
+            // Get the selected rows
+            var selectedRows = table.getSelectedRows();
+
+            // Delete all of the selected rows
+            selectedRows.forEach(function(thisRow){
+                thisRow.delete()
+            })
+        })
+
+        function modalDisplayTimeseries(){
+            // Show the modal.
+            $('#modalTimeserieschart').modal('toggle');
+            drawTimeseries();
+        }
+
+        $('#save-modal-timeseries').click(function(e){
+            saveModalTimeseries()
+        })
+
+        function saveModalTimeseries(){
+            id = $('#timeseries-form-id').val();
+            // On save:
+            // - 1: delete the timeseries entries where el.TimeSeries === id
+            swmmjs.model['TIMESERIES'] = swmmjs.model['TIMESERIES'].filter(item => item.TimeSeries.toString() !== id.toString())
+
+            // - 2: for every row in the '#tableTimeseries' table
+            let table = Tabulator.prototype.findTable('#tableTimeseries')[0];
+            if(!table) return;
+
+            id = $('#timeseries-name').val()
+
+            table.getData().forEach(function(el){
+                // - 3: Place a new entry in the timeseries entries with el.TimeSeries = id
+                swmmjs.model['TIMESERIES'].push({TimeSeries:id, Value:el.Value, Date:el.Date, Time:el.Time})
+            })
+            // Hide the modal.
+            //$('#modalTimeseries').modal('toggle');
+
+            populateTimeseriesList();
+        }
+
+        /////////////////////////////////////////////////////////////
+        // Time Pattern Modal 
+        /////////////////////////////////////////////////////////////
+
+        var modalEditTimepattern = function(id){
             // Show the modal.
             $('#modalTimeseries').modal('toggle');
             $('#timeseries-form-id').val(id);

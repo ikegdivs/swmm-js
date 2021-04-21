@@ -467,7 +467,7 @@ function drawLine(theseSpecs, curveType){
 
 const swmm_run = Module.cwrap('swmm_run', 'number', ['string', 'string', 'string']);
 
-function runModelClick(){
+/*function runModelClick(){
     // dataObj is an array of dataElement objects.
     dataObj = [];
     let inpText = null;
@@ -485,6 +485,82 @@ function runModelClick(){
     // --3: New function is called svg.dataToInpString().
     // --4: How can I send the inpString to the swmm_run file? it looks like inpText can be used for that.
     fetch('data/info.json')
+        .then(response => response.text())
+        .then((data) => {
+        inpText = swmmjs.svg.dataToInpString();
+        
+        try
+        {
+            FS.createPath('/', '/', true, true);
+            FS.ignorePermissions = true;
+            var f = FS.findObject('input.inp');
+            if (f) {
+                FS.unlink('input.inp');
+            }
+            FS.createDataFile('/', 'input.inp', inpText, true, true);
+
+            async function processModel(){
+                    swmm_run("/input.inp", "data/Example1x.rpt", "data/out.out");
+                    return 1;
+            }
+
+            processModel().then(function (){
+                let rpt = Module.intArrayToString(FS.findObject('data/Example1x.rpt').contents);
+                document.getElementById('rptFile').innerHTML = rpt;
+                modalReportStatus();
+            })
+
+        } catch (e) {
+            console.log('/input.inp creation failed');
+            // Remove the processing modal.
+            $('#modalSpinner').modal('hide')
+            
+        } finally{
+            // Remove the processing modal.
+            $('#modalSpinner').modal('hide')
+        }
+        console.log('runran')
+    })
+}*/
+
+/////////////////////////////////////////////////////////////////////////
+// Network file functions
+/////////////////////////////////////////////////////////////////////////
+
+function wait(delay){
+    return new Promise((resolve) => setTimeout(resolve, delay));
+}
+
+function fetchRetry(url, delay, tries, fetchOptions = {}){
+    function onError(err){
+        triesLeft = tries - 1;
+        if(!triesLeft){
+            throw err;
+        }
+        return wait(delay).then(() => fetchRetry(url, delay, triesLeft, fetchOptions));
+    }
+
+    return fetch(url, fetchOptions).catch(onError);
+}
+
+function runModelClick(){
+    // dataObj is an array of dataElement objects.
+    dataObj = [];
+    let inpText = null;
+    // Create a set of dataElements.
+
+    //Get the input file for parsing:
+    // Since we are running a model, it would be a good idea to
+    // instead, write the current model objects into a string field,
+    // then send that string field to the executable.
+    // --1: How does save translate the model to a string:
+    //   A: Via svg.save() in swmm.js
+    // --2: Can I modify svg.save to instead call a string creation function.
+    //      This function can then be called by this click event as well, so no files
+    //      need to be saved (though it would be a good idea to save a file before you run it, right?)
+    // --3: New function is called svg.dataToInpString().
+    // --4: How can I send the inpString to the swmm_run file? it looks like inpText can be used for that.
+    fetchRetry('data/info.json', 500, 20)
         .then(response => response.text())
         .then((data) => {
         inpText = swmmjs.svg.dataToInpString();
@@ -539,15 +615,17 @@ function runModelClick(){
          children[0].parentNode.removeChild(children[0]);
      };
      
-     var circle = document.createElement('div');
-     circle.style["position"] = 'absolute';  
-     this.appendChild(circle);      
-   
-     var d = Math.max(this.clientWidth, this.clientHeight);
-     var eRect = this.getBoundingClientRect()
-      
-     circle.style.width = circle.style.height = d + 'px';
-     circle.style.left = e.clientX - eRect.left - d / 2 + 'px';
-     circle.style.top = e.clientY - eRect.top - d / 2 + 'px';
-     circle.classList.add('wave-ripple');
+     for(let i = 0; i < 4; i++){
+        var circle = document.createElement('div');
+        circle.style["position"] = 'absolute';  
+        this.appendChild(circle);      
+    
+        var d = Math.max(this.clientWidth, this.clientHeight);
+        var eRect = this.getBoundingClientRect()
+        
+        circle.style.width = circle.style.height = d*(10+2*i)/10 + 'px';
+        circle.style.left = e.clientX - eRect.left - d / 2 + 'px';
+        circle.style.top = e.clientY - eRect.top - d / 2 + 'px';
+        circle.classList.add('wave-ripple');
+     }
  }
