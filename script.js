@@ -522,6 +522,11 @@ function fetchRetry(url, delay, tries, fetchOptions = {}){
 
     fetch(url, fetchOptions).then(response => response.json())
     .then((info) => {
+        try{
+            $('#loadInfo').text(JSON.stringify(info))
+        } catch{
+            $('#loadInfo').text(info)
+        }
         $('#coverTitle').text(info[0].Title);
         // For each entry in info[0].Files: 
         //  -- add the Title to the dropdown select
