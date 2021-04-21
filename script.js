@@ -536,6 +536,8 @@ function fetchRetry(url, delay, tries, fetchOptions = {}){
                 },
                 false)
             })
+
+            alert('Loaded file: info.json')
         },
         error: function(xhr, textStatus, errorThrown){
             if(textStatus == 'timeout'){
@@ -545,7 +547,7 @@ function fetchRetry(url, delay, tries, fetchOptions = {}){
                     $.ajax(this);
                     return;
                 }
-                alert('Cannot find data file: info.json')
+                alert('Retrying file: info.json')
                 return;
             }
             if(xhr.status == 500){
@@ -555,7 +557,7 @@ function fetchRetry(url, delay, tries, fetchOptions = {}){
                     $.ajax(this);
                     return;
                 }
-                alert('Cannot find data file: info.json')
+                alert('You have won a 500 error.')
                 return;
             }else {
                 alert('Cannot find data file: info.json')
