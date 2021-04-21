@@ -545,6 +545,7 @@ function fetchRetry(url, delay, tries, fetchOptions = {}){
                     $.ajax(this);
                     return;
                 }
+                alert('Cannot find data file: info.json')
                 return;
             }
             if(xhr.status == 500){
@@ -554,6 +555,7 @@ function fetchRetry(url, delay, tries, fetchOptions = {}){
                     $.ajax(this);
                     return;
                 }
+                alert('Cannot find data file: info.json')
                 return;
             }else {
                 alert('Cannot find data file: info.json')
