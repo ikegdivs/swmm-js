@@ -520,7 +520,7 @@ function fetchRetry(url, delay, tries, fetchOptions = {}){
         return wait(delay).then(() => fetchRetry(url, delay, triesLeft, fetchOptions));
     }
 
-    fetch(url, fetchOptions).then(response => response.json()).catch(onError)
+    fetch(url, fetchOptions).then(response => response.json())
     .then((info) => {
         try{
             $('#loadInfo').text(JSON.stringify(info))
