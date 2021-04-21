@@ -239,3 +239,7 @@ main {
         opacity: 0;
     }
 }
+
+.modal {
+  overflow-y: auto;
+}
