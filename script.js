@@ -105,28 +105,8 @@ document.addEventListener("DOMContentLoaded", function() {
     // Setting up to process input file.
     Module.onRuntimeInitialized = _ => {
         // Process the metadata file
-        // Load info.json into an object
-        fetchRetry('./data/info.json', 500, 20)
-            .then(response => response.json())
-            .then((info) => {
-                $('#coverTitle').text(info[0].Title);
-                // For each entry in info[0].Files: 
-                //  -- add the Title to the dropdown select
-                //  -- clicking on the select will:
-                //     -- close the modal.
-                //     -- load the selected file.
-                info[0].Files.forEach(function(value, i) {
-                    $('#coverDropdown').append('<a class="dropdown-item" id="coverModel'+i+'">'+ value.Title +'</a>')
-                    document.getElementById("coverModel"+i).addEventListener('click', 
-                    function () {
-                        jQuery.get(value.FileLoc, function(contents){
-                            processInput(contents);
-                        })
-                        $('#modalCover').modal('toggle');
-                    },
-                    false)
-                })
-            })
+        // Load info.json
+        fetchRetry('./data/info.json', 500, 20, {headers: {'Content-Type': 'application/json', 'Accept': 'application/json'}});
     }
 
     // Listen for requests to open the default file.
@@ -540,7 +520,26 @@ function fetchRetry(url, delay, tries, fetchOptions = {}){
         return wait(delay).then(() => fetchRetry(url, delay, triesLeft, fetchOptions));
     }
 
-    return fetch(url, fetchOptions).catch(onError);
+    fetch(url, fetchOptions).then(response => response.json())
+    .then((info) => {
+        $('#coverTitle').text(info[0].Title);
+        // For each entry in info[0].Files: 
+        //  -- add the Title to the dropdown select
+        //  -- clicking on the select will:
+        //     -- close the modal.
+        //     -- load the selected file.
+        info[0].Files.forEach(function(value, i) {
+            $('#coverDropdown').append('<a class="dropdown-item" id="coverModel'+i+'">'+ value.Title +'</a>')
+            document.getElementById("coverModel"+i).addEventListener('click', 
+            function () {
+                jQuery.get(value.FileLoc, function(contents){
+                    processInput(contents);
+                })
+                $('#modalCover').modal('toggle');
+            },
+            false)
+        })
+    }).catch(onError)
 }
 
 function runModelClick(){
@@ -560,7 +559,7 @@ function runModelClick(){
     //      need to be saved (though it would be a good idea to save a file before you run it, right?)
     // --3: New function is called svg.dataToInpString().
     // --4: How can I send the inpString to the swmm_run file? it looks like inpText can be used for that.
-    fetchRetry('data/info.json', 500, 20)
+    fetch('data/info.json')
         .then(response => response.text())
         .then((data) => {
         inpText = swmmjs.svg.dataToInpString();
