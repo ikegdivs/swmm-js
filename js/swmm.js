@@ -56,12 +56,12 @@ function translateDate(days){
     return outVal;
 }
 
-// Translate a date from the datetime input format (yyyy-MM-dd) to sweep format (MM/DD) 
+// Translate a date from the datetime input format (YYYY-MM-dd) to sweep format (MM/DD) 
 function untranslateSweepDate(date){
-    let dateArray = date.split('-');
-    let dateString = dateArray[0]+'/'+dateArray[1];
+    //let dateArray = date.split('-');
+    //let dateString = dateArray[0]+'/'+dateArray[1];
 
-    return dateString;
+    return date;
 }
 
 // Translate a sweep date from the model format (days since 12/31/1899) to datetime input format (MM-dd)
@@ -1959,11 +1959,11 @@ d3.inp = function() {
             // Show the modal.
             $('#modalDates').modal('toggle');
 
-            $('#dates-startdateanalysis').val((swmmjs.model['OPTIONS']['START_DATE'].Value))
+            $('#dates-startdateanalysis').val(moment(new Date(swmmjs.model['OPTIONS']['START_DATE'].Value)).format('YYYY-MM-DD'))
             $('#dates-starttimeanalysis').val((swmmjs.model['OPTIONS']['START_TIME'].Value))
-            $('#dates-startdatereport').val((swmmjs.model['OPTIONS']['REPORT_START_DATE'].Value))
+            $('#dates-startdatereport').val(moment(new Date(swmmjs.model['OPTIONS']['REPORT_START_DATE'].Value)).format('YYYY-MM-DD'))
             $('#dates-starttimereport').val((swmmjs.model['OPTIONS']['REPORT_START_TIME'].Value))
-            $('#dates-enddateanalysis').val((swmmjs.model['OPTIONS']['END_DATE'].Value))
+            $('#dates-enddateanalysis').val(moment(new Date(swmmjs.model['OPTIONS']['END_DATE'].Value)).format('YYYY-MM-DD'))
             $('#dates-endtimeanalysis').val((swmmjs.model['OPTIONS']['END_TIME'].Value))
             $('#dates-startsweeping').val((swmmjs.model['OPTIONS']['SWEEP_START'].Value))
             $('#dates-endsweeping').val((swmmjs.model['OPTIONS']['SWEEP_END'].Value))
