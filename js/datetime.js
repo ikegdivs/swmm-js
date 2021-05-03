@@ -145,9 +145,12 @@ function datetime_encodeDate(year, month, day)
     && (day >= 1)
     && (day <= DaysPerMonth[i][month-1]))
     {
-        for (j = 0; j < month-1; j++) day += DaysPerMonth[i][j];
+        /*for (j = 0; j < month-1; j++) day += DaysPerMonth[i][j];
         i = year - 1;
-        return i*365 + i/4 - i/100 + i/400 + day - DateDelta;
+        return i*365 + i/4 - i/100 + i/400 + day - DateDelta;*/
+        t1 = new Date(year, month, day)
+        t2 = new Date(1899, 12, 30)
+        return Math.abs(t1.getTime() - t2.getTime())/(1000*60*60*24)
     }
     else return -DateDelta;
 }
@@ -464,7 +467,7 @@ function datetime_strToTime(s, inObj)
 //  Purpose: converts a string time to a DateTime value.
 //  Note:    accepts time as hr:min:sec or as decimal hours.
 {
-    let  n, hr, min = 0, sec = 0;
+    let  n, hr = 0, min = 0, sec = 0;
 
     // Attempt to read time as decimal hours
     inObj.t = parseInt(s);
@@ -479,12 +482,9 @@ function datetime_strToTime(s, inObj)
     //n = sscanf(s, "%d:%d:%d", &hr, &min, &sec);
     vals = s.split(/[:]+/)
             n = vals.length
-            //hr = parseInt(vals[n-3])
-            //min = parseInt(vals[n-2])
-            //sec = parseInt(vals[n-1])
-            hr = parseInt(vals[0])
-            min = parseInt(vals[1])
-            sec = parseInt(vals[2])
+            if(n === 3) hr = parseInt(vals[0])
+            min = parseInt(vals[n-2])
+            sec = parseInt(vals[n-1])
     if ( n == 0 ) return 0;
     if(isNaN(hr)) hr = 0;
     if(isNaN(min)) min = 0;

@@ -74,7 +74,14 @@ function gage_readParams(j, tok, ntoks)
     k = findmatch(tok[4], GageDataWords);
     if      ( k == RAIN_TSERIES )
     {
-        err = readGageSeriesFormat(tok, ntoks, x);
+        ////////////////////////////////////
+        returnObj = {tok: tok, x: x}
+        returnVal = readGageSeriesFormat(ntoks, returnObj);
+        tok = returnObj.tok;
+        x = returnObj.x;
+        ////////////////////////////////////
+        //err = readGageSeriesFormat(tok, ntoks, x);
+        err = returnVal;
     }
     else if ( k == RAIN_FILE    )
     {
@@ -110,7 +117,13 @@ function gage_readParams(j, tok, ntoks)
 
 //=============================================================================
 // char* tok[], int ntoks, double x[]
-function readGageSeriesFormat(tok, ntoks, x)
+////////////////////////////////////
+//returnObj = {tok: tok, x: x}
+//returnVal = readGageSeriesFormat(ntoks, returnObj);
+//tok = returnObj.tok;
+//x = returnObj.x;
+////////////////////////////////////
+function readGageSeriesFormat(ntoks, inObj)
 {
     let m, ts;
     let aTime;
@@ -122,50 +135,48 @@ function readGageSeriesFormat(tok, ntoks, x)
     if ( ntoks < 6 ) return error_setInpError(ERR_ITEMS, "");
 
     // --- determine type of rain data
-    m = findmatch(tok[1], RainTypeWords);
-    if ( m < 0 ) return error_setInpError(ERR_KEYWORD, tok[1]);
-    x[1] = m;
+    m = findmatch(inObj.tok[1], RainTypeWords);
+    if ( m < 0 ) return error_setInpError(ERR_KEYWORD, inObj.tok[1]);
+    inObj.x[1] = m;
 
     // --- get data time interval & convert to seconds
-    ////////////////////////////////////
-    returnObj = {y: x[2]}
-    returnVal = getDouble(tok[2], returnObj);
-    x[2] = returnObj.y;
-    ////////////////////////////////////
-    
-    if ( returnVal ) x[2] = Math.floor(x[2]*3600 + 0.5);
-    //else if ( datetime_strToTime(tok[2], aTime) )
+    // If there arent any colons ':' in inObj.tok[2], then it
+    // is a float representing hours.
+    if(inObj.tok[2].indexOf(':') < 0){
+        inObj.x[2] = parseFloat(inObj.tok[2])
+        inObj.x[2] = Math.floor(inObj.x[2]*3600 + 0.5);
+    }
     else{
         ////////////////////////////////////
         returnObj = {t: aTime}
-        returnVal = datetime_strToTime(tok[2], returnObj);
+        returnVal = datetime_strToTime(inObj.tok[2], returnObj);
         aTime = returnObj.t;
         ////////////////////////////////////
         if (returnVal)
         {
-            x[2] = Math.floor(aTime*SECperDAY + 0.5);
+            inObj.x[2] = Math.floor(aTime*SECperDAY + 0.5);
         } else {
-            return error_setInpError(ERR_DATETIME, tok[2]);
+            return error_setInpError(ERR_DATETIME, inObj.tok[2]);
         }
     }
     
-    if ( x[2] <= 0.0 ) return error_setInpError(ERR_DATETIME, tok[2]);
+    if ( inObj.x[2] <= 0.0 ) return error_setInpError(ERR_DATETIME, inObj.tok[2]);
 
     // --- get snow catch deficiency factor
     ////////////////////////////////////
-    returnObj = {y: x[3]}
-    returnVal1 = getDouble(tok[3], returnObj);
-    x[3] = returnObj.y;
+    returnObj = {y: inObj.x[3]}
+    returnVal1 = getDouble(inObj.tok[3], returnObj);
+    inObj.x[3] = returnObj.y;
     ////////////////////////////////////
     if( !returnVal1 )
     //if ( null == (x[3] = getDouble(tok[3])))
-        return error_setInpError(ERR_DATETIME, tok[3]);
+        return error_setInpError(ERR_DATETIME, inObj.tok[3]);
 
     // --- get time series index
-    ts = project_findObject(TSERIES, tok[5]);
-    if ( ts < 0 ) return error_setInpError(ERR_NAME, tok[5]);
-    x[0] = ts;
-    tok[2] = "";
+    ts = project_findObject(TSERIES, inObj.tok[5]);
+    if ( ts < 0 ) return error_setInpError(ERR_NAME, inObj.tok[5]);
+    inObj.x[0] = ts;
+    inObj.tok[2] = "";
     return 0;
 }
 

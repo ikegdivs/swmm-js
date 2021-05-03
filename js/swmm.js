@@ -2,6 +2,7 @@
 
 // When the document is loaded:
 // Create some data
+
 // Draw a line chart with the data.
 function drawTimeseries(){
     // dataObj is an array of dataElement objects.
@@ -14,7 +15,7 @@ function drawTimeseries(){
     table.getData().forEach(function(el){
         // - 3: Place a new entry in the timeseries entries with el.TimeSeries = id
         let thisDuration = moment.duration(el.Time, 'h:mm');
-        let thisDate = moment('2000-1-1');
+        let thisDate = moment(el.Date);
         dataObj.push(new DataElement(thisDate.add(thisDuration), el.Value))
     })
     
@@ -43,16 +44,18 @@ function untranslateDate(date){
 }
 
 // Translate a date from the model format (days since 12/30/1899) to datetime input format (yyyy-MM-dd)
-/*function translateDate(days){
-    let thisDate = new Date('12/30/1899');
-    thisDate.setDate(thisDate.getDate() + days);
-    let outVal = thisDate.toLocaleDateString('en-CA', {year: 'numeric', month: '2-digit', day: '2-digit'});
-    return outVal;
-}*/
 function translateDate(days){
     let thisDate = new Date('12/30/1899');
-    thisDate.setDate(thisDate.getDate() + days);
+    thisDate.setUTCSeconds(days * 3600 * 24);
     let outVal = thisDate.toLocaleDateString('en-US', {year: 'numeric', month: '2-digit', day: '2-digit'});
+    return outVal;
+}
+
+function extractTimeFromDate(days){
+    let thisDate = new Date('12/30/1899');
+    thisDate.setUTCSeconds(days * 24 * 60 * 60);
+    let outVal = thisDate.toLocaleTimeString('en-US', {hour12: false, hour: '2-digit', minute: '2-digit'});
+    if(outVal === "24:00") outVal = '00:00';
     return outVal;
 }
 
@@ -629,7 +632,7 @@ d3.inp = function() {
                         .attr('r', swmmjs.svg.nodeSize/transform.k)
                         .attr('data-x', xy1[0])
                         .attr('data-y', xy1[1])
-                        .attr('onclick', 'modalEditRaingages('+id+');')
+                        .attr('onclick', 'modalEditRaingages("'+id+'");')
                         .attr('title', id)
                         .attr('onmouseover', 'swmmjs.svg.tooltip(evt.target)')
                         .attr('onmouseout', 'swmmjs.svg.clearTooltips(evt.target)')
@@ -2084,7 +2087,7 @@ d3.inp = function() {
 
         function saveModalInterfacefiles(){
             // Show the modal.
-            $('#modalInterfacefiles').modal('toggle');
+            //$('#modalInterfacefiles').modal('toggle');
         }
 
         /////////////////////////////////////////////////////////////
@@ -2102,7 +2105,7 @@ d3.inp = function() {
 
         function saveModalReporting(){
             // Show the modal.
-            $('#modalReporting').modal('toggle');
+            //$('#modalReporting').modal('toggle');
         }
 
         /////////////////////////////////////////////////////////////
@@ -2161,7 +2164,7 @@ d3.inp = function() {
 
         function saveModalTemperature(){
             // Show the modal.
-            $('#modalTemperature').modal('toggle');
+            //$('#modalTemperature').modal('toggle');
 
             // Get the selected option: none, data, or file
             // If no data is checked, remove the temperature timeseries from the model
@@ -2204,7 +2207,7 @@ d3.inp = function() {
 
         function saveModalEvaporation(){
             // Show the modal.
-            $('#modalEvaporation').modal('toggle');
+            //$('#modalEvaporation').modal('toggle');
         }
 
         /////////////////////////////////////////////////////////////
@@ -2227,7 +2230,7 @@ d3.inp = function() {
 
         function saveModalWindspeed(){
             // Show the modal.
-            $('#modalWindspeed').modal('toggle');
+            //$('#modalWindspeed').modal('toggle');
         }
 
         /////////////////////////////////////////////////////////////
@@ -2250,7 +2253,7 @@ d3.inp = function() {
 
         function saveModalWindspeed(){
             // Show the modal.
-            $('#modalWindspeed').modal('toggle');
+            //$('#modalWindspeed').modal('toggle');
         }
 
         /////////////////////////////////////////////////////////////
@@ -2273,7 +2276,7 @@ d3.inp = function() {
 
         function saveModalArealdepletion(){
             // Show the modal.
-            $('#modalArealdepletion').modal('toggle');
+            //$('#modalArealdepletion').modal('toggle');
         }
 
         /////////////////////////////////////////////////////////////
@@ -2350,7 +2353,7 @@ d3.inp = function() {
             swmmjs.model['RAINGAGES'][id]['RainUnits'] = $('#raingages-rainunits').val()
 
             // Close the modal.
-            $('#modalRaingages').modal('toggle');
+            //$('#modalRaingages').modal('toggle');
 
             // Refresh the Raingages list.
             populateRaingagesList();
@@ -2454,7 +2457,7 @@ d3.inp = function() {
             swmmjs.model['JUNCTIONS'][id]['Aponded'] = $('#junctions-pondedarea').val()
 
             // Close the modal.
-            $('#modalJunctions').modal('toggle');
+            //$('#modalJunctions').modal('toggle');
 
             // Refresh the Raingages list.
             populateJunctionsList();
@@ -2498,7 +2501,7 @@ d3.inp = function() {
             swmmjs.model['OUTFALLS'][id]['Type'] = $('#outfalls-type').val()
 
             // Close the modal.
-            $('#modalOutfalls').modal('toggle');
+            //$('#modalOutfalls').modal('toggle');
 
             // Refresh the Raingages list.
             populateOutfallsList();
@@ -2549,7 +2552,7 @@ d3.inp = function() {
             swmmjs.model['LOSSES'][id]['FlapGate'] = $('#conduits-flapgate').val()
         
             // Close the modal.
-            $('#modalConduits').modal('toggle');
+            //$('#modalConduits').modal('toggle');
         
             // Refresh the Pumps list.
             populateConduitsList();
@@ -2593,7 +2596,7 @@ d3.inp = function() {
             swmmjs.model['PUMPS'][id]['Doff'] = $('#pumps-shutoffdepth').val()
         
             // Close the modal.
-            $('#modalPumps').modal('toggle');
+            //$('#modalPumps').modal('toggle');
         
             // Refresh the Pumps list.
             populatePumpsList();
@@ -2642,7 +2645,7 @@ d3.inp = function() {
             swmmjs.model['ORIFICES'][id]['CloseTime'] = $('#orifices-time').val()
 
             // Close the modal.
-            $('#modalOrifices').modal('toggle');
+            //$('#modalOrifices').modal('toggle');
         
             // Refresh the Orifices list.
             populateOrificesList();
@@ -2692,7 +2695,7 @@ d3.inp = function() {
             swmmjs.model['WEIRS'][id]['EndCoeff'] = $('#weirs-endcoeff').val()
 
             // Close the modal.
-            $('#modalWeirs').modal('toggle');
+            //$('#modalWeirs').modal('toggle');
         
             // Refresh the Weirs list.
             populateWeirsList();
@@ -2731,7 +2734,7 @@ d3.inp = function() {
             swmmjs.model['OUTLETS'][id]['QTable'] = $('#outlets-tabularcurvename').val()
 
             // Close the modal.
-            $('#modalOutlets').modal('toggle');
+            //$('#modalOutlets').modal('toggle');
         
             // Refresh the Outlets list.
             populateOutletsList();
@@ -2811,7 +2814,7 @@ d3.inp = function() {
         
             
             // Close the modal.
-            $('#modalSubcatchments').modal('toggle');
+            //$('#modalSubcatchments').modal('toggle');
         
             // Refresh the Project menu list.
             populateSubcatchmentsList();
@@ -2882,7 +2885,7 @@ d3.inp = function() {
             swmmjs.model['POLLUTANTS'][id]['CoFrac'] = $('#pollutants-cofraction').val()
 
             // Close the modal.
-            $('#modalPollutants').modal('toggle');
+            //$('#modalPollutants').modal('toggle');
 
             // Refresh the Pollutants list.
             populatePollutantsList();
@@ -3125,7 +3128,7 @@ d3.inp = function() {
             
 
             // Close the modal.
-            $('#modalLanduses').modal('toggle');
+            //$('#modalLanduses').modal('toggle');
 
             // Refresh the Landuses list.
             populateLandusesList();
@@ -3367,23 +3370,13 @@ d3.inp = function() {
                 return;
             },
             EVAPORATION: function(section, key, line) {
-                    var m = line.match(/\s+([//\-:a-zA-Z0-9\.]+)/);
-                    if (m && m.length)
-                        section[key] = {Value: m[1]};
+                return;
             },
             TEMPERATURE: function(section, key, line) {
-                var m = [];
-                line = key + line;
-                m.push(line)
-                m.push(line.slice(19,line.length))
-                if (m && m.length)
-                        section[key] = {Value: m[1].trim()};
+                return;
             },
             RAINGAGES: function(section, key, line) {
-                var m = line.match(/\s+([a-zA-Z0-9\.]+)\s+([:0-9\.]+)\s+([0-9\.]+)\s+([A-Za-z0-9\.]+)\s+([A-Za-z0-9\.]+)/);
-                if (m && m.length)
-                    section[key] = {Format: m[1], Interval: m[2], SCF: m[3], Source: m[4], SeriesName: m[5], Description: curDesc};
-                    //swmmjs.model.RAINGAGES[id] = {Description: '', Format: 'INTENSITY', Interval: '1:00', SCF: 1.0, Source: 'TIMESERIES', SeriesName: '*', FileName: '*', StationID: '*', RainUnits: 'IN'}
+                return
             },
             INFILTRATION: function(section, key, line) {
                     var m = line.match(/\s+([0-9\.]+)\s+([0-9\.]+)\s+([0-9\.]+)\s+([0-9\.]+)\s+([0-9\.]+)/);
@@ -3544,20 +3537,24 @@ d3.inp = function() {
 
             },
             COORDINATES: function(section, key, line) {
-                var m = line.match(/\s*(-?[0-9\.]+)\s+(-?[0-9\.]+)/);
-                if (m && m.length && 3 === m.length)
+                line = key + line;
+                let m = line.split(/\b\s+/)
+                if (m && m.length)
                     section[key] = {x: parseFloat(m[1]), y: parseFloat(m[2])};
             },
             Polygons: function(section, key, line) {
-                var m = line.match(/\s*(-?[0-9\.]+)\s+(-?[0-9\.]+)/);
-                        if (!section[key]) 
-                            section[key] = [];
-                        if (Object.keys(section[key]).length === 0)
-                            section[key] = [];
-                if (m && m.length && 3 === m.length) {
-                            var coord = {x: parseFloat(m[1]), y: parseFloat(m[2])};
+                line = key + line;
+                m = line.split(/\b\s+/)
+                if (!section[key]) 
+                    section[key] = [];
+                    
+                if (Object.keys(section[key]).length === 0)
+                    section[key] = [];
+
+                if (m && m.length) {
+                    var coord = {x: parseFloat(m[1]), y: parseFloat(m[2])};
                     section[key].push(coord);
-                        }
+                }
             },
             LABELS: function(section, key, line) {
                 var m = line.match(/\s+([-?[0-9\.]+)\s+"([^"]+)"/);
@@ -3573,12 +3570,7 @@ d3.inp = function() {
                 }
             },
             SUBCATCHMENTS: function(section, key, line) {
-                var m = line.match(/\s*([^\s;]+)\s+([0-9\.]+)\s+([0-9\.]+)\s+([0-9\.]+)\s+([0-9\.]+)\s+([0-9\.]+)\s+([0-9\.]+)\s+([^;]).*/);
-                if (m && m.length && 9 === m.length) {
-                    section[key] = {RainGage: m[1], Outlet: parseFloat(m[2]), 
-                    Area: parseFloat(m[3]), PctImperv: parseFloat(m[4]),
-                    Width: parseFloat(m[5]), PctSlope: parseFloat(m[6]), CurbLen: parseFloat(m[7]), SnowPack: m[8], Description: curDesc};
-                }
+                return;
             },
             SUBAREAS: function(section, key, line) {
                 var m = [];
@@ -3841,24 +3833,14 @@ d3.inp = function() {
 ;;Node             Parameter        Time Series      /Mass    Factor    
             */
             TIMESERIES: function(section, key, line) {
-                var m = [];
-                line = key + line;
-                m.push(line)
-                m.push(line.slice(17,28))
-                m.push(line.slice(28,39))
-                m.push(line.slice(39,line.length))
-                if (m && m.length)
-                        section[Object.keys(section).length] = {
-                                        TimeSeries: key.trim(),
-                                        Date: m[1].trim(), 
-                                        Time: m[2].trim(),
-                                        Value: parseFloat(m[3])};
+                return;
             },  
             VERTICES: function(section, key, line) {
-                var m = line.match(/\s*(-?[0-9\.]+)\s+(-?[0-9\.]+)/),
+                line = key + line;
+                let m = line.split(/\b\s+/)
                 v = section[key] || [],
                 c = {};
-                if (m && m.length && 3 === m.length) {
+                if (m && m.length) {
                     c.x = parseFloat(m[1]);
                     c.y = parseFloat(m[2]);
                 }
@@ -3866,34 +3848,22 @@ d3.inp = function() {
                 section[key] = v;
             },
             REPORT: function(section, key, line) {
-                    var m = line.match(/\s+([//\-:a-zA-Z0-9\.]+)/);
-                    if (m && m.length)
-                        section[key] = {Value: m[1]};
+                var m = line.match(/\s+([//\-:a-zA-Z0-9\.]+)/);
+                if (m && m.length)
+                    section[key] = {Value: m[1]};
             },
             TAGS: function(section, key, line) {
-                var m = [];
                 line = key + line;
-                m.push(line)
-                m.push(line.slice(0, 11))
-                m.push(line.slice(11,28))
-                m.push(line.slice(28,line.length))
-                /*if (m && m.length)
-                        section[Object.keys(section).length] = {
-                                        Type: m[1].trim(), 
-                                        ID: m[2].trim(), 
-                                        Tag: m[3].trim()};*/
+                let m = line.split(/\b\s+/)
                 if (m && m.length)
                 section.push({
-                                Type: m[1].trim(), 
-                                ID: m[2].trim(), 
-                                Tag: m[3].trim()});
+                                Type: m[0].trim(), 
+                                ID: m[1].trim(), 
+                                Tag: m[2].trim()});
             },
             SYMBOLS: function(section, key, line) {
-                var m = [];
                 line = key + line;
-                m.push(line)
-                m.push(line.slice(17,36))
-                m.push(line.slice(36,line.length))
+                let m = line.split(/\b\s+/)
                 if (m && m.length)
                         section[key] = {XCoord: parseFloat(m[1]), 
                                         YCoord: parseFloat(m[2])};
@@ -3907,84 +3877,181 @@ d3.inp = function() {
                     section[key.toUpperCase()] = line.replace(/^\s+/, '').replace(/\s+$/, '');
                 }
             }
-                // add other if neccesary
         },
-        model = {   SUBCATCHMENTS: [], SUBAREAS: [], CONDUITS: [], XSECTIONS: [], LOSSES: [],  PUMPS: [], ORIFICES: [], WEIRS: [], OUTLETS: [], 
+
+        model = {   // Input file model variables. Related to a header in .inp file.
+                    EVAPORATION: [], SUBCATCHMENTS: [], SUBAREAS: [], CONDUITS: [], XSECTIONS: [], LOSSES: [],  PUMPS: [], ORIFICES: [], WEIRS: [], OUTLETS: [], 
                     TRANSECTS: [], CONTROLS: [], COORDINATES: [], Polygons: [], LABELS: [], SYMBOLS: [],
                     JUNCTIONS: [], STORAGE: [], OUTFALLS: [], DIVIDERS: [], RAINGAGES: [], TIMESERIES: [], TAGS: [],
-                    INFLOWS: [],
+                    INFLOWS: [], TIMEPATTERNS: [], ADJUSTMENTS: [],
+
+                    // Loose model variables. Can refer to interface or input file.
+                    Fclimate, Snow, Temp, Tseries: [], Wind,
+
+                    // Interface model variables
                     clickEffect: 'edit'},
         lines = text.split(/\r\n|\r|\n/),
-            section = null;
+        section = null;
+
+        // Data Source (file or timeseries) for temperature data
+        // Switches when user clicks on 'External Climate File' in Climatology->Temperature.
+        model.Temp.dataSource = NO_TEMP;
+        model.Temp.fileStartDate = NO_DATE;
+        model.Wind.aws = [];
+        
         
         // Open the files and translate to a model.
-        swmm_read_files(text, 'rpt.rpt', 'out.out');
+        let JSONpointer = inpToJSON();
+
+
+        /*const view = new Uint8Array(WebAssembly.Memory.buffer, thisNumba, 9999)
+        let string = '';
+        for(let i = 0; i < 9999; i++){
+            string += String.fromCharCode(view[i]);
+        }
+        console.log( string
+            //(new TextDecoder()).decode(new Uint8Array(WebAssembly.Memory.buffer, thisNumba, 1000))
+            
+        );*/
+        //var fill_array = Module.cwrap('fill_array', 'number', []);
+        //var n = 16;
+        //var ptr_from_wasm = fill_array(n);
+        //var js_array = Module.HEAPU8.subarray(ptr_from_wasm, ptr_from_wasm + n);
+        //alert(js_array);
+
+        let n = 99999;
+        let js_array = Module.HEAPU8.subarray(JSONpointer, JSONpointer + n)
+        let JX_string = new TextDecoder().decode(js_array)
+        JX_string = JX_string.slice(0, JX_string.lastIndexOf('}') + 1);
+        let JX = [];
+        try{
+            JX = $.parseJSON(JX_string);
+        } catch(e){
+            alert(e);
+        }
+
+        // Translate the Title
+        // TITLE
+        model['TITLE'] = [];
+        JX.Title.forEach(function(line){
+            model['TITLE'].push({TitleNotes: line})
+        })
 
         ///////////////////////////////////////////////////////
         // raw swmm-js translations
         ///////////////////////////////////////////////////////
 
-        // Translate the Title
-        // TITLE
-        model['TITLE'] = [];
-        Title.forEach(function(line){
-            model['TITLE'].push({TitleNotes: line})
+        // Get base data (time patterns, time series, etc) first
+        JX.Pattern.forEach(function(el){
+            model['TIMEPATTERNS'].push({ID: el.ID, count: el.count, factor: el.factor, type: el.type})
         })
 
-        // Translate the Options
-        // Options
-        /*OPTIONS: function(section, key, line) {
-                    var m = line.match(/\s+([//\-:a-zA-Z0-9\.]+)/);
-                    if (m && m.length)
-                        section[key] = {Value: m[1]};
-            },*/
-        model['OPTIONS'] = [];
-        model['OPTIONS']['FLOW_UNITS']   = {Value: FlowUnitWords[FlowUnits]};
-        model['OPTIONS']['INFILTRATION'] = {Value: InfilModelWords[InfilModel]};
-        model['OPTIONS']['FLOW_ROUTING'] = {Value: RouteModelWords[RouteModel]};
-        model['OPTIONS']['START_DATE']   = {Value: translateDate(StartDate)};
-        model['OPTIONS']['START_TIME']   = {Value: translateTime(StartTime)};
-        model['OPTIONS']['END_DATE']     = {Value: translateDate(EndDate)};
-        model['OPTIONS']['END_TIME']     = {Value: translateTime(EndTime)};
-        model['OPTIONS']['REPORT_START_DATE'] = {Value: translateDate(ReportStartDate)};
-        model['OPTIONS']['REPORT_START_TIME'] = {Value: translateTime(ReportStartTime)};
-        model['OPTIONS']['SWEEP_START']       = {Value: translateSweepDate(SweepStart)};
-        model['OPTIONS']['SWEEP_END']         = {Value: translateSweepDate(SweepEnd)};
-        model['OPTIONS']['DRY_DAYS']          = {Value: StartDryDays};
-        model['OPTIONS']['WET_STEP']          = {Value: translateToHMS(WetStep)};
-        model['OPTIONS']['DRY_STEP']          = {Value: translateToHMS(DryStep)};
-        model['OPTIONS']['REPORT_STEP']       = {Value: translateToHMS(ReportStep)};
-        model['OPTIONS']['RULE_STEP']         = {Value: translateToHMS(RuleStep)};
-        model['OPTIONS']['INERTIAL_DAMPING']     = {Value: InertDampingWords[InertDamping]};
-        model['OPTIONS']['ALLOW_PONDING']     = {Value: NoYesWords[Number(AllowPonding)]};
-        model['OPTIONS']['SLOPE_WEIGHTING']   = {Value: NoYesWords[Number(SlopeWeighting)]};
-        model['OPTIONS']['SKIP_STEADY_STATE'] = {Value: NoYesWords[Number(SkipSteadyState)]};
-        model['OPTIONS']['IGNORE_RAINFALL']   = {Value: NoYesWords[Number(IgnoreRainfall)]};
-        model['OPTIONS']['IGNORE_SNOWMELT']   = {Value: NoYesWords[Number(IgnoreSnowmelt)]};
-        model['OPTIONS']['IGNORE_GROUNDWATER']= {Value: NoYesWords[Number(IgnoreGwater)]};
-        model['OPTIONS']['IGNORE_ROUTING']    = {Value: NoYesWords[Number(IgnoreRouting)]};
-        model['OPTIONS']['IGNORE_QUALITY']    = {Value: NoYesWords[Number(IgnoreQuality)]};
-        model['OPTIONS']['IGNORE_RDII']       = {Value: NoYesWords[Number(IgnoreRDII)]};
-        model['OPTIONS']['NORMAL_FLOW_LIMITED'] = {Value: NormalFlowWords[NormalFlowLtd]};
-        model['OPTIONS']['FORCE_MAIN_EQUATION'] = {Value: ForceMainEqnWords[ForceMainEqn]};
-        model['OPTIONS']['LINK_OFFSETS']        = {Value: LinkOffsetWords[LinkOffsets]};
-        //model['OPTIONS']['COMPATIBILITY']       = {Value: Compatibility};
-        model['OPTIONS']['ROUTING_STEP']        = {Value: translateToHMS(RouteStep)};
-        model['OPTIONS']['LENGTHENING_STEP']    = {Value: LengtheningStep};
-        model['OPTIONS']['MINIMUM_STEP']        = {Value: MinRouteStep};
-        model['OPTIONS']['THREADS']             = {Value: NumThreads};
-        model['OPTIONS']['VARIABLE_STEP']       = {Value: CourantFactor};
-        model['OPTIONS']['MIN_SURFAREA']        = {Value: MinSurfArea};
-        model['OPTIONS']['MIN_SLOPE']           = {Value: MinSlope*100}; // Percent in file, fraction in exe
-        model['OPTIONS']['MAX_TRIALS']          = {Value: MaxTrials};
-        model['OPTIONS']['HEAD_TOLERANCE']      = {Value: HeadTol};
-        model['OPTIONS']['SYS_FLOW_TOL']        = {Value: SysFlowTol*100}; // Percent in file, fraction in exe
-        model['OPTIONS']['LAT_FLOW_TOL']        = {Value: LatFlowTol*100}; // Percent in file, fraction in exe
-        model['OPTIONS']['SURCHARGE_METHOD']    = {Value: SurchargeWords[SurchargeMethod]}; 
-        model['OPTIONS']['TEMPDIR']             = {Value: TempDir}; 
+        JX.Tseries.forEach(function(el){
+            el.Table.forEach(function(en){
+                model['TIMESERIES'].push({
+                    TimeSeries: el.ID, 
+                    Date: translateDate(en.x), 
+                    Time: extractTimeFromDate(en.x), 
+                    Value: en.y, 
+                    curveType: el.curveType, 
+                    file: {mode: el.file.mode, file: el.file.file}, 
+                    refersTo: el.refersTo})
+            })
+        })
 
-        // Recover all memory from parsing the input.
-        swmm_close();
+        // For each element in the evaporationtable object, create a new model['evap']['key'] = {Value: m[1]}
+        model['EVAPORATION']['dryOnly']         = {Value: JX.Evap.dryOnly}        
+        model['EVAPORATION']['monthlyEvap']     = {Value: JX.Evap.monthlyEvap}    
+        model['EVAPORATION']['panCoeff']        = {Value: JX.Evap.panCoeff}       
+        model['EVAPORATION']['recoveryFactor']  = {Value: JX.Evap.recoveryFactor} 
+        model['EVAPORATION']['recoveryPattern'] = {Value: JX.Evap.recoveryPattern}
+        model['EVAPORATION']['tSeries']         = {Value: JX.Evap.tSeries}  
+        model['EVAPORATION']['type']            = {Value: JX.Evap.type}          
+        model['EVAPORATION']['rate']            = {Value: JX.Evap.rate}           
+        
+
+        model['ADJUSTMENTS']['temp']            = {Value: JX.Adjust.temp};       
+        model['ADJUSTMENTS']['evap']            = {Value: JX.Adjust.evap};        
+        model['ADJUSTMENTS']['rain']            = {Value: JX.Adjust.rain};          
+        model['ADJUSTMENTS']['hydcon']          = {Value: JX.Adjust.hydcon};
+        model['ADJUSTMENTS']['rainFactor']      = {Value: JX.Adjust.rainFactor};
+        model['ADJUSTMENTS']['hydconFactor']    = {Value: JX.Adjust.hydconFactor};
+        
+        //  [RAINGAGES]
+        //
+        JX.Gage.forEach(function(el){
+            model['RAINGAGES'][el.ID.toString()] = {
+                Description: '', 
+                Format: RainTypeWords[el.rainType],   // intensity, volume, cumulative
+                Interval: el.rainInterval,            // recording time interval (seconds)
+                SCF: el.snowFactor,                   // snow catch deficiency correction
+                Source: GageDataWords[el.dataSource], // data from time series or file 
+                SeriesName:  JX.Tseries[el.tSeries].ID,  // rainfall data time series name
+                fname: el.fname,                      // name of rainfall data file
+                staID: el.staID,                      // station number
+                rainUnits: el.rainUnits,              // rain depth units (US or SI)
+                coGage: el.coGage                     // index of gage with same rain timeseries
+            };
+        })
+        
+        //  [TEMPERATURE]
+        model.Temp.datasource = JX.Temp.dataSource;  
+        model.Temp.tSeries = JX.Temp.tSeries;
+        //model.Tseries[model.Temp.tSeries].refersTo = TSERIES_TEMP;
+        model.Fclimate.mode = JX.Fclimate.mode;
+        model.Fclimate.name = JX.Fclimate.name || '';
+        model.Temp.fileStartDate = JX.Temp.fileStartDate;
+        model.Wind.type   = JX.Wind.type;
+        model.Wind.aws    = JX.Wind.aws;
+        model.Snow.snotmp = JX.Snow.snotmp;
+        model.Snow.tipm   = JX.Snow.tipm;
+        model.Snow.rnm    = JX.Snow.rnm;
+        model.Temp.elev   = JX.Temp.elev;
+        model.Temp.anglat = JX.Temp.anglat;
+        model.Temp.dtlong = JX.Temp.dtlong;
+        model.Snow.adc    = JX.Snow.adc;    // adc[0] = IMPERVIOUS, adc[1] = PERVIOUS
+        
+        //  [SUBCATCHMENTS]
+        //
+        JX.Subcatch.forEach(function(el){
+            model['SUBCATCHMENTS'][el.ID.toString()] = {
+                Description: '', 
+                RainGage: JX.Gage[el.gage].ID,
+                Outlet: JX.Node[el.outNode].ID, 
+                Area: el.area,
+                PctImperv: el.fracImperv * 100,
+                Width: el.width,
+                PctSlope: el.slope,
+                CurbLen: el.curbLength,
+                SnowPack: ''
+            };
+        })
+
+        //  [SUBAREAS]
+        //
+        JX.Subcatch.forEach(function(el){
+            model['SUBAREAS'][el.ID.toString()] = {
+                Description: '', 
+                RainGage: JX.Gage[el.gage].ID,
+                Outlet: JX.Node[el.outNode].ID, 
+                Area: el.area,
+                PctImperv: el.fracImperv * 100,
+                Width: el.width,
+                PctSlope: el.slope,
+                CurbLen: el.curbLength,
+                SnowPack: ''
+            };
+        })
+
+        /*
+            inpString += model[secStr][entry].NImperv.toString().padEnd(11, ' ');
+            inpString += model[secStr][entry].NPerv.toString().padEnd(11, ' ');
+            inpString += model[secStr][entry].SImperv.toString().padEnd(11, ' ');
+            inpString += model[secStr][entry].SPerv.toString().padEnd(11, ' ');
+            inpString += model[secStr][entry].PctZero.toString().padEnd(11, ' ');
+            inpString += model[secStr][entry].RouteTo.padEnd(11, ' ');
+            inpString += model[secStr][entry].PctRouted.toString().padEnd(11, ' ');
+        */
 
         //////////////////////////////////////////////////////////
         // wasm swmm-js translations
@@ -4118,7 +4185,7 @@ d3.swmmresult = function() {
         this.SWMM_Nnodes = 0,                // number of drainage system nodes
         this.SWMM_Nlinks = 0,                // number of drainage system links
         this.SWMM_Npolluts = 0,              // number of pollutants tracked
-        this.SWMM_StartDate = new Date(),              // start date of simulation
+        this.SWMM_StartDate = new Date(),    // start date of simulation
         this.SWMM_ReportStep = 0;            // reporting time step (seconds)	
         
         this.SubcatchVars = 0,               // number of subcatch reporting variable
@@ -4553,11 +4620,38 @@ var swmmjs = function() {
 
         secStr = 'EVAPORATION';
         inpString +='[EVAPORATION]\n;;Evap Data      Parameters\n;;-------------- ----------------\n'
-        for (let entry in model[secStr]) {
-            inpString += entry.padEnd(17, ' ');
-            inpString += model[secStr][entry].Value;
-            inpString += '\n';
+        if(model['EVAPORATION'].dryOnly.Value.toString() === '1'){
+            inpString += 'DRY_ONLY'.padEnd(16, ' ') + ' ' + 'YES\n';
+        } else {
+            inpString += 'DRY_ONLY'.padEnd(16, ' ') + ' ' + 'NO\n';
         }
+        switch(EvapTypeWords[model['EVAPORATION'].type.Value]){
+            case 'CONSTANT':
+                inpString += 'CONSTANT'.padEnd(16, ' ') + ' ' + model['EVAPORATION'].rate.Value.toString() + '\n';
+                break;
+            case 'MONTHLY':
+                inpString += 'MONTHLY'.padEnd(16, ' ') + ' ' + model['EVAPORATION'].monthlyEvap.Value.toString() + '\n';
+                break;
+            case 'TIMESERIES':
+                inpString += 'TIMESERIES'.padEnd(16, ' ') + ' ' + model['EVAPORATION'].tSeries.Value + '\n';
+                break;
+            case 'FILE':
+                inpString += 'FILE'.padEnd(16, ' ') + ' ' + model['EVAPORATION'].file.Value + '\n';
+                break;
+            case 'RECOVERTY':
+                inpString += 'RECOVERY'.padEnd(16, ' ') + ' ' + model['EVAPORATION'].recoveryPattern.Value + '\n';
+                break;
+        }
+
+        /*model['EVAPORATION']['dryOnly']         = {Value: (Evap.dryOnly        !== undefined) ? Evap.dryOnly        : false};
+        model['EVAPORATION']['monthlyEvap']     = {Value: (Evap.monthlyEvap    !== undefined) ? Evap.monthlyEvap    : []};
+        model['EVAPORATION']['panCoeff']        = {Value: (Evap.panCoeff       !== undefined) ? Evap.panCoeff       : []};
+        model['EVAPORATION']['recoveryFactor']  = {Value: (Evap.recoveryFactor !== undefined) ? Evap.recoveryFactor : 0};
+        model['EVAPORATION']['recoveryPattern'] = {Value: (Evap.recoveryPattern >= 0) ? model['TIMEPATTERNS'][Evap.recoveryPattern].ID : ''};
+        model['EVAPORATION']['tSeries']         = {Value: (Evap.tSeries >= 0)         ? model['TIMESERIES'][Evap.tSeries].ID : ''};
+        model['EVAPORATION']['type']            = {Value: (Evap.type           !== undefined) ? Evap.type           : 0};
+        model['EVAPORATION']['rate']            = {Value: (Evap.rate           !== undefined) ? Evap.rate           : 0};
+        */
         inpString += '\n';
 
         secStr = 'TEMPERATURE';
@@ -4578,7 +4672,7 @@ var swmmjs = function() {
             }
             inpString += entry.padEnd(17, ' ');
             inpString += model[secStr][entry].Format.padEnd(10, ' ');
-            inpString += model[secStr][entry].Interval.padEnd(7, ' ');
+            inpString += model[secStr][entry].Interval.toString().padEnd(7, ' ');
             inpString += model[secStr][entry].SCF.toString().padEnd(7, ' ');
             inpString += model[secStr][entry].Source.padEnd(11, ' ');
             inpString += model[secStr][entry].SeriesName.padEnd(11, ' ');
@@ -4589,15 +4683,15 @@ var swmmjs = function() {
         secStr = 'SUBCATCHMENTS';
         inpString +='[SUBCATCHMENTS]\n;;Subcatchment   Rain Gage        Outlet           Area     %Imperv  Width    %Slope   CurbLen  Snow Pack       \n;;-------------- ---------------- ---------------- -------- -------- -------- -------- -------- ----------------\n'
         for (let entry in model[secStr]) {
-            inpString += entry.padEnd(17, ' ');
-            inpString += model[secStr][entry].RainGage.padEnd(17, ' ');
-            inpString += model[secStr][entry].Outlet.toString().padEnd(17, ' ');
-            inpString += model[secStr][entry].Area.toString().padEnd(9, ' ');
-            inpString += model[secStr][entry].PctImperv.toString().padEnd(9, ' ');
-            inpString += model[secStr][entry].Width.toString().padEnd(9, ' ');
-            inpString += model[secStr][entry].PctSlope.toString().padEnd(9, ' ');
-            inpString += model[secStr][entry].CurbLen.toString().padEnd(9, ' ');
-            inpString += model[secStr][entry].SnowPack.padEnd(17, ' ');
+            inpString += entry.padEnd(17, ' ') + ' ';
+            inpString += model[secStr][entry].RainGage.padEnd(17, ' ') + ' ';
+            inpString += model[secStr][entry].Outlet.toString().padEnd(17, ' ')+ ' ';
+            inpString += model[secStr][entry].Area.toString().padEnd(9, ' ')+ ' ';
+            inpString += model[secStr][entry].PctImperv.toString().padEnd(9, ' ')+ ' ';
+            inpString += model[secStr][entry].Width.toString().padEnd(9, ' ')+ ' ';
+            inpString += model[secStr][entry].PctSlope.toString().padEnd(9, ' ')+ ' ';
+            inpString += model[secStr][entry].CurbLen.toString().padEnd(9, ' ')+ ' ';
+            inpString += model[secStr][entry].SnowPack.padEnd(17, ' ')+ ' ';
             inpString += '\n';
         }
         inpString += '\n';
@@ -5104,51 +5198,51 @@ INFLOWS: function(section, key, line) {
         }
 
 	    if ('object' !== typeof model.COORDINATES)
-		return;
+		    return;
             
-            var coords = Object.values(model.COORDINATES),
-		    x = function(c) {
-                return c.x
-            },
-		    y = function(c) {
-                return c.y
-            };
-            svg.minx = d3.min(coords, x);
-            svg.maxx = d3.max(coords, x);
-            svg.miny = d3.min(coords, y);
-            svg.maxy = d3.max(coords, y);
-            
-            if (!svg.minx || !svg.maxx || !svg.miny || !svg.maxy){
-                svg.minx = 0;
-                svg.maxx = 1000;
-                svg.miny = 0;
-                svg.maxy = 1000;
+        var coords = Object.values(model.COORDINATES),
+        x = function(c) {
+            return c.x
+        },
+        y = function(c) {
+            return c.y
+        };
+        svg.minx = d3.min(coords, x);
+        svg.maxx = d3.max(coords, x);
+        svg.miny = d3.min(coords, y);
+        svg.maxy = d3.max(coords, y);
+        
+        if (!svg.minx || !svg.maxx || !svg.miny || !svg.maxy){
+            svg.minx = 0;
+            svg.maxx = 1000;
+            svg.miny = 0;
+            svg.maxy = 1000;
+        }
+        
+        var height = (svg.maxy - svg.miny),
+            width = (svg.maxx - svg.minx),
+            scale = width * 0.1;
+        
+        svg.strokeWidth = height / 200;
+        svg.top = svg.maxy + scale;
+
+        d3.select('#svgSimple').attr('viewBox', (svg.minx - scale) + ' ' + 0 + ' ' + (width + 2 * scale) + ' ' + (height + 2 * scale));
+        //el.attr('viewBox', (svg.minx - scale) + ' ' + 0 + ' ' + (width + 2 * scale) + ' ' + (height + 2 * scale));
+
+        svg.nodeSize = height / 75,
+        el.append('circle')
+            .attr('cx', svg.minx + width / 2)
+            .attr('cy', svg.top - height / 2)
+            //.attr('r', svg.nodeSize)
+            .attr('style', 'fill: black');
+        var c = d3.select('circle');
+        if (c && c[0] && c[0][0] && c[0][0].getBoundingClientRect)
+        {
+            var r = c[0][0].getBoundingClientRect();
+            if (r && r.height && r.width) {
+                svg.nodeSize = svg.nodeSize / r.height * 10;
             }
-            
-            var height = (svg.maxy - svg.miny),
-                width = (svg.maxx - svg.minx),
-                scale = width * 0.1;
-            
-            svg.strokeWidth = height / 200;
-            svg.top = svg.maxy + scale;
-
-            d3.select('#svgSimple').attr('viewBox', (svg.minx - scale) + ' ' + 0 + ' ' + (width + 2 * scale) + ' ' + (height + 2 * scale));
-	    //el.attr('viewBox', (svg.minx - scale) + ' ' + 0 + ' ' + (width + 2 * scale) + ' ' + (height + 2 * scale));
-
-	    svg.nodeSize = height / 75,
-	    el.append('circle')
-		    .attr('cx', svg.minx + width / 2)
-		    .attr('cy', svg.top - height / 2)
-		    .attr('r', svg.nodeSize)
-		    .attr('style', 'fill: black');
-	    var c = d3.select('circle');
-	    if (c && c[0] && c[0][0] && c[0][0].getBoundingClientRect)
-	    {
-		var r = c[0][0].getBoundingClientRect();
-		if (r && r.height && r.width) {
-		    svg.nodeSize = svg.nodeSize / r.height * 10;
-		}
-	    }
+        }
 	    svg.removeAll(el);
 
         // Render polygons
@@ -5463,6 +5557,10 @@ INFLOWS: function(section, key, line) {
         });
         // junctions
         d3.select('#svgSimple > g').selectAll('.junction').each(function() { 
+            this.setAttribute('r', svg.nodeSize / swmmjs.currentScale );
+        });
+        // raingages
+        d3.select('#svgSimple > g').selectAll('.raingage').each(function() { 
             this.setAttribute('r', svg.nodeSize / swmmjs.currentScale );
         });
         // outfalls

@@ -1,5 +1,6 @@
-$('#outSpot').html(node_readParams(0, 1, 0, 0, 0))
-swmm_run('./model/Example1.inp', './model/out1.rpt', './model/out1.out')
+
+//$('#outSpot').html(node_readParams(0, 1, 0, 0, 0))
+//swmm_run('./model/Example1.inp', './model/out1.rpt', './model/out1.out')
 //
 //  Input:   f1 = name of input file
 //           f2 = name of report file

@@ -1,5 +1,4 @@
 // Chartspecs and DataElement should be eliminated, so do not do anything with it.
-
 //const { data } = require("jquery");
 
 // dataElements are classes for data row/objects.
@@ -368,6 +367,7 @@ function drawLine(theseSpecs, curveType){
 }
 
 const swmm_run = Module.cwrap('swmm_run', 'number', ['string', 'string', 'string']);
+const swmm_transcribe = Module.cwrap('swmm_transcribe', 'number', ['string', 'string', 'string']);
 
 /////////////////////////////////////////////////////////////////////////
 // Network file functions
@@ -429,6 +429,34 @@ function fetchRetry(url, delay, tries, fetchOptions = {}){
     })
 }
 
+
+function inpToJSON(){
+    let inpText = document.getElementById('inpFile').value;
+    
+    try
+    {
+        FS.createPath('/', '/', true, true);
+        FS.ignorePermissions = true;
+        var f = FS.findObject('input.inp');
+        if (f) {
+            FS.unlink('input.inp');
+        }
+        FS.createDataFile('/', 'input.inp', inpText, true, true);
+
+        let JSONpointer = swmm_transcribe("/input.inp", "data/Example1x.rpt", "data/out.out");
+        return JSONpointer;
+
+    } catch (e) {
+        console.log('/input.inp creation failed');
+        // Remove the processing modal.
+        $('#modalSpinner').modal('hide')
+        
+    } finally{
+        // Remove the processing modal.
+        $('#modalSpinner').modal('hide')
+    }
+    console.log('runran')
+}
 
 function runModelClick(){
     // dataObj is an array of dataElement objects.
@@ -516,3 +544,5 @@ function runModelClick(){
         circle.classList.add('wave-ripple');
      }
  }
+
+

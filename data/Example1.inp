@@ -1,6 +1,7 @@
 [TITLE]
 ;;Project Title/Notes
 Example 1
+This is a good example.
 
 [OPTIONS]
 ;;Option             Value
@@ -18,10 +19,10 @@ REPORT_START_DATE    01/01/1998
 REPORT_START_TIME    00:00:00
 END_DATE             01/02/1998
 END_TIME             12:00:00
-SWEEP_START          01/01
+SWEEP_START          1/1
 SWEEP_END            12/31
 DRY_DAYS             5
-REPORT_STEP          00:01:00
+REPORT_STEP          01:00:00
 WET_STEP             00:15:00
 DRY_STEP             01:00:00
 ROUTING_STEP         0:01:00 
@@ -31,16 +32,16 @@ NORMAL_FLOW_LIMITED  BOTH
 FORCE_MAIN_EQUATION  H-W
 VARIABLE_STEP        0.75
 LENGTHENING_STEP     0
-MIN_SURFAREA         12.557
-MAX_TRIALS           8
-HEAD_TOLERANCE       0.005
+MIN_SURFAREA         0
+MAX_TRIALS           0
+HEAD_TOLERANCE       0
 SYS_FLOW_TOL         5
 LAT_FLOW_TOL         5
 
 [EVAPORATION]
 ;;Evap Data      Parameters
 ;;-------------- ----------------
-CONSTANT         0.0
+TIMESERIES       TS2
 DRY_ONLY         NO
 
 [RAINGAGES]
@@ -206,6 +207,19 @@ TS1                         27:00      0.0
 TS1                         28:00      0.4       
 TS1                         29:00      0.2       
 TS1                         30:00      0.0       
+;
+TS2                         0:00       0.0       
+TS2                         1:00       0.25      
+TS2                         2:00       0.5       
+
+[PATTERNS]
+;;Pattern        Type       Multipliers
+;;-------------- ---------- -----------
+tp1              MONTHLY    1.0   1.0   1.0   1.0   1.0   1.0  
+tp1                         1.0   1.0   1.0   1.0   1.0   1.0  
+;
+;sdf
+tp2              DAILY      1.0   1.0   1.0   1.0   1.0   1.0   1.0  
 
 [REPORT]
 ;;Reporting Options
