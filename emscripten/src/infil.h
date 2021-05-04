@@ -114,5 +114,8 @@ void    grnampt_initState(TGrnAmpt *infil);
 double  grnampt_getInfil(TGrnAmpt *infil, double tstep, double irate,
         double depth, int modelType);
 
+void    horton_getInput(int j, double p[]);
+void    grnampt_getInput(int j, double p[]);
+void    curveNumber_getInput(int j, double p[]);
 
 #endif //INFIL_H

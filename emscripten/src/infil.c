@@ -563,6 +563,54 @@ double modHorton_getInfil(THorton *infil, double tstep, double irate,
 
 //=============================================================================
 
+void grnampt_getInput(int j, double p[])
+//
+//  Input:   j = subcatchment index
+//           p[] = array of parameter values
+//  Output:  none
+//  Purpose: retrieves Green-Ampt infiltration parameters for a subcatchment.
+//
+{
+    p[0] = Infil[j].grnAmpt.S;   // Capillary suction head (ft)
+    p[1] = Infil[j].grnAmpt.Ks;  // Sat. hyd. conductivity (ft/sec)
+    p[2] = Infil[j].grnAmpt.IMDmax; // Max. init. moisture deficit
+}
+
+//=============================================================================
+
+void horton_getInput(int j, double p[])
+//
+//  Input:   j = subcatchment index
+//           p[] = array of parameter values
+//  Output:  none
+//  Purpose: retrieves Horton infiltration parameters for a subcatchment.
+//
+{
+    p[0] = Infil[j].horton.f0;   
+    p[1] = Infil[j].horton.fmin;  
+    p[2] = Infil[j].horton.Fmax;  
+    p[3] = Infil[j].horton.decay;  
+    p[4] = Infil[j].horton.regen;  
+}
+
+
+//=============================================================================
+
+void curveNumber_getInput(int j, double p[])
+//
+//  Input:   j = subcatchment index
+//           p[] = array of parameter values
+//  Output:  none
+//  Purpose: retrieves Horton infiltration parameters for a subcatchment.
+//
+{
+    p[0] = Infil[j].curveNum.Smax;   
+    p[1] = Infil[j].curveNum.regen;  
+    p[2] = Infil[j].curveNum.Tmax;  
+}
+
+//=============================================================================
+
 void grnampt_getParams(int j, double p[])
 //
 //  Input:   j = subcatchment index
