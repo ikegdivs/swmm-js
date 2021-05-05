@@ -1259,6 +1259,42 @@ char* EMSCRIPTEN_KEEPALIVE DLLEXPORT swmm_transcribe(char* f1, char* f2, char* f
 
 
 
+
+
+
+        /*
+        Supporting variables:
+
+        static int    Ntransects;              // total number of transects
+        static int    Nstations;               // number of stations in current transect
+        Station[Nstations]?
+        Elev[Nstations]?
+        Transect[Ntransects]
+        */
+
+        /*
+        TTransect
+        //////////////////////////////
+        char*        ID;                      // section ID
+        double       yFull;                     // depth when full (ft)
+        double       aFull;                     // area when full (ft2)
+        double       rFull;                     // hyd. radius when full (ft)
+        double       wMax;                      // width at widest point (ft)
+        double       ywMax;                     // depth at max width (ft)
+        double       sMax;                      // section factor at max. flow (ft^4/3)
+        double       aMax;                      // area at max. flow (ft2)
+        double       lengthFactor;              // floodplain / channel length
+        */
+
+        /*
+        //  Format of transect data follows that used for HEC-2 program:
+        //    NC  nLeft  nRight  nChannel
+        //    X1  name  nSta  xLeftBank  xRightBank  0  0  0  xFactor  yFactor
+        //    GR  Elevation  Station  ... 
+        */
+
+
+
         
 
         strcat(JX, "}\n");

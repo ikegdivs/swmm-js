@@ -3367,12 +3367,24 @@ d3.inp = function() {
                 return;
             },
             OPTIONS: function(section, key, line) {
+                var m = line.match(/\s+([//\-:a-zA-Z0-9\.]+)/);
+                    if (m && m.length)
+                        section[key] = {Value: m[1]};
                 return;
             },
             EVAPORATION: function(section, key, line) {
+                var m = line.match(/\s+([//\-:a-zA-Z0-9\.]+)/);
+                    if (m && m.length)
+                        section[key] = {Value: m[1]};
                 return;
             },
             TEMPERATURE: function(section, key, line) {
+                var m = [];
+                line = key + line;
+                m.push(line)
+                m.push(line.slice(19,line.length))
+                if (m && m.length)
+                        section[key] = {Value: m[1].trim()};
                 return;
             },
             RAINGAGES: function(section, key, line) {
@@ -4670,11 +4682,11 @@ var swmmjs = function() {
             if(typeof model[secStr][entry].Description !== 'undefined' && model[secStr][entry].Description.length > 0){
                 inpString += ';' + model[secStr][entry].Description + '\n';
             }
-            inpString += entry.padEnd(17, ' ');
-            inpString += model[secStr][entry].Format.padEnd(10, ' ');
-            inpString += model[secStr][entry].Interval.toString().padEnd(7, ' ');
-            inpString += model[secStr][entry].SCF.toString().padEnd(7, ' ');
-            inpString += model[secStr][entry].Source.padEnd(11, ' ');
+            inpString += entry.padEnd(17, ' ') + ' ';
+            inpString += model[secStr][entry].Format.padEnd(10, ' ') + ' ';
+            inpString += model[secStr][entry].Interval.toString().padEnd(7, ' ') + ' ';
+            inpString += model[secStr][entry].SCF.toString().padEnd(7, ' ') + ' ';
+            inpString += model[secStr][entry].Source.padEnd(11, ' ') + ' ';
             inpString += model[secStr][entry].SeriesName.padEnd(11, ' ');
             inpString += '\n';
         }

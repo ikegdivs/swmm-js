@@ -1,6 +1,8 @@
 [TITLE]
 ;;Project Title/Notes
 Example 1
+Which is good.
+  And nice.  Yes.
 
 [OPTIONS]
 ;;Option             Value
@@ -21,7 +23,7 @@ END_TIME             12:00:00
 SWEEP_START          01/01
 SWEEP_END            12/31
 DRY_DAYS             5
-REPORT_STEP          00:01:00
+REPORT_STEP          01:00:00
 WET_STEP             00:15:00
 DRY_STEP             01:00:00
 ROUTING_STEP         0:01:00 
@@ -40,7 +42,7 @@ LAT_FLOW_TOL         5
 [EVAPORATION]
 ;;Evap Data      Parameters
 ;;-------------- ----------------
-CONSTANT         0.0
+TIMESERIES       TS2
 DRY_ONLY         NO
 
 [RAINGAGES]
@@ -84,6 +86,22 @@ RG1              INTENSITY 1:00     1.0      TIMESERIES TS1
 7                0.7        0.3        4.14       0.50       0         
 8                0.7        0.3        4.14       0.50       0         
 
+[AQUIFERS]
+;;Aquifer        Phi    WP     FC     HydCon Kslope Tslope UEF    LED    LGLR   BEL    WTEL   UZM    UEF Pat
+;;-------------- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
+aq1              0.5    0.15   0.30   5.0    10.0   15.0   0.35   14.0   0.002  0.0    10.0   0.30         
+
+[GROUNDWATER]
+;;Subcatchment   Aquifer          Node             Elev   A1     B1     A2     B2     A3     Hsw    Hcb    BEL    WTEL   UZM   
+;;-------------- ---------------- ---------------- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
+
+[SNOWPACKS]
+;;Snowpack Data
+sm1              PLOWABLE   0.001      0.001      32.0       0.10       0.00       0.00       0.0       
+sm1              IMPERVIOUS 0.001      0.001      32.0       0.10       0.00       0.00       0.00      
+sm1              PERVIOUS   0.001      0.001      32.0       0.10       0.00       0.00       0.00      
+sm1              REMOVAL    1.0        0.0        0.0        0.0        0.0        0.0        
+
 [JUNCTIONS]
 ;;Junction       Invert     Dmax       Dinit      Dsurch     Aponded   
 ;;-------------- ---------- ---------- ---------- ---------- ----------
@@ -106,6 +124,16 @@ RG1              INTENSITY 1:00     1.0      TIMESERIES TS1
 ;;-------------- ---------- ---------- ---------------- --------
 18               975        FREE                        NO
 
+[DIVIDERS]
+;;Divider        Invert     Diverted Link    Type       Parameters
+;;-------------- ---------- ---------------- ---------- ----------
+12               0          *                CUTOFF     0          0          0          0          0         
+
+[STORAGE]
+;;Storage Node   Invert   Dmax     Dinit     Curve      Name/Params                  Aponded  Fevap    SeepRate
+;;-------------- -------- -------- --------- ---------- ---------------------------- -------- -------- --------
+11               0        0        0         TABULAR    st1                          0        0        0       
+
 [CONDUITS]
 ;;Conduit        From Node        To Node          Length     Roughness  InOffset   OutOffset  InitFlow   MaxFlow   
 ;;-------------- ---------------- ---------------- ---------- ---------- ---------- ---------- ---------- ----------
@@ -123,10 +151,30 @@ RG1              INTENSITY 1:00     1.0      TIMESERIES TS1
 15               16               24               100        0.01       0          0          0          0         
 16               24               17               400        0.01       0          0          0          0         
 
+[PUMPS]
+;;Pump           From Node        To Node          PumpCurve        Status   Dstart   Doff    
+;;-------------- ---------------- ---------------- ---------------- ------ -------- --------
+2                10               22               pumpcurve1       ON       0        0       
+
+[ORIFICES]
+;;Orifice        From Node        To Node          Type         CrestHt    Qcoeff     Gated    CloseTime 
+;;-------------- ---------------- ---------------- ------------ ---------- ---------- -------- ----------
+3                20               16               SIDE         0          0.65       NO       0         
+
+[WEIRS]
+;;Weir           From Node        To Node          Type         CrestHt    Qcoeff     Gated    EndCon   EndCoeff  
+;;-------------- ---------------- ---------------- ------------ ---------- ---------- -------- -------- ----------
+9                14               16               TRANSVERSE   0          3.33       NO       0        0         
+
+[OUTLETS]
+;;Outlet         From Node        To Node          CrestHt    Type            QTable/Qcoeff    Qexpon     Gated   
+;;-------------- ---------------- ---------------- ---------- --------------- ---------------- ---------- --------
+17               21               24               0          FUNCTIONAL/DEPTH 10.0             0.5        NO      
+
 [XSECTIONS]
 ;;Link           Shape        Geom1            Geom2      Geom3      Geom4      Barrels   
 ;;-------------- ------------ ---------------- ---------- ---------- ---------- ----------
-1                CIRCULAR     1.5              0          0          0          1                    
+1                IRREGULAR    transect1        0          0          0          1                    
 4                CIRCULAR     1                0          0          0          1                    
 5                CIRCULAR     1                0          0          0          1                    
 6                CIRCULAR     1                0          0          0          1                    
@@ -139,6 +187,19 @@ RG1              INTENSITY 1:00     1.0      TIMESERIES TS1
 14               CIRCULAR     1                0          0          0          1                    
 15               CIRCULAR     2                0          0          0          1                    
 16               CIRCULAR     2                0          0          0          1                    
+3                CIRCULAR     1                0          0          0
+9                RECT_OPEN    1                1          0          0         
+
+[TRANSECTS]
+;;Transect Data in HEC-1 format
+;
+NC 0.01     0.01     0.01    
+X1 transect1         5        0.0      0.0      0.0      0.0      0.0      0.0      0.0     
+GR 10       0        2        1        3        4        10       8        12       10      
+;
+NC 0.01     0.01     0.01    
+X1 transect2         4        0.0      0.0      0.0      0.0      0.0      0.0      0.0     
+GR 20       0        10       4        10       8        20       10      
 
 [LOSSES]
 ;;Link           Kin        Kout       Kavg       Flap Gate  SeepRate  
@@ -191,6 +252,15 @@ Residential      Lead             EMC        0          0          0          0
 Undeveloped      TSS              EXP        0.1        0.7        0          0         
 Undeveloped      Lead             EMC        0          0          0          0         
 
+[CURVES]
+;;Curve          Type       X-Value    Y-Value   
+;;-------------- ---------- ---------- ----------
+pumpcurve1       Pump1      0          0         
+pumpcurve1                  1          1         
+;
+st1              Storage    0          1         
+st1                         2          3         
+
 [TIMESERIES]
 ;;Time Series    Date       Time       Value     
 ;;-------------- ---------- ---------- ----------
@@ -206,6 +276,19 @@ TS1                         27:00      0.0
 TS1                         28:00      0.4       
 TS1                         29:00      0.2       
 TS1                         30:00      0.0       
+;
+TS2                         0:00       0.0       
+TS2                         1:00       0.25      
+TS2                         2:00       0.5       
+
+[PATTERNS]
+;;Pattern        Type       Multipliers
+;;-------------- ---------- -----------
+tp1              MONTHLY    1.0   1.0   1.0   1.0   1.0   1.0  
+tp1                         1.0   1.0   1.0   1.0   1.0   1.0  
+;
+;sdf
+tp2              DAILY      1.0   1.0   1.0   1.0   1.0   1.0   1.0  
 
 [REPORT]
 ;;Reporting Options
@@ -238,11 +321,14 @@ Units      None
 23               6484.210           3978.950          
 24               5389.470           3031.580          
 18               6631.580           505.260           
+12               -178.133           4090.909          
+11               -190.418           5737.101          
 
 [VERTICES]
 ;;Link           X-Coord            Y-Coord           
 ;;-------------- ------------------ ------------------
 10               6673.680           1368.420          
+17               5436.118           3034.398          
 
 [Polygons]
 ;;Subcatchment   X-Coord            Y-Coord           
