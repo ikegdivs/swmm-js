@@ -46,7 +46,7 @@ DRY_ONLY         NO
 [RAINGAGES]
 ;;Gage           Format    Interval SCF      Source    
 ;;-------------- --------- ------ ------ ----------
-RG1              INTENSITY 1:00     1.0      TIMESERIES TS1             
+RG1              INTENSITY 00:01:00     1.0      TIMESERIES TS1             
 
 [SUBCATCHMENTS]
 ;;Subcatchment   Rain Gage        Outlet           Area     %Imperv  Width    %Slope   CurbLen  Snow Pack       

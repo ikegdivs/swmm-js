@@ -4684,7 +4684,7 @@ var swmmjs = function() {
             }
             inpString += entry.padEnd(17, ' ') + ' ';
             inpString += model[secStr][entry].Format.padEnd(10, ' ') + ' ';
-            inpString += model[secStr][entry].Interval.toString().padEnd(7, ' ') + ' ';
+            inpString += translateToHMS(model[secStr][entry].Interval).toString().padEnd(7, ' ') + ' ';
             inpString += model[secStr][entry].SCF.toString().padEnd(7, ' ') + ' ';
             inpString += model[secStr][entry].Source.padEnd(11, ' ') + ' ';
             inpString += model[secStr][entry].SeriesName.padEnd(11, ' ');
