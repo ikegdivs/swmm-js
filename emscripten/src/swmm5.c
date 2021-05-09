@@ -393,6 +393,7 @@ char* EMSCRIPTEN_KEEPALIVE DLLEXPORT swmm_transcribe(char* f1, char* f2, char* f
         strcat(JX, "],\n");
         // end Tseries 
         // EVAPORATION
+
         strcat(JX, "\n\"Evap\": {\n");
 
         sprintf(&JX[strlen(JX)], "\"dryOnly\":\"%d\",\n", Evap.dryOnly);
@@ -878,7 +879,7 @@ char* EMSCRIPTEN_KEEPALIVE DLLEXPORT swmm_transcribe(char* f1, char* f2, char* f
 
             // rdiiInflow
             // This is a variable length array of TRdiiInflow structs.
-            strcat(JX, "\"rdiiInflow\":[");
+            strcat(JX, "\"rdiiInflow\":");
             if(Node[i].rdiiInflow){
                 strcat(JX, "{");
 
@@ -886,14 +887,16 @@ char* EMSCRIPTEN_KEEPALIVE DLLEXPORT swmm_transcribe(char* f1, char* f2, char* f
                 sprintf(&JX[strlen(JX)], "\t\"area\":\"%f\"\n", Node[i].rdiiInflow->area);
 
                 strcat(JX, "}");
+            } else {
+                strcat(JX, "null");
             }
-            strcat(JX, "],");
+            strcat(JX, ",");
 
             // treatment
-            // This is a variable length array of TTreatment structs.
-            strcat(JX, "\"treatment\":[");
+            // This is a nullable TTreatment struct.
+            strcat(JX, "\"treatment\":");
             if(Node[i].treatment){
-                sprintf(&JX[strlen(JX)], "\t\"treatType\":\"%d\",\n", Node[i].treatment->treatType);
+                sprintf(&JX[strlen(JX)], "\t\"{treatType\":\"%d\",\n", Node[i].treatment->treatType);
 
                 // equation
                 // This is a variable length array of ExprNode structs.
@@ -918,9 +921,10 @@ char* EMSCRIPTEN_KEEPALIVE DLLEXPORT swmm_transcribe(char* f1, char* f2, char* f
                         if(this->next) strcat(JX, ",");
                     }
                 }
-                strcat(JX, "\t],");
+                strcat(JX, "\t},");
+            } else {
+                strcat(JX, "null,");
             }
-            strcat(JX, "]");
 
             sprintf(&JX[strlen(JX)], "\t}\n");
 
@@ -938,39 +942,39 @@ char* EMSCRIPTEN_KEEPALIVE DLLEXPORT swmm_transcribe(char* f1, char* f2, char* f
             // horton (THorton)
             // grnAmpt (TGrnAmpt)
             // curveNum (TCurveNum)
-            sprintf(&JX[strlen(JX)], "\t{\"horton\":{\n");
+            sprintf(&JX[strlen(JX)], "\t{\"horton\":\n");
             if ( Subcatch[i].infilModel == HORTON ||                       
                  Subcatch[i].infilModel == MOD_HORTON ){
                 double p[5];
                 horton_getInput(i, p);
-                sprintf(&JX[strlen(JX)], "\t\t\"f0\":\"%f\",\n", p[0]);
+                sprintf(&JX[strlen(JX)], "\t\t\"{f0\":\"%f\",\n", p[0]);
                 sprintf(&JX[strlen(JX)], "\t\t\"fmin\":\"%f\",\n", p[1]);
                 sprintf(&JX[strlen(JX)], "\t\t\"Fmax\":\"%f\",\n", p[2]);
                 sprintf(&JX[strlen(JX)], "\t\t\"decay\":\"%f\",\n", p[3]);
-                sprintf(&JX[strlen(JX)], "\t\t\"regen\":\"%f\"\n", p[4]);
-            }
-            sprintf(&JX[strlen(JX)], "\t},\n");
+                sprintf(&JX[strlen(JX)], "\t\t\"regen\":\"%f\"},\n", p[4]);
+            } else { sprintf(&JX[strlen(JX)], "null,\n"); }
+            sprintf(&JX[strlen(JX)], "\t\n");
             
-            sprintf(&JX[strlen(JX)], "\t\"grnAmpt\":{\n");
+            sprintf(&JX[strlen(JX)], "\t\"grnAmpt\":\n");
             if ( Subcatch[i].infilModel == GREEN_AMPT ||                       
                  Subcatch[i].infilModel == MOD_GREEN_AMPT ){
                 double p[3];
                 grnampt_getInput(i, p);
-                sprintf(&JX[strlen(JX)], "\t\t\"S\":\"%f\",\n", p[0]);
+                sprintf(&JX[strlen(JX)], "\t\t\"{S\":\"%f\",\n", p[0]);
                 sprintf(&JX[strlen(JX)], "\t\t\"Ks\":\"%f\",\n", p[1]);
-                sprintf(&JX[strlen(JX)], "\t\t\"IMDmax\":\"%f\"\n", p[2]);
-            }
-            sprintf(&JX[strlen(JX)], "\t},\n");
+                sprintf(&JX[strlen(JX)], "\t\t\"IMDmax\":\"%f\"},\n", p[2]);
+            } else { sprintf(&JX[strlen(JX)], "null,\n"); }
+            sprintf(&JX[strlen(JX)], "\t\n");
 
-            sprintf(&JX[strlen(JX)], "\t\"curveNum\":{\n");
+            sprintf(&JX[strlen(JX)], "\t\"curveNum\":\n");
             if ( Subcatch[i].infilModel == CURVE_NUMBER ){
                 double p[5];
                 curveNumber_getInput(i, p);
-                sprintf(&JX[strlen(JX)], "\t\t\"Smax\":\"%f\",\n", p[0]);
+                sprintf(&JX[strlen(JX)], "\t\t\"{Smax\":\"%f\",\n", p[0]);
                 sprintf(&JX[strlen(JX)], "\t\t\"regen\":\"%f\",\n", p[1]);
-                sprintf(&JX[strlen(JX)], "\t\t\"Tmax\":\"%f\"\n", p[2]);
-            }
-            sprintf(&JX[strlen(JX)], "\t}\n");
+                sprintf(&JX[strlen(JX)], "\t\t\"Tmax\":\"%f\"}\n", p[2]);
+            } else { sprintf(&JX[strlen(JX)], "null\n"); }
+            sprintf(&JX[strlen(JX)], "\t\n");
 
             if(i != arrayN-1) strcat(JX, "},");
             else strcat(JX, "}");
@@ -1071,7 +1075,7 @@ char* EMSCRIPTEN_KEEPALIVE DLLEXPORT swmm_transcribe(char* f1, char* f2, char* f
             sprintf(&JX[strlen(JX)], "\t\"tideCurve\":\"%d\",\n", Outfall[i].tideCurve);
             sprintf(&JX[strlen(JX)], "\t\"stageSeries\":\"%d\",\n", Outfall[i].stageSeries);
             sprintf(&JX[strlen(JX)], "\t\"routeTo\":\"%d\",\n", Outfall[i].routeTo);
-            sprintf(&JX[strlen(JX)], "\t\"vRouted\":\"%d\",\n", Outfall[i].vRouted);
+            sprintf(&JX[strlen(JX)], "\t\"vRouted\":\"%f\",\n", Outfall[i].vRouted);
             strcat(JX, "\t\"wRouted\":[");
             for(int j = 0; j < Nobjects[POLLUT]; j++){
                 sprintf(&JX[strlen(JX)], "\"%f\"", Outfall[i].wRouted[j]);
@@ -1159,6 +1163,25 @@ char* EMSCRIPTEN_KEEPALIVE DLLEXPORT swmm_transcribe(char* f1, char* f2, char* f
             sprintf(&JX[strlen(JX)], "\t{\"length\":\"%f\",\n", Conduit[i].length);
             sprintf(&JX[strlen(JX)], "\t\"roughness\":\"%f\",\n", Conduit[i].roughness);
             sprintf(&JX[strlen(JX)], "\t\"barrels\":\"%d\"\n", Conduit[i].barrels);
+            sprintf(&JX[strlen(JX)], "\t}\n");
+
+            if(i != arrayN-1) strcat(JX, ",");
+        }
+        strcat(JX, "],\n");
+
+        // end Conduit 
+        // Pump
+        strcat(JX, "\n\"Pump\": [\n");
+        // Get array size
+        arrayN = Nlinks[PUMP];
+        for (int i=0; i<arrayN; i++){
+            sprintf(&JX[strlen(JX)], "\t{\"type\":\"%d\",\n", Pump[i].type);
+            sprintf(&JX[strlen(JX)], "\t\"pumpCurve\":\"%d\",\n", Pump[i].pumpCurve);
+            sprintf(&JX[strlen(JX)], "\t\"initSetting\":\"%f\",\n", Pump[i].initSetting);
+            sprintf(&JX[strlen(JX)], "\t\"yOn\":\"%f\",\n", Pump[i].yOn);
+            sprintf(&JX[strlen(JX)], "\t\"yOff\":\"%f\",\n", Pump[i].yOff);
+            sprintf(&JX[strlen(JX)], "\t\"xMin\":\"%f\",\n", Pump[i].xMin);
+            sprintf(&JX[strlen(JX)], "\t\"xMax\":\"%f\"\n", Pump[i].xMax);
             sprintf(&JX[strlen(JX)], "\t}\n");
 
             if(i != arrayN-1) strcat(JX, ",");
@@ -1255,12 +1278,62 @@ char* EMSCRIPTEN_KEEPALIVE DLLEXPORT swmm_transcribe(char* f1, char* f2, char* f
 
             if(i != arrayN-1) strcat(JX, ",");
         }
-        strcat(JX, "]\n");
+        strcat(JX, "],\n");
 
+        // end Link 
+        // Transect
+        strcat(JX, "\n\"Transect\": [\n");
+        // Get array size
+        arrayN = Nobjects[TRANSECT];
+        for (int i=0; i<arrayN; i++){
+            sprintf(&JX[strlen(JX)], "\t{\"ID\":\"%s\",\n", Transect[i].ID);
+            sprintf(&JX[strlen(JX)], "\t\"yFull\":\"%f\",\n", Transect[i].yFull);
+            sprintf(&JX[strlen(JX)], "\t\"aFull\":\"%f\",\n", Transect[i].aFull);
+            sprintf(&JX[strlen(JX)], "\t\"rFull\":\"%f\",\n", Transect[i].rFull);
+            sprintf(&JX[strlen(JX)], "\t\"wMax\":\"%f\",\n", Transect[i].wMax);
+            sprintf(&JX[strlen(JX)], "\t\"ywMax\":\"%f\",\n", Transect[i].ywMax);
+            sprintf(&JX[strlen(JX)], "\t\"sMax\":\"%f\",\n", Transect[i].sMax);
+            sprintf(&JX[strlen(JX)], "\t\"aMax\":\"%f\",\n", Transect[i].aMax);
+            sprintf(&JX[strlen(JX)], "\t\"lengthFactor\":\"%f\"\n", Transect[i].lengthFactor);
+            sprintf(&JX[strlen(JX)], "\t}\n");
 
+            if(i != arrayN-1) strcat(JX, ",");
+        }
+        strcat(JX, "],\n");
 
+        // end Transect 
+        // Shape
+        strcat(JX, "\n\"Shape\": [\n");
+        // Get array size
+        arrayN = Nobjects[SHAPE];
+        for (int i=0; i<arrayN; i++){
+            sprintf(&JX[strlen(JX)], "\t{\"curve\":\"%d\",\n", Shape[i].curve);
+            sprintf(&JX[strlen(JX)], "\t\"nTbl\":\"%d\",\n", Shape[i].nTbl);
+            sprintf(&JX[strlen(JX)], "\t\"aFull\":\"%f\",\n", Shape[i].aFull);
+            sprintf(&JX[strlen(JX)], "\t\"rFull\":\"%f\",\n", Shape[i].rFull);
+            sprintf(&JX[strlen(JX)], "\t\"wMax\":\"%f\",\n", Shape[i].wMax);
+            sprintf(&JX[strlen(JX)], "\t\"sMax\":\"%f\",\n", Shape[i].sMax);
+            sprintf(&JX[strlen(JX)], "\t\"aMax\":\"%f\",\n", Shape[i].aMax);
+            strcat(JX, "\t\"areaTbl\":[");
+            for(int j = 0; j < N_SHAPE_TBL; j++){
+                sprintf(&JX[strlen(JX)], "\"%f\"", Shape[i].areaTbl[j]);
+                if(j < N_SHAPE_TBL-1) strcat(JX, ","); else strcat(JX, "],\n");
+            }
+            strcat(JX, "\t\"hradTbl\":[");
+            for(int j = 0; j < N_SHAPE_TBL; j++){
+                sprintf(&JX[strlen(JX)], "\"%f\"", Shape[i].hradTbl[j]);
+                if(j < N_SHAPE_TBL-1) strcat(JX, ","); else strcat(JX, "],\n");
+            }
+            strcat(JX, "\t\"widthTbl\":[");
+            for(int j = 0; j < N_SHAPE_TBL; j++){
+                sprintf(&JX[strlen(JX)], "\"%f\"", Shape[i].widthTbl[j]);
+                if(j < N_SHAPE_TBL-1) strcat(JX, ","); else strcat(JX, "]\n");
+            }
+            sprintf(&JX[strlen(JX)], "\t}\n");
 
-
+            if(i != arrayN-1) strcat(JX, ",");
+        }
+        strcat(JX, "],\n");
 
         /*
         Supporting variables:
@@ -1273,29 +1346,376 @@ char* EMSCRIPTEN_KEEPALIVE DLLEXPORT swmm_transcribe(char* f1, char* f2, char* f
         */
 
         /*
-        TTransect
-        //////////////////////////////
-        char*        ID;                      // section ID
-        double       yFull;                     // depth when full (ft)
-        double       aFull;                     // area when full (ft2)
-        double       rFull;                     // hyd. radius when full (ft)
-        double       wMax;                      // width at widest point (ft)
-        double       ywMax;                     // depth at max width (ft)
-        double       sMax;                      // section factor at max. flow (ft^4/3)
-        double       aMax;                      // area at max. flow (ft2)
-        double       lengthFactor;              // floodplain / channel length
-        */
-
-        /*
+        //  Transect data should be stored as ID:{NC:{}, X1:{nSta:, . . . }, GR:[{Elevation: , Station: }]}
+        //  Because swmm automatically calculates these values without storing them. Maybe add these values
+        //  to the structure of Transect or a table or something?
         //  Format of transect data follows that used for HEC-2 program:
         //    NC  nLeft  nRight  nChannel
         //    X1  name  nSta  xLeftBank  xRightBank  0  0  0  xFactor  yFactor
         //    GR  Elevation  Station  ... 
         */
 
+        // end Shape 
+        // Losses are a part of Link
+        // Pollut
+        strcat(JX, "\n\"Pollut\": [\n");
+        // Get array size
+        arrayN = Nobjects[POLLUT];
+        for (int i=0; i<arrayN; i++){
+            sprintf(&JX[strlen(JX)], "\t{\"ID\":\"%s\",\n", Pollut[i].ID);
+            sprintf(&JX[strlen(JX)], "\t\"units\":\"%d\",\n", Pollut[i].units);
+            sprintf(&JX[strlen(JX)], "\t\"mcf\":\"%f\",\n", Pollut[i].mcf);
+            sprintf(&JX[strlen(JX)], "\t\"dwfConcen\":\"%f\",\n", Pollut[i].dwfConcen);
+            sprintf(&JX[strlen(JX)], "\t\"pptConcen\":\"%f\",\n", Pollut[i].pptConcen);
+            sprintf(&JX[strlen(JX)], "\t\"gwConcen\":\"%f\",\n", Pollut[i].gwConcen);
+            sprintf(&JX[strlen(JX)], "\t\"rdiiConcen\":\"%f\",\n", Pollut[i].rdiiConcen);
+            sprintf(&JX[strlen(JX)], "\t\"initConcen\":\"%f\",\n", Pollut[i].initConcen);
+            sprintf(&JX[strlen(JX)], "\t\"kDecay\":\"%f\",\n", Pollut[i].kDecay);
+            sprintf(&JX[strlen(JX)], "\t\"coPollut\":\"%d\",\n", Pollut[i].coPollut);
+            sprintf(&JX[strlen(JX)], "\t\"coFraction\":\"%f\",\n", Pollut[i].coFraction);
+            sprintf(&JX[strlen(JX)], "\t\"snowOnly\":\"%d\"\n", Pollut[i].snowOnly);
+            sprintf(&JX[strlen(JX)], "\t}\n");
 
+            if(i != arrayN-1) strcat(JX, ",");
+        }
+        strcat(JX, "],\n");
 
+        // end Pollut 
+        // Landuse also shows up in the subcatchments
+        // Landuse
+        strcat(JX, "\n\"Landuse\": [\n");
+        // Get array size
+        arrayN = Nobjects[LANDUSE];
+        for (int i=0; i<arrayN; i++){
+            sprintf(&JX[strlen(JX)], "\t{\"ID\":\"%s\",\n", Landuse[i].ID);
+            sprintf(&JX[strlen(JX)], "\t\"sweepInterval\":\"%f\",\n", Landuse[i].sweepInterval);
+            sprintf(&JX[strlen(JX)], "\t\"sweepRemoval\":\"%f\",\n", Landuse[i].sweepRemoval);
+            sprintf(&JX[strlen(JX)], "\t\"sweepDays0\":\"%f\",\n", Landuse[i].sweepDays0);
+            //buildupFunc TBuildup
+            strcat(JX, "\n\t\"buildupFunc\": [\n");
+            // Get array size
+            int arrayO = Nobjects[POLLUT];
+            for (int j=0; j<arrayO; j++){
+                sprintf(&JX[strlen(JX)], "\t\t{\"normalizer\":\"%d\",\n", Landuse[i].buildupFunc[j].normalizer);
+                sprintf(&JX[strlen(JX)], "\t\t\"funcType\":\"%d\",\n", Landuse[i].buildupFunc[j].funcType);
+                strcat(JX, "\t\t\"coeff\":[");
+                for(int k = 0; k < 3; k++){
+                    sprintf(&JX[strlen(JX)], "\"%f\"", Landuse[i].buildupFunc[j].coeff[k]);
+                    if(k < 3-1) strcat(JX, ","); else strcat(JX, "],\n");
+                }
+                sprintf(&JX[strlen(JX)], "\t\t\"maxDays\":\"%f\"\n", Landuse[i].buildupFunc[j].maxDays);
+                sprintf(&JX[strlen(JX)], "\t\t}\n");
+
+            if(j != arrayO-1) strcat(JX, ",");
+            }
+            strcat(JX, "\t],\n");
+            //washoffFunc TWashoff
+            strcat(JX, "\n\t\"washoffFunc\": [\n");
+            // Get array size
+            arrayO = Nobjects[POLLUT];
+            for (int j=0; j<arrayO; j++){
+                sprintf(&JX[strlen(JX)], "\t\t{\"funcType\":\"%d\",\n", Landuse[i].washoffFunc[j].funcType);
+                sprintf(&JX[strlen(JX)], "\t\t\"coeff\":\"%f\",\n", Landuse[i].washoffFunc[j].coeff);
+                sprintf(&JX[strlen(JX)], "\t\t\"expon\":\"%f\",\n", Landuse[i].washoffFunc[j].expon);
+                sprintf(&JX[strlen(JX)], "\t\t\"sweepEffic\":\"%f\",\n", Landuse[i].washoffFunc[j].sweepEffic);
+                sprintf(&JX[strlen(JX)], "\t\t\"bmpEffic\":\"%f\"\n", Landuse[i].washoffFunc[j].bmpEffic);
+                sprintf(&JX[strlen(JX)], "\t\t}\n");
+
+                if(j != arrayO-1) strcat(JX, ",");
+            }
+            strcat(JX, "\t]\n");
+            sprintf(&JX[strlen(JX)], "\t}\n");
+
+            if(i != arrayN-1) strcat(JX, ",");
+        }
+        strcat(JX, "],\n");
+
+        // end Landuse 
+        // Buildup and Washoff are part of Landuse
+        // Coverage is taken care of by the following part of subcatch_readLanduseParams()
+        // Subcatch[j].landFactor[m].fraction = f/100.0;
+        // Inflow and DWF, and rdii are part of Node.
+        // UnitHyd
+
+        strcat(JX, "\n\"UnitHyd\": [\n");
+        // Get array size
+        arrayN = Nobjects[UNITHYD];
+        for (int i=0; i<arrayN; i++){
+            sprintf(&JX[strlen(JX)], "\t{\"ID\":\"%s\",\n", UnitHyd[i].ID);
+            sprintf(&JX[strlen(JX)], "\t\"rainGage\":\"%d\",\n", UnitHyd[i].rainGage);
+            strcat(JX, "\t\"iaMax\":[");
+            for(int j = 0; j < 12; j++){
+                strcat(JX, "[");
+                for(int k = 0; k < 3; k++){
+                    sprintf(&JX[strlen(JX)], "\"%f\"", UnitHyd[i].iaMax[j][k]);
+                    if(k < 3-1) strcat(JX, ","); else strcat(JX, "]\n");
+                }
+                if(j < 12-1) strcat(JX, ","); else strcat(JX, "],\n");
+            }
+            strcat(JX, "\t\"iaRecov\":[");
+            for(int j = 0; j < 12; j++){
+                strcat(JX, "[");
+                for(int k = 0; k < 3; k++){
+                    sprintf(&JX[strlen(JX)], "\"%f\"", UnitHyd[i].iaRecov[j][k]);
+                    if(k < 3-1) strcat(JX, ","); else strcat(JX, "]\n");
+                }
+                if(j < 12-1) strcat(JX, ","); else strcat(JX, "],\n");
+            }
+            strcat(JX, "\t\"iaInit\":[");
+            for(int j = 0; j < 12; j++){
+                strcat(JX, "[");
+                for(int k = 0; k < 3; k++){
+                    sprintf(&JX[strlen(JX)], "\"%f\"", UnitHyd[i].iaInit[j][k]);
+                    if(k < 3-1) strcat(JX, ","); else strcat(JX, "]\n");
+                }
+                if(j < 12-1) strcat(JX, ","); else strcat(JX, "],\n");
+            }
+            strcat(JX, "\t\"r\":[");
+            for(int j = 0; j < 12; j++){
+                strcat(JX, "[");
+                for(int k = 0; k < 3; k++){
+                    sprintf(&JX[strlen(JX)], "\"%f\"", UnitHyd[i].r[j][k]);
+                    if(k < 3-1) strcat(JX, ","); else strcat(JX, "]\n");
+                }
+                if(j < 12-1) strcat(JX, ","); else strcat(JX, "],\n");
+            }
+            strcat(JX, "\t\"tBase\":[");
+            for(int j = 0; j < 12; j++){
+                strcat(JX, "[");
+                for(int k = 0; k < 3; k++){
+                    sprintf(&JX[strlen(JX)], "\"%ld\"", UnitHyd[i].tBase[j][k]);
+                    if(k < 3-1) strcat(JX, ","); else strcat(JX, "]\n");
+                }
+                if(j < 12-1) strcat(JX, ","); else strcat(JX, "],\n");
+            }
+            strcat(JX, "\t\"tPeak\":[");
+            for(int j = 0; j < 12; j++){
+                strcat(JX, "[");
+                for(int k = 0; k < 3; k++){
+                    sprintf(&JX[strlen(JX)], "\"%ld\"", UnitHyd[i].tPeak[j][k]);
+                    if(k < 3-1) strcat(JX, ","); else strcat(JX, "]\n");
+                }
+                if(j < 12-1) strcat(JX, ","); else strcat(JX, "],\n");
+            }
+            
+            sprintf(&JX[strlen(JX)], "\t}\n");
+
+            if(i != arrayN-1) strcat(JX, ",");
+        }
+        strcat(JX, "],\n");
+
+        // end UnitHyd 
+        // Loadings is taken care of in Subcatch
+        // Treatment is taken care of in Nodes
+        // Curve
+        strcat(JX, "\n\"Curve\": [\n");
+        // Get array size
+        arrayN = Nobjects[CURVE];
+        for (int i=0; i<arrayN; i++){
+            sprintf(&JX[strlen(JX)], "\t{\"ID\":\"%s\",\n", Curve[i].ID);
+            sprintf(&JX[strlen(JX)], "\t\"curveType\":\"%d\",\n", Curve[i].curveType);
+            sprintf(&JX[strlen(JX)], "\t\"refersTo\":\"%d\",\n", Curve[i].refersTo);
+            sprintf(&JX[strlen(JX)], "\t\"dxMin\":\"%f\",\n", Curve[i].dxMin);
+            sprintf(&JX[strlen(JX)], "\t\"lastDate\":\"%f\",\n", Curve[i].lastDate);
+            sprintf(&JX[strlen(JX)], "\t\"x1\":\"%f\",\n", Curve[i].x1);
+            sprintf(&JX[strlen(JX)], "\t\"x2\":\"%f\",\n", Curve[i].x2);
+            sprintf(&JX[strlen(JX)], "\t\"y1\":\"%f\",\n", Curve[i].y1);
+            sprintf(&JX[strlen(JX)], "\t\"y2\":\"%f\",\n", Curve[i].y2);
+
+            // File
+            strcat(JX, "\t\"file\":{\n");
+            sprintf(&JX[strlen(JX)], "\t\t\"name\":\"%s\",\n", Curve[i].file.name);
+            sprintf(&JX[strlen(JX)], "\n\t\t\"mode\":\"%d\"},\n", Curve[i].file.mode);
+
+            // Table
+            strcat(JX, "\t\"Table\":[\n");
+            TTableEntry* tSpot = Curve[i].firstEntry;
+            while(tSpot){
+                sprintf(&JX[strlen(JX)], "\t\t{\"x\":\"%f\",\n", tSpot->x);
+                sprintf(&JX[strlen(JX)], "\t\t\"y\":\"%f\"}\n", tSpot->y);
+
+                tSpot = tSpot->next;
+                if(tSpot) strcat(JX, ",");
+                else strcat(JX, "]");
+            }
+            strcat(JX, "\n}");
+
+            if(i != arrayN-1) strcat(JX, ",");
+            strcat(JX, "\n");
+        }
+        strcat(JX, "],\n");
+
+        // end Curve 
+        // Timeseries is taken care of earlier (for testing)
+        // Control
+        /*strcat(JX, ",\n\"Control\": [\n");
+        // Get array size
+        arrayN = Nobjects[CONTROL];
+        for (int i=0; i<arrayN; i++){
+            sprintf(&JX[strlen(JX)], "\t{\"ID\":\"%s\",\n", Rules[i].ID);
+            sprintf(&JX[strlen(JX)], "\t\"priority\":\"%f\",\n", Rules[i].priority);
+
+            // Premises
+            strcat(JX, "\t\"Premises\":[\n");
+            TPremise* tSpot = Rules[i].firstPremise;
+            while(tSpot){
+                sprintf(&JX[strlen(JX)], "\t\t{\"type\":\"%d\",\n", tSpot->type);
+                sprintf(&JX[strlen(JX)], "\t\t\t\"lhsVar\":{\n");
+                sprintf(&JX[strlen(JX)], "\t\t\t\t\"node\":\"%d\",\n", tSpot->lhsVar.node);
+                sprintf(&JX[strlen(JX)], "\t\t\t\t\"link\":\"%d\",\n", tSpot->lhsVar.link);
+                sprintf(&JX[strlen(JX)], "\t\t\t\t\"attribute\":\"%d\"},\n", tSpot->lhsVar.attribute);
+                sprintf(&JX[strlen(JX)], "\t\t\t\"rhsVar\":{\n");
+                sprintf(&JX[strlen(JX)], "\t\t\t\t\"node\":\"%d\",\n", tSpot->rhsVar.node);
+                sprintf(&JX[strlen(JX)], "\t\t\t\t\"link\":\"%d\",\n", tSpot->rhsVar.link);
+                sprintf(&JX[strlen(JX)], "\t\t\t\t\"attribute\":\"%d\"},\n", tSpot->rhsVar.attribute);
+                sprintf(&JX[strlen(JX)], "\t\t\"relation\":\"%d\",\n", tSpot->relation);
+                sprintf(&JX[strlen(JX)], "\t\t\"value\":\"%f\"}\n", tSpot->value);
+
+                tSpot = tSpot->next;
+                if(tSpot) strcat(JX, ",\n");
+                else strcat(JX, "],\n");
+            }
+
+            // thenActions
+            strcat(JX, "\t\"thenActions\":[\n");
+            TAction* tSpat = Rules[i].thenActions;
+            while(tSpat){
+                sprintf(&JX[strlen(JX)], "\t\t{\"rule\":\"%d\",\n", tSpat->rule);
+                sprintf(&JX[strlen(JX)], "\t\t\"link\":\"%d\",\n", tSpat->link);
+                sprintf(&JX[strlen(JX)], "\t\t\"attribute\":\"%d\",\n", tSpat->attribute);
+                sprintf(&JX[strlen(JX)], "\t\t\"curve\":\"%d\",\n", tSpat->curve);
+                sprintf(&JX[strlen(JX)], "\t\t\"tseries\":\"%d\",\n", tSpat->tseries);
+                sprintf(&JX[strlen(JX)], "\t\t\"value\":\"%f\",\n", tSpat->value);
+                sprintf(&JX[strlen(JX)], "\t\t\"kp\":\"%f\",\n", tSpat->kp);
+                sprintf(&JX[strlen(JX)], "\t\t\"ki\":\"%f\",\n", tSpat->ki);
+                sprintf(&JX[strlen(JX)], "\t\t\"kd\":\"%f\",\n", tSpat->kd);
+                sprintf(&JX[strlen(JX)], "\t\t\"e1\":\"%f\",\n", tSpat->e1);
+                sprintf(&JX[strlen(JX)], "\t\t\"e2\":\"%f\"}", tSpat->e2);
+
+                tSpat = tSpat->next;
+                if(tSpat) strcat(JX, ",\n");
+                else strcat(JX, "],\n");
+            }
+            
+            // elseActions
+            strcat(JX, "\t\"elseActions\":[\n");
+            TAction* tSput = Rules[i].elseActions;
+            while(tSput){
+                sprintf(&JX[strlen(JX)], "\t\t{\"rule\":\"%d\",\n", tSput->rule);
+                sprintf(&JX[strlen(JX)], "\t\t\"link\":\"%d\",\n", tSput->link);
+                sprintf(&JX[strlen(JX)], "\t\t\"attribute\":\"%d\",\n", tSput->attribute);
+                sprintf(&JX[strlen(JX)], "\t\t\"curve\":\"%d\",\n", tSput->curve);
+                sprintf(&JX[strlen(JX)], "\t\t\"tseries\":\"%d\",\n", tSput->tseries);
+                sprintf(&JX[strlen(JX)], "\t\t\"value\":\"%f\",\n", tSput->value);
+                sprintf(&JX[strlen(JX)], "\t\t\"kp\":\"%f\",\n", tSput->kp);
+                sprintf(&JX[strlen(JX)], "\t\t\"ki\":\"%f\",\n", tSput->ki);
+                sprintf(&JX[strlen(JX)], "\t\t\"kd\":\"%f\",\n", tSput->kd);
+                sprintf(&JX[strlen(JX)], "\t\t\"e1\":\"%f\",\n", tSput->e1);
+                sprintf(&JX[strlen(JX)], "\t\t\"e2\":\"%f\"}", tSput->e2);
+
+                tSput = tSput->next;
+                if(tSput) strcat(JX, ",\n");
+                else strcat(JX, "]\n");
+            }
+
+            strcat(JX, "}");
+
+            if(i != arrayN-1) strcat(JX, ",");
+            strcat(JX, "\n");
+        }
+        strcat(JX, "],\n");*/
         
+        // end Control 
+        // Report
+        strcat(JX, "\n\"RptFlags\": {\n");
+        sprintf(&JX[strlen(JX)], "\t\"report\":\"%d\",\n", RptFlags.report);
+        sprintf(&JX[strlen(JX)], "\t\"input\":\"%d\",\n", RptFlags.input);
+        sprintf(&JX[strlen(JX)], "\t\"subcatchments\":\"%d\",\n", RptFlags.subcatchments);
+        sprintf(&JX[strlen(JX)], "\t\"nodes\":\"%d\",\n", RptFlags.nodes);
+        sprintf(&JX[strlen(JX)], "\t\"links\":\"%d\",\n", RptFlags.links);
+        sprintf(&JX[strlen(JX)], "\t\"continuity\":\"%d\",\n", RptFlags.continuity);
+        sprintf(&JX[strlen(JX)], "\t\"flowStats\":\"%d\",\n", RptFlags.flowStats);
+        sprintf(&JX[strlen(JX)], "\t\"nodeStats\":\"%d\",\n", RptFlags.nodeStats);
+        sprintf(&JX[strlen(JX)], "\t\"controls\":\"%d\",\n", RptFlags.controls);
+        sprintf(&JX[strlen(JX)], "\t\"averages\":\"%d\",\n", RptFlags.averages);
+        sprintf(&JX[strlen(JX)], "\t\"linesPerPage\":\"%d\"\n", RptFlags.linesPerPage);
+        sprintf(&JX[strlen(JX)], "}\n");
+
+        // end Report
+        // Skipping files
+        // LidProcs
+        /*strcat(JX, "\n\"LidProcs\": [\n");
+        // Get array size
+        arrayN = LidCount;
+        for (int i=0; i<arrayN; i++){
+            sprintf(&JX[strlen(JX)], "\t{\"ID\":\"%s\",\n", LidProcs[i].ID);
+            sprintf(&JX[strlen(JX)], "\t\"lidType\":\"%d\",\n", LidProcs[i].lidType);
+            sprintf(&JX[strlen(JX)], "\t\"surface\": {\n");
+            sprintf(&JX[strlen(JX)], "\t\t\"thickness\":\"%f\",\n", LidProcs[i].surface.thickness);
+            sprintf(&JX[strlen(JX)], "\t\t\"voidFrac\":\"%f\",\n", LidProcs[i].surface.voidFrac);
+            sprintf(&JX[strlen(JX)], "\t\t\"roughness\":\"%f\",\n", LidProcs[i].surface.roughness);
+            sprintf(&JX[strlen(JX)], "\t\t\"surfSlope\":\"%f\",\n", LidProcs[i].surface.surfSlope);
+            sprintf(&JX[strlen(JX)], "\t\t\"sideSlope\":\"%f\",\n", LidProcs[i].surface.sideSlope);
+            sprintf(&JX[strlen(JX)], "\t\t\"alpha\":\"%f\",\n", LidProcs[i].surface.alpha);
+            sprintf(&JX[strlen(JX)], "\t\t\"canOverflow\":\"%d\"\n", LidProcs[i].surface.canOverflow);
+            sprintf(&JX[strlen(JX)], "\t},\n");
+            sprintf(&JX[strlen(JX)], "\t\"pavement\": {\n");
+            sprintf(&JX[strlen(JX)], "\t\t\"thickness\":\"%f\",\n", LidProcs[i].pavement.thickness);
+            sprintf(&JX[strlen(JX)], "\t\t\"voidFrac\":\"%f\",\n", LidProcs[i].pavement.voidFrac);
+            sprintf(&JX[strlen(JX)], "\t\t\"impervFrac\":\"%f\",\n", LidProcs[i].pavement.impervFrac);
+            sprintf(&JX[strlen(JX)], "\t\t\"kSat\":\"%f\",\n", LidProcs[i].pavement.kSat);
+            sprintf(&JX[strlen(JX)], "\t\t\"clogFactor\":\"%f\",\n", LidProcs[i].pavement.clogFactor);
+            sprintf(&JX[strlen(JX)], "\t\t\"regenDays\":\"%f\",\n", LidProcs[i].pavement.regenDays);
+            sprintf(&JX[strlen(JX)], "\t\t\"regenDegree\":\"%f\",\n", LidProcs[i].pavement.regenDegree);
+            sprintf(&JX[strlen(JX)], "\t},\n");
+            sprintf(&JX[strlen(JX)], "\t\"soil\": {\n");
+            sprintf(&JX[strlen(JX)], "\t\t\"thickness\":\"%f\",\n", LidProcs[i].soil.thickness);
+            sprintf(&JX[strlen(JX)], "\t\t\"porosity\":\"%f\",\n", LidProcs[i].soil.porosity);
+            sprintf(&JX[strlen(JX)], "\t\t\"fieldCap\":\"%f\",\n", LidProcs[i].soil.fieldCap);
+            sprintf(&JX[strlen(JX)], "\t\t\"wiltPoint\":\"%f\",\n", LidProcs[i].soil.wiltPoint);
+            sprintf(&JX[strlen(JX)], "\t\t\"suction\":\"%f\",\n", LidProcs[i].soil.suction);
+            sprintf(&JX[strlen(JX)], "\t\t\"kSat\":\"%f\",\n", LidProcs[i].soil.kSat);
+            sprintf(&JX[strlen(JX)], "\t\t\"kSlope\":\"%f\",\n", LidProcs[i].soil.kSlope);
+            sprintf(&JX[strlen(JX)], "\t},\n");
+            sprintf(&JX[strlen(JX)], "\t\"storage\": {\n");
+            sprintf(&JX[strlen(JX)], "\t\t\"thickness\":\"%f\",\n", LidProcs[i].storage.thickness);
+            sprintf(&JX[strlen(JX)], "\t\t\"voidFrac\":\"%f\",\n", LidProcs[i].storage.voidFrac);
+            sprintf(&JX[strlen(JX)], "\t\t\"kSat\":\"%f\",\n", LidProcs[i].storage.kSat);
+            sprintf(&JX[strlen(JX)], "\t\t\"clogFactor\":\"%f\",\n", LidProcs[i].storage.clogFactor);
+            sprintf(&JX[strlen(JX)], "\t},\n");
+            sprintf(&JX[strlen(JX)], "\t\"drain\": {\n");
+            sprintf(&JX[strlen(JX)], "\t\t\"coeff\":\"%f\",\n", LidProcs[i].drain.coeff);
+            sprintf(&JX[strlen(JX)], "\t\t\"expon\":\"%f\",\n", LidProcs[i].drain.expon);
+            sprintf(&JX[strlen(JX)], "\t\t\"offset\":\"%f\",\n", LidProcs[i].drain.offset);
+            sprintf(&JX[strlen(JX)], "\t\t\"delay\":\"%f\",\n", LidProcs[i].drain.delay);
+            sprintf(&JX[strlen(JX)], "\t\t\"hOpen\":\"%f\",\n", LidProcs[i].drain.hOpen);
+            sprintf(&JX[strlen(JX)], "\t\t\"hClose\":\"%f\",\n", LidProcs[i].drain.hClose);
+            sprintf(&JX[strlen(JX)], "\t\t\"qCurve\":\"%d\",\n", LidProcs[i].drain.qCurve);
+            sprintf(&JX[strlen(JX)], "\t},\n");
+            sprintf(&JX[strlen(JX)], "\t\"drainMat\": {\n");
+            sprintf(&JX[strlen(JX)], "\t\t\"thickness\":\"%f\",\n", LidProcs[i].drainMat.thickness);
+            sprintf(&JX[strlen(JX)], "\t\t\"voidFrac\":\"%f\",\n", LidProcs[i].drainMat.voidFrac);
+            sprintf(&JX[strlen(JX)], "\t\t\"roughness\":\"%f\",\n", LidProcs[i].drainMat.roughness);
+            sprintf(&JX[strlen(JX)], "\t\t\"alpha\":\"%f\",\n", LidProcs[i].drainMat.alpha);
+            sprintf(&JX[strlen(JX)], "\t},\n");
+            sprintf(&JX[strlen(JX)], "\t\"drainRmvl\": ");
+            strcat(JX, "[");
+            for(int j = 0; j < Nobjects[POLLUT]; j++){
+                sprintf(&JX[strlen(JX)], "\"%f\"", LidProcs[i].drainRmvl[j]);
+                if(j < Nobjects[POLLUT]-1) strcat(JX, ","); else strcat(JX, "]\n");
+            }
+            
+            strcat(JX, "}");
+
+            if(i != arrayN-1) strcat(JX, ",");
+        }
+        strcat(JX, "]\n");*/
+
+
+
+
+
+
 
         strcat(JX, "}\n");
         swmm_close();
