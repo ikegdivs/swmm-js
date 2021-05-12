@@ -3915,23 +3915,7 @@ d3.inp = function() {
         // Open the files and translate to a model.
         let JSONpointer = inpToJSON();
 
-
-        /*const view = new Uint8Array(WebAssembly.Memory.buffer, thisNumba, 9999)
-        let string = '';
-        for(let i = 0; i < 9999; i++){
-            string += String.fromCharCode(view[i]);
-        }
-        console.log( string
-            //(new TextDecoder()).decode(new Uint8Array(WebAssembly.Memory.buffer, thisNumba, 1000))
-            
-        );*/
-        //var fill_array = Module.cwrap('fill_array', 'number', []);
-        //var n = 16;
-        //var ptr_from_wasm = fill_array(n);
-        //var js_array = Module.HEAPU8.subarray(ptr_from_wasm, ptr_from_wasm + n);
-        //alert(js_array);
-
-        let n = 99999;
+        let n = 999999;
         let js_array = Module.HEAPU8.subarray(JSONpointer, JSONpointer + n)
         let JX_string = new TextDecoder().decode(js_array)
         JX_string = JX_string.slice(0, JX_string.lastIndexOf('}') + 1);
