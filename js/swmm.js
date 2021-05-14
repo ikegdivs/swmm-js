@@ -2,7 +2,7 @@
 
 function UCF(integerCode){
     if(integerCode < FLOW){
-        return Ucf[u][UnitSystem];
+        return Ucf[integerCode][UnitSystem];
     } else {
         return Qcf[FlowUnits];
     }
@@ -92,8 +92,8 @@ function translateToHMS(seconds){
     return duration;
 }
 // Translate a duration from the model format (seconds) to precise clock format (H:MM:SS)
-function translateTohMS(seconds){
-    let duration = moment.utc(seconds*1000).format('H:mm:ss');
+function translateTohM(seconds){
+    let duration = moment.utc(seconds*1000).format('H:mm');
     return duration;
 }
 
@@ -3845,7 +3845,22 @@ d3.inp = function() {
 ;;Node             Parameter        Time Series      /Mass    Factor    
             */
             TIMESERIES: function(section, key, line) {
-                return;
+                line = key + line;
+                line = line.trim();
+                let m = line.split(/\b\s+/);
+                if (m && m.length === 4){
+                    section[Object.keys(section).length] = {
+                                    TimeSeries: key.trim(),
+                                    Date: m[1].trim(), 
+                                    Time: m[2].trim(),
+                                    Value: parseFloat(m[3])};
+                } else {
+                    section[Object.keys(section).length] = {
+                                    TimeSeries: key.trim(),
+                                    Date: '', 
+                                    Time: m[1].trim(),
+                                    Value: parseFloat(m[2])};
+                }
             },  
             VERTICES: function(section, key, line) {
                 line = key + line;
@@ -3936,13 +3951,15 @@ d3.inp = function() {
         ///////////////////////////////////////////////////////
         // raw swmm-js translations
         ///////////////////////////////////////////////////////
+        if ( JX.OPTIONS.FLOW_UNITS <= MGD )  UnitSystem = US;
+        else                                UnitSystem = SI;
 
         // Get base data (time patterns, time series, etc) first
         JX.Pattern.forEach(function(el){
             model['TIMEPATTERNS'].push({ID: el.ID, count: el.count, factor: el.factor, type: el.type})
         })
 
-        JX.Tseries.forEach(function(el){
+        /*JX.Tseries.forEach(function(el){
             el.Table.forEach(function(en){
                 model['TIMESERIES'].push({
                     TimeSeries: el.ID, 
@@ -3951,9 +3968,11 @@ d3.inp = function() {
                     Value: en.y, 
                     curveType: el.curveType, 
                     file: {mode: el.file.mode, file: el.file.file}, 
-                    refersTo: el.refersTo})
+                    refersTo: el.refersTo,
+                    dxMin: el.dxMin,
+                    lastDate: el.lastDate})
             })
-        })
+        })*/
 
         // For each element in the evaporationtable object, create a new model['evap']['key'] = {Value: m[1]}
         model['EVAPORATION']['dryOnly']         = {Value: JX.Evap.dryOnly}        
@@ -4014,9 +4033,9 @@ d3.inp = function() {
                 Description: '', 
                 RainGage: JX.Gage[el.gage].ID,
                 Outlet: JX.Node[el.outNode].ID, 
-                Area: el.area,
+                Area: parseFloat(el.area) * UCF(LANDAREA),
                 PctImperv: el.fracImperv * 100,
-                Width: el.width,
+                Width: parseFloat(el.width) * UCF(LENGTH),
                 PctSlope: el.slope,
                 CurbLen: el.curbLength,
                 SnowPack: ''
@@ -4241,7 +4260,7 @@ d3.swmmresult = function() {
             var subcatch = {}, node = {}, link = {}, pollut = {};
             for (var i =0; i< this.SWMM_Nsubcatch; i++) {
                 var no = er.readInt(c, nr, RECORDSIZE);
-                subcatch[i] = [ Module.intArrayToString(Array.prototype.slice.call(c,nr, nr + no + RECORDSIZE)).replace(/[^a-z0-9_\.]/gi, '') ];
+                subcatch[i] = [ intArrayToString(Array.prototype.slice.call(c,nr, nr + no + RECORDSIZE)).replace(/[^a-z0-9_\.]/gi, '') ];
                 nr = nr + no + RECORDSIZE;
             }
             variables['SUBCATCH'] = {};
@@ -4249,7 +4268,7 @@ d3.swmmresult = function() {
             
             for (var i =0; i< this.SWMM_Nnodes; i++) {
                 var no = er.readInt(c, nr, RECORDSIZE);
-                node[i] = [ Module.intArrayToString(Array.prototype.slice.call(c,nr, nr + no + RECORDSIZE)).replace(/[^a-z0-9_\.]/gi, '') ];
+                node[i] = [ intArrayToString(Array.prototype.slice.call(c,nr, nr + no + RECORDSIZE)).replace(/[^a-z0-9_\.]/gi, '') ];
                 nr = nr + no + RECORDSIZE;
             }
             variables['NODE'] = {};
@@ -4257,7 +4276,7 @@ d3.swmmresult = function() {
             
             for (var i =0; i< this.SWMM_Nlinks; i++) {
                 var no = er.readInt(c, nr, RECORDSIZE);
-                link[i] = [ Module.intArrayToString(Array.prototype.slice.call(c,nr, nr + no + RECORDSIZE)).replace(/[^a-z0-9_\.]/gi, '') ];
+                link[i] = [ intArrayToString(Array.prototype.slice.call(c,nr, nr + no + RECORDSIZE)).replace(/[^a-z0-9_\.]/gi, '') ];
                 nr = nr + no + RECORDSIZE;
             }
             variables['LINK'] = {};
@@ -4265,7 +4284,7 @@ d3.swmmresult = function() {
             
             for (var i =0; i< this.SWMM_Npolluts; i++) {
                 var no = er.readInt(c, nr, RECORDSIZE);
-                pollut[i] = Module.intArrayToString(Array.prototype.slice.call(c,nr, nr + no + RECORDSIZE)).replace(/[^a-z0-9_\.]/gi, '');
+                pollut[i] = intArrayToString(Array.prototype.slice.call(c,nr, nr + no + RECORDSIZE)).replace(/[^a-z0-9_\.]/gi, '');
                 nr = nr + no + RECORDSIZE;
             }
             variables['POLLUT'] = {};
@@ -4455,12 +4474,12 @@ d3.swmmresult = function() {
     
     swmmresult.readInt = function(content, offset, recordsize) {
         Module.HEAP8.set(new Int8Array(content.slice(offset, offset + recordsize)), swmmresult.i4);
-        return Module.getValue(swmmresult.i4, 'i32');
+        return getValue(swmmresult.i4, 'i32');
     };
 
     swmmresult.readFloat = function(content, offset, recordsize) {
         Module.HEAP8.set(new Int8Array(content.slice(offset, offset + recordsize)), swmmresult.i4);
-        return Module.getValue(swmmresult.i4, 'float');
+        return getValue(swmmresult.i4, 'float');
     };
 
     return swmmresult;
@@ -4646,7 +4665,7 @@ var swmmjs = function() {
             }
             inpString += entry.padEnd(17, ' ') + ' ';
             inpString += model[secStr][entry].Format.padEnd(10, ' ') + ' ';
-            inpString += translateToHMS(model[secStr][entry].Interval).toString().padEnd(7, ' ') + ' ';
+            inpString += translateTohM(model[secStr][entry].Interval).toString().padEnd(7, ' ') + ' ';
             inpString += model[secStr][entry].SCF.toString().padEnd(7, ' ') + ' ';
             inpString += model[secStr][entry].Source.padEnd(11, ' ') + ' ';
             inpString += model[secStr][entry].SeriesName.padEnd(11, ' ');
@@ -4680,7 +4699,9 @@ var swmmjs = function() {
             inpString += model[secStr][entry].SPerv.toString().padEnd(11, ' ');
             inpString += model[secStr][entry].PctZero.toString().padEnd(11, ' ');
             inpString += model[secStr][entry].RouteTo.padEnd(11, ' ');
-            inpString += model[secStr][entry].PctRouted.toString().padEnd(11, ' ');
+            if (model[secStr][entry].PctRouted){
+                inpString += model[secStr][entry].PctRouted.toString().padEnd(11, ' ');
+            }
             inpString += '\n';
         }
         inpString += '\n';
@@ -5785,7 +5806,7 @@ INFLOWS: function(section, key, line) {
         Module.postRun = [function () {
                 try {
                     swmmjs.renderAnalysis();
-                    var rpt = Module.intArrayToString(FS.findObject('/report.txt').contents);
+                    var rpt = intArrayToString(FS.findObject('/report.txt').contents);
                     document.getElementById('rptFile').innerHTML = rpt;
                     Module['calledRun'] = false;
                     console.log('Run complete.')

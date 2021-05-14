@@ -282,7 +282,7 @@ char* EMSCRIPTEN_KEEPALIVE DLLEXPORT swmm_transcribe(char* f1, char* f2, char* f
         strcat(JX, "],\n\"OPTIONS\": {\n");
 
         // OPTIONS
-        sprintf(&JX[strlen(JX)], "\"FLOW_UNITS\":\"%s\",\n", FlowUnitWords[FlowUnits]);
+        sprintf(&JX[strlen(JX)], "\"FLOW_UNITS\":%d,\n", FlowUnits);
         sprintf(&JX[strlen(JX)], "\"INFILTRATION\":\"%s\",\n", InfilModelWords[InfilModel]);
         sprintf(&JX[strlen(JX)], "\"FLOW_ROUTING\":\"%s\",\n", RouteModelWords[RouteModel]);
         sprintf(&JX[strlen(JX)], "\"START_DATE\":\"%f\",\n", StartDate);
