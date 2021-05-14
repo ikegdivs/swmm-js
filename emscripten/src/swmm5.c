@@ -844,9 +844,9 @@ char* EMSCRIPTEN_KEEPALIVE DLLEXPORT swmm_transcribe(char* f1, char* f2, char* f
                     sprintf(&JX[strlen(JX)], "\t\"cFactor\":\"%f\",\n", this->cFactor);
                     sprintf(&JX[strlen(JX)], "\t\"baseline\":\"%f\",\n", this->baseline);
                     sprintf(&JX[strlen(JX)], "\t\"sFactor\":\"%f\",\n", this->sFactor);
-                    sprintf(&JX[strlen(JX)], "\t\"extIfaceInflow\":\"%f\",\n", this->extIfaceInflow);
+                    sprintf(&JX[strlen(JX)], "\t\"extIfaceInflow\":\"%f\"\n", this->extIfaceInflow);
 
-                    strcat(JX, "}");
+                    strcat(JX, "}\n");
                     if(this->next) strcat(JX, ",");
                 }
             }
@@ -871,7 +871,7 @@ char* EMSCRIPTEN_KEEPALIVE DLLEXPORT swmm_transcribe(char* f1, char* f2, char* f
                         }
                     }
 
-                    strcat(JX, "}");
+                    strcat(JX, "}\n");
                     if(this->next) strcat(JX, ",");
                 }
             }
@@ -890,13 +890,13 @@ char* EMSCRIPTEN_KEEPALIVE DLLEXPORT swmm_transcribe(char* f1, char* f2, char* f
             } else {
                 strcat(JX, "null");
             }
-            strcat(JX, ",");
+            strcat(JX, ",\n");
 
             // treatment
             // This is a nullable TTreatment struct.
             strcat(JX, "\"treatment\":");
             if(Node[i].treatment){
-                sprintf(&JX[strlen(JX)], "\t\"{treatType\":\"%d\",\n", Node[i].treatment->treatType);
+                sprintf(&JX[strlen(JX)], "\t{\"treatType\":\"%d\",\n", Node[i].treatment->treatType);
 
                 // equation
                 // This is a variable length array of ExprNode structs.
@@ -921,9 +921,9 @@ char* EMSCRIPTEN_KEEPALIVE DLLEXPORT swmm_transcribe(char* f1, char* f2, char* f
                         if(this->next) strcat(JX, ",");
                     }
                 }
-                strcat(JX, "\t},");
+                strcat(JX, "\t}");
             } else {
-                strcat(JX, "null,");
+                strcat(JX, "null");
             }
 
             sprintf(&JX[strlen(JX)], "\t}\n");
@@ -947,7 +947,7 @@ char* EMSCRIPTEN_KEEPALIVE DLLEXPORT swmm_transcribe(char* f1, char* f2, char* f
                  Subcatch[i].infilModel == MOD_HORTON ){
                 double p[5];
                 horton_getInput(i, p);
-                sprintf(&JX[strlen(JX)], "\t\t\"{f0\":\"%f\",\n", p[0]);
+                sprintf(&JX[strlen(JX)], "\t\t{\"f0\":\"%f\",\n", p[0]);
                 sprintf(&JX[strlen(JX)], "\t\t\"fmin\":\"%f\",\n", p[1]);
                 sprintf(&JX[strlen(JX)], "\t\t\"Fmax\":\"%f\",\n", p[2]);
                 sprintf(&JX[strlen(JX)], "\t\t\"decay\":\"%f\",\n", p[3]);
@@ -960,7 +960,7 @@ char* EMSCRIPTEN_KEEPALIVE DLLEXPORT swmm_transcribe(char* f1, char* f2, char* f
                  Subcatch[i].infilModel == MOD_GREEN_AMPT ){
                 double p[3];
                 grnampt_getInput(i, p);
-                sprintf(&JX[strlen(JX)], "\t\t\"{S\":\"%f\",\n", p[0]);
+                sprintf(&JX[strlen(JX)], "\t\t{\"S\":\"%f\",\n", p[0]);
                 sprintf(&JX[strlen(JX)], "\t\t\"Ks\":\"%f\",\n", p[1]);
                 sprintf(&JX[strlen(JX)], "\t\t\"IMDmax\":\"%f\"},\n", p[2]);
             } else { sprintf(&JX[strlen(JX)], "null,\n"); }
@@ -970,7 +970,7 @@ char* EMSCRIPTEN_KEEPALIVE DLLEXPORT swmm_transcribe(char* f1, char* f2, char* f
             if ( Subcatch[i].infilModel == CURVE_NUMBER ){
                 double p[5];
                 curveNumber_getInput(i, p);
-                sprintf(&JX[strlen(JX)], "\t\t\"{Smax\":\"%f\",\n", p[0]);
+                sprintf(&JX[strlen(JX)], "\t\t{\"Smax\":\"%f\",\n", p[0]);
                 sprintf(&JX[strlen(JX)], "\t\t\"regen\":\"%f\",\n", p[1]);
                 sprintf(&JX[strlen(JX)], "\t\t\"Tmax\":\"%f\"}\n", p[2]);
             } else { sprintf(&JX[strlen(JX)], "null\n"); }
@@ -1079,8 +1079,9 @@ char* EMSCRIPTEN_KEEPALIVE DLLEXPORT swmm_transcribe(char* f1, char* f2, char* f
             strcat(JX, "\t\"wRouted\":[");
             for(int j = 0; j < Nobjects[POLLUT]; j++){
                 sprintf(&JX[strlen(JX)], "\"%f\"", Outfall[i].wRouted[j]);
-                if(j < Nobjects[POLLUT]-1) strcat(JX, ","); else strcat(JX, "]\n");
+                if(j < Nobjects[POLLUT]-1) strcat(JX, ",");
             }
+            strcat(JX, "]\n");
             sprintf(&JX[strlen(JX)], "\t}\n");
 
             if(i != arrayN-1) strcat(JX, ",");
@@ -1106,7 +1107,7 @@ char* EMSCRIPTEN_KEEPALIVE DLLEXPORT swmm_transcribe(char* f1, char* f2, char* f
                     sprintf(&JX[strlen(JX)], "\t\t\t\"Ks\":\"%f\",\n", Storage[i].exfil->btmExfil->Ks);
                     sprintf(&JX[strlen(JX)], "\t\t\t\"IMDmax\":\"%f\"\n", Storage[i].exfil->btmExfil->IMDmax);
 
-                    sprintf(&JX[strlen(JX)], "\t\t}\n");
+                    sprintf(&JX[strlen(JX)], "\t\t},\n");
                 } else {
                     sprintf(&JX[strlen(JX)], "\t\t\"btmExfil\":null,\n");
                 }
@@ -1117,7 +1118,7 @@ char* EMSCRIPTEN_KEEPALIVE DLLEXPORT swmm_transcribe(char* f1, char* f2, char* f
                     sprintf(&JX[strlen(JX)], "\t\t\t\"Ks\":\"%f\",\n", Storage[i].exfil->bankExfil->Ks);
                     sprintf(&JX[strlen(JX)], "\t\t\t\"IMDmax\":\"%f\"\n", Storage[i].exfil->bankExfil->IMDmax);
 
-                    sprintf(&JX[strlen(JX)], "\t\t}\n");
+                    sprintf(&JX[strlen(JX)], "\t\t},\n");
                 } else {
                     sprintf(&JX[strlen(JX)], "\t\t\"bankExfil\":null,\n");
                 }
@@ -1717,7 +1718,7 @@ char* EMSCRIPTEN_KEEPALIVE DLLEXPORT swmm_transcribe(char* f1, char* f2, char* f
 
 
 
-        strcat(JX, "}\n");
+        strcat(JX, "}\0");
         swmm_close();
     }
 

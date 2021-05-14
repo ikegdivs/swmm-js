@@ -1,7 +1,12 @@
 
 
-// When the document is loaded:
-// Create some data
+function UCF(integerCode){
+    if(integerCode < FLOW){
+        return Ucf[u][UnitSystem];
+    } else {
+        return Qcf[FlowUnits];
+    }
+}
 
 // Draw a line chart with the data.
 function drawTimeseries(){
@@ -3585,16 +3590,10 @@ d3.inp = function() {
                 return;
             },
             SUBAREAS: function(section, key, line) {
-                var m = [];
                 line = key + line;
-                m.push(line)
-                m.push(line.slice(17,28))
-                m.push(line.slice(28,39))
-                m.push(line.slice(39,50))
-                m.push(line.slice(50,61))
-                m.push(line.slice(61,72))
-                m.push(line.slice(72,83))
-                m.push(line.slice(83, line.length))
+                line = line.trim();
+                m = line.split(/\b\s+/)
+
                 if (m && m.length)
                         section[key] = {NImperv: parseFloat(m[1]), 
                                         NPerv: parseFloat(m[2]), 
@@ -3602,7 +3601,8 @@ d3.inp = function() {
                                         SPerv: parseFloat(m[4]), 
                                         PctZero: parseFloat(m[5]), 
                                         RouteTo: m[6].trim(), 
-                                        PctRouted: m[7].trim()};
+                                        PctRouted: m.length === 8 ? m[7].trim() : null};
+                return;
             },
             PUMPS: function(section, key, line) {
                 //var m = line.match(/\s*([^\s;]+)\s+([^\s;]+)\s+([^\s;]+)\s+([^\s;]+).*/);
@@ -3918,7 +3918,7 @@ d3.inp = function() {
         let n = 999999;
         let js_array = Module.HEAPU8.subarray(JSONpointer, JSONpointer + n)
         let JX_string = new TextDecoder().decode(js_array)
-        JX_string = JX_string.slice(0, JX_string.lastIndexOf('}') + 1);
+        JX_string = JX_string.slice(0, JX_string.indexOf('\0') );
         let JX = [];
         try{
             JX = $.parseJSON(JX_string);
@@ -4024,30 +4024,8 @@ d3.inp = function() {
         })
 
         //  [SUBAREAS]
-        //
-        JX.Subcatch.forEach(function(el){
-            model['SUBAREAS'][el.ID.toString()] = {
-                Description: '', 
-                RainGage: JX.Gage[el.gage].ID,
-                Outlet: JX.Node[el.outNode].ID, 
-                Area: el.area,
-                PctImperv: el.fracImperv * 100,
-                Width: el.width,
-                PctSlope: el.slope,
-                CurbLen: el.curbLength,
-                SnowPack: ''
-            };
-        })
+        //  SUBAREAS does not utilize the SJX object
 
-        /*
-            inpString += model[secStr][entry].NImperv.toString().padEnd(11, ' ');
-            inpString += model[secStr][entry].NPerv.toString().padEnd(11, ' ');
-            inpString += model[secStr][entry].SImperv.toString().padEnd(11, ' ');
-            inpString += model[secStr][entry].SPerv.toString().padEnd(11, ' ');
-            inpString += model[secStr][entry].PctZero.toString().padEnd(11, ' ');
-            inpString += model[secStr][entry].RouteTo.padEnd(11, ' ');
-            inpString += model[secStr][entry].PctRouted.toString().padEnd(11, ' ');
-        */
 
         //////////////////////////////////////////////////////////
         // wasm swmm-js translations
