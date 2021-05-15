@@ -3355,14 +3355,8 @@ d3.inp = function() {
         },
         parser = {
             LOSSES: function(section, key, line) {
-                var m = [];
-                line = key + line;
-                m.push(line)
-                m.push(line.slice(17,28))
-                m.push(line.slice(28,39))
-                m.push(line.slice(39,50))
-                m.push(line.slice(50,61))
-                m.push(line.slice(61,line.length))
+                line = (key + line).trim();
+                let m = line.split(/\b\s+/);
                 if (m && m.length)
                         section[key] = {Kin: parseFloat(m[1]), Kout: m[2].trim(), Kavg: m[3].trim(), FlapGate: m[4].trim(), SeepRate: m[5].trim()};
             },
@@ -3384,10 +3378,8 @@ d3.inp = function() {
                 return;
             },
             TEMPERATURE: function(section, key, line) {
-                var m = [];
-                line = key + line;
-                m.push(line)
-                m.push(line.slice(19,line.length))
+                line = (key + line).trim();
+                let m = line.split(/\b\s+/);
                 if (m && m.length)
                         section[key] = {Value: m[1].trim()};
                 return;
@@ -3406,15 +3398,13 @@ d3.inp = function() {
                         section[key] = {Invert: parseFloat(m[1]), Dmax: parseFloat(m[2]), Dinit: parseFloat(m[3]), Dsurch: parseFloat(m[4]), Aponded: parseFloat(m[5]), Description: curDesc};
             },
             OUTFALLS: function(section, key, line) {
-                var m = [];
-                line = key + line;
-                m.push(line)
-                m.push(line.slice(17,28))
-                m.push(line.slice(28,39))
-                m.push(line.slice(39,56))
-                m.push(line.slice(56,line.length))
-                if (m && m.length)
-                        section[key] = {Invert: parseFloat(m[1]), Type: m[2].trim(), StageData: m[3].trim(), Gated: m[4].trim()};
+                line = (key + line).trim();
+                let m = line.split(/\b\s+/);
+                if (m && m.length >= 5)
+                    section[key].StageData = m[3].trim();
+                else
+                    section[key].StageData = '';
+                return;
             },
             DIVIDERS: function(section, key, line) {
                 var m = [];
@@ -3554,7 +3544,7 @@ d3.inp = function() {
 
             },
             COORDINATES: function(section, key, line) {
-                line = key + line;
+                line = (key + line).trim();
                 let m = line.split(/\b\s+/)
                 if (m && m.length)
                     section[key] = {x: parseFloat(m[1]), y: parseFloat(m[2])};
@@ -3587,6 +3577,14 @@ d3.inp = function() {
                 }
             },
             SUBCATCHMENTS: function(section, key, line) {
+                line = key + line;
+                line = line.trim();
+                m = line.split(/\b\s+/)
+
+                if (m && m.length){
+                    section[key].Area = parseFloat(m[3]);
+                    section[key].Width = parseFloat(m[5]);
+                }
                 return;
             },
             SUBAREAS: function(section, key, line) {
@@ -4033,9 +4031,9 @@ d3.inp = function() {
                 Description: '', 
                 RainGage: JX.Gage[el.gage].ID,
                 Outlet: JX.Node[el.outNode].ID, 
-                Area: parseFloat(el.area) * UCF(LANDAREA),
+                //Area: parseFloat(el.area) * UCF(LANDAREA),
                 PctImperv: el.fracImperv * 100,
-                Width: parseFloat(el.width) * UCF(LENGTH),
+                //Width: parseFloat(el.width) * UCF(LENGTH),
                 PctSlope: el.slope,
                 CurbLen: el.curbLength,
                 SnowPack: ''
@@ -4044,6 +4042,18 @@ d3.inp = function() {
 
         //  [SUBAREAS]
         //  SUBAREAS does not utilize the SJX object
+
+        // [OUTFALLS]
+        JX.Outfall.forEach(function(el, index){
+            let thisID = JX.Node.filter(obj => { return obj.type === OUTFALL && obj.subIndex === index; })[0].ID;
+            model['OUTFALLS'][thisID] = {
+                Invert: JX.Node.filter(obj => { return obj.ID === thisID; })[0].invertElev,
+                Type: OutfallTypeWords[el.type],
+                StageData: null,
+                Gated: NoYesWords[el.hasFlapGate]
+            };
+        })
+
 
 
         //////////////////////////////////////////////////////////
