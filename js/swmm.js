@@ -463,6 +463,10 @@ d3.inp = function() {
         $('#btnPMChart').click(function(e){
             // Show the modal.
             $('#modalTSPlotSelection').modal('toggle');
+            $('#tsplotselection-objecttype').val('DEFAULT');
+            $('#tsplotselection-objectname').empty();
+            $('#tsplotselection-variable').empty();
+            
         })
 
         // Clicking on the delete button deletes the currently selected object, if there is one.
@@ -576,7 +580,7 @@ d3.inp = function() {
                 // Use the incremented date object 
                 let thisDate = moment(new Date(thisDateStep));
                 //dataObj.push(new DataElement('00:'+i.toString().padStart(2, '0'), val[i][objectType][parseInt(objectName)][parseInt(variable)]));
-                dataObj.push(new DataElement(thisDate._d, val[i][objectType][parseInt(objectName)][parseInt(variable)]));
+                dataObj.push(new DataElement(thisDate._d, val[i][objectType][objectName][parseInt(variable)]));
                 // increment thisDateStep
                 thisDateStep.add(stepDuration)
             }
@@ -3358,7 +3362,11 @@ d3.inp = function() {
                 line = (key + line).trim();
                 let m = line.split(/\b\s+/);
                 if (m && m.length)
-                        section[key] = {Kin: parseFloat(m[1]), Kout: m[2].trim(), Kavg: m[3].trim(), FlapGate: m[4].trim(), SeepRate: m[5].trim()};
+                        section[key] = {Kin: parseFloat(m[1]), 
+                                        Kout: m[2].trim(), 
+                                        Kavg: m[3].trim(), 
+                                        FlapGate: m[4].trim(), 
+                                        SeepRate: m[5].trim()};
             },
             // TITLE Title/Notes needs to consume all of the lines until the next section.
             // Older code just takes in a single line.
@@ -3390,12 +3398,22 @@ d3.inp = function() {
             INFILTRATION: function(section, key, line) {
                     var m = line.match(/\s+([0-9\.]+)\s+([0-9\.]+)\s+([0-9\.]+)\s+([0-9\.]+)\s+([0-9\.]+)/);
                     if (m && m.length)
-                        section[key] = {MaxRate: parseFloat(m[1]), MinRate: parseFloat(m[2]), Decay: parseFloat(m[3]), DryTime: parseFloat(m[4]), MaxInfil: parseFloat(m[5])};
+                        section[key] = {MaxRate: parseFloat(m[1]), 
+                                        MinRate: parseFloat(m[2]), 
+                                        Decay: parseFloat(m[3]), 
+                                        DryTime: parseFloat(m[4]), 
+                                        MaxInfil: parseFloat(m[5])};
             },
             JUNCTIONS: function(section, key, line, curDesc) {
-                    var m = line.match(/\s+([0-9\.]+)\s+([0-9\.]+)\s+([0-9\.]+)\s+([0-9\.]+)\s+([0-9\.]+)/);
+                line = (key + line).trim();
+                let m = line.split(/\b\s+/);
                     if (m && m.length)
-                        section[key] = {Invert: parseFloat(m[1]), Dmax: parseFloat(m[2]), Dinit: parseFloat(m[3]), Dsurch: parseFloat(m[4]), Aponded: parseFloat(m[5]), Description: curDesc};
+                        section[key] = {Invert: parseFloat(m[1]), 
+                                        Dmax: parseFloat(m[2]), 
+                                        Dinit: parseFloat(m[3]), 
+                                        Dsurch: parseFloat(m[4]), 
+                                        Aponded: parseFloat(m[5]), 
+                                        Description: curDesc};
             },
             OUTFALLS: function(section, key, line) {
                 line = (key + line).trim();
@@ -3407,23 +3425,10 @@ d3.inp = function() {
                 return;
             },
             DIVIDERS: function(section, key, line) {
-                var m = [];
-                line = key + line;
-                m.push(line)
-                m.push(line.slice(17,28))  // Invert
-                m.push(line.slice(28,45))  // Diverted Link
-                m.push(line.slice(45,56))  // Type
-
+                line = (key + line).trim();
+                let m = line.split(/\b\s+/);
                 if (m && m.length){
                         if(m[3].trim() === 'WEIR'){
-                            m.push(line.slice(56,67))  // P1
-                            m.push(line.slice(67,78))  // P2
-                            m.push(line.slice(78,89))  // P3
-                            m.push(line.slice(89,100))  // P4
-                            m.push(line.slice(100,111))  // P5
-                            m.push(line.slice(111,122))  // P6
-                            m.push(line.slice(122,line.length))  // P7
-
                             section[key] = {Invert: parseFloat(m[1]), 
                                             DivertedLink: m[2].trim(), 
                                             Type: m[3].trim(), 
@@ -3436,12 +3441,6 @@ d3.inp = function() {
                                             Aponded: parseFloat(m[10]), 
                                             Description: curDesc}
                         } else if (m[3].trim() === 'CUTOFF'){
-                            m.push(line.slice(56,67))  // P1
-                            m.push(line.slice(67,78))  // P2
-                            m.push(line.slice(78,89))  // P3
-                            m.push(line.slice(89,100))  // P4
-                            m.push(line.slice(100,line.length))  // P5
-
                             section[key] = {Invert: parseFloat(m[1]), 
                                             DivertedLink: m[2].trim(), 
                                             Type: m[3].trim(), 
@@ -3454,12 +3453,6 @@ d3.inp = function() {
                                             Aponded: parseFloat(m[8]), 
                                             Description: curDesc}
                         } else if (m[3].trim() === 'TABULAR'){
-                            m.push(line.slice(56,73))  // P1, table name
-                            m.push(line.slice(73,84))  // P2, Dmax
-                            m.push(line.slice(84,95))  // P3, Dinit
-                            m.push(line.slice(95,106)) // P4, Dsurch
-                            m.push(line.slice(106,line.length)) // P5, Aponded
-
                             section[key] = {Invert: parseFloat(m[1]), 
                                             DivertedLink: m[2].trim(), 
                                             Type: m[3].trim(), 
@@ -3472,10 +3465,6 @@ d3.inp = function() {
                                             Aponded: parseFloat(m[8]), 
                                             Description: curDesc}
                         } else if (m[3].trim() === 'OVERFLOW'){
-                            m.push(line.slice(56,67))  // P1
-                            m.push(line.slice(67,78))  // P2
-                            m.push(line.slice(78,89))  // P3
-                            m.push(line.slice(89,line.length))  // P4
                             section[key] = {Invert: parseFloat(m[1]), 
                                             DivertedLink: m[2].trim(), 
                                             Type: m[3].trim(), 
@@ -3492,23 +3481,11 @@ d3.inp = function() {
 
             },
             STORAGE: function(section, key, line) {
-                var m = [];
-                line = key + line;
-                m.push(line)
-                m.push(line.slice(17,26))  // Invert
-                m.push(line.slice(26,35))  // Dmax
-                m.push(line.slice(35,45))  // Dinit
-                m.push(line.slice(45,56))  // Curve
+                line = (key + line).trim();
+                let m = line.split(/\b\s+/);
 
                 if (m && m.length){
                         if(m[4].trim() === 'FUNCTIONAL'){
-                            m.push(line.slice(56,66))  // P1
-                            m.push(line.slice(66,76))  // P2
-                            m.push(line.slice(76,85))  // P3
-                            m.push(line.slice(85,94))  // P4
-                            m.push(line.slice(94,103))  // P5
-                            m.push(line.slice(103,line.length))  // P6
-
                             section[key] = {Invert: parseFloat(m[1]), 
                                             Dmax: parseFloat(m[2]), 
                                             Dinit: parseFloat(m[3]), 
@@ -3522,11 +3499,6 @@ d3.inp = function() {
                                             SeepRate: parseFloat(m[10]), 
                                             Description: curDesc}
                         } else if (m[4].trim() === 'TABULAR'){
-                            m.push(line.slice(56,85))  // P1
-                            m.push(line.slice(85,94))  // P4
-                            m.push(line.slice(94,103))  // P5
-                            m.push(line.slice(103,line.length))  // P6
-
                             section[key] = {Invert: parseFloat(m[1]), 
                                             Dmax: parseFloat(m[2]), 
                                             Dinit: parseFloat(m[3]), 
@@ -3569,18 +3541,25 @@ d3.inp = function() {
                     section[Object.keys(section).length] = {x: parseFloat(key), y: parseFloat(m[1]), label: m[2]};
             },
             CONDUITS: function(section, key, line) {
-                var m = line.match(/\s*([^\s;]+)\s+([^\s;]+)\s+([0-9\.]+)\s+([0-9\.]+)\s+([0-9\.]+)\s+([0-9\.]+)\s+([0-9\.]+)\s+([^;]).*/);
+                line = (key + line).trim();
+                let m = line.split(/\b\s+/);
                 if (m && m.length && (8 === m.length || 9 === m.length)) {
-                    section[key] = {FromNode: m[1], ToNode: m[2], 
-                    Length: parseFloat(m[3]), Roughness: parseFloat(m[4]),
-                    InOffset: parseFloat(m[5]), OutOffset: parseFloat(m[6]), InitFlow: m[7], MaxFlow: m[8], Description: curDesc};
+                    section[key] = {FromNode: m[1], 
+                                    ToNode: m[2], 
+                                    Length: parseFloat(m[3]),   
+                                    Roughness: parseFloat(m[4]),
+                                    InOffset: parseFloat(m[5]), 
+                                    OutOffset: parseFloat(m[6]), 
+                                    InitFlow: m[7], 
+                                    MaxFlow: m[8], 
+                                    Description: curDesc
+                                };
                 }
             },
             SUBCATCHMENTS: function(section, key, line) {
                 line = key + line;
                 line = line.trim();
                 m = line.split(/\b\s+/)
-
                 if (m && m.length){
                     section[key].Area = parseFloat(m[3]);
                     section[key].Width = parseFloat(m[5]);
@@ -3591,7 +3570,6 @@ d3.inp = function() {
                 line = key + line;
                 line = line.trim();
                 m = line.split(/\b\s+/)
-
                 if (m && m.length)
                         section[key] = {NImperv: parseFloat(m[1]), 
                                         NPerv: parseFloat(m[2]), 
@@ -3604,23 +3582,20 @@ d3.inp = function() {
             },
             PUMPS: function(section, key, line) {
                 //var m = line.match(/\s*([^\s;]+)\s+([^\s;]+)\s+([^\s;]+)\s+([^\s;]+).*/);
-                var m = [];
-                line = key + line;
-                m.push(line)
-                m.push(line.slice(17,34))
-                m.push(line.slice(34,51))
-                m.push(line.slice(51,68))
-                m.push(line.slice(68,77))
-                m.push(line.slice(77,86))
-                m.push(line.slice(86, line.length))
+                line = (key + line).trim();
+                let m = line.split(/\b\s+/);
                 if (m && m.length)
-                        section[key] = {Node1: parseFloat(m[1]), 
-                                        Node2: parseFloat(m[2]), 
-                                        Curve: m[3].trim(), 
-                                        Status: m[4].trim(), 
-                                        Dstart: parseFloat(m[5]), 
-                                        Doff: parseFloat(m[6]),
+                        section[key] = {Node1: m[1], 
+                                        Node2: m[2], 
+                                        Curve: m[3], 
+                                        Status: m[4], 
+                                        Dstart: null, 
+                                        Doff: null,
                                         Description: curDesc
+                }
+                if(m[5] && m[6]){
+                    section[key].Dstart = parseFloat(m[5]);
+                    section[key].Doff = parseFloat(m[6]);
                 }
             },
             /*
@@ -3630,16 +3605,8 @@ d3.inp = function() {
             3                9                19               SIDE         3          0.65       NO       4         
             */
             ORIFICES: function(section, key, line) {
-                var m = [];
-                line = key + line;
-                m.push(line)
-                m.push(line.slice(17,34))
-                m.push(line.slice(34,51))
-                m.push(line.slice(51,64))
-                m.push(line.slice(64,75))
-                m.push(line.slice(75,86))
-                m.push(line.slice(86,95))
-                m.push(line.slice(95, line.length))
+                line = (key + line).trim();
+                let m = line.split(/\b\s+/);
                 if (m && m.length)
                         section[key] = {FromNode: parseFloat(m[1]), 
                                         ToNode: parseFloat(m[2]), 
@@ -3658,17 +3625,8 @@ d3.inp = function() {
             9                20               24               SIDEFLOW     4          3.33       YES      1        6         
             */
             WEIRS: function(section, key, line) {
-                var m = [];
-                line = key + line;
-                m.push(line)
-                m.push(line.slice(17,34))
-                m.push(line.slice(34,51))
-                m.push(line.slice(51,64))
-                m.push(line.slice(64,75))
-                m.push(line.slice(75,86))
-                m.push(line.slice(86,95))
-                m.push(line.slice(95,104))
-                m.push(line.slice(104, line.length))
+                line = (key + line).trim();
+                let m = line.split(/\b\s+/);
                 if (m && m.length)
                         section[key] = {FromNode: parseFloat(m[1]), 
                                         ToNode: parseFloat(m[2]), 
@@ -3689,16 +3647,8 @@ d3.inp = function() {
             17               21               16               1          TABULAR/DEPTH   curve22                     YES     
             */
             OUTLETS: function(section, key, line) {
-                var m = [];
-                line = key + line;
-                m.push(line)
-                m.push(line.slice(17,34))
-                m.push(line.slice(34,51))
-                m.push(line.slice(51,62))
-                m.push(line.slice(62,78))
-                m.push(line.slice(78,95))
-                m.push(line.slice(95,106))
-                m.push(line.slice(106, line.length))
+                line = (key + line).trim();
+                let m = line.split(/\b\s+/);
                 if (m && m.length){
                         let outletTableName = '*';
                         let outletCoeff = 0;
@@ -3720,25 +3670,15 @@ d3.inp = function() {
                 }
             },
             XSECTIONS: function(section, key, line) {
-                var m = line.match(/\s*([^\s;]+)\s+([^\s;]+)\s+([0-9\.]+)\s+([^\s;]+)\s+([^\s;]+)\s+([0-9\.]+).*/);
+                line = (key + line).trim();
+                let m = line.split(/\b\s+/);
                 if (m && m.length && 7 === m.length) {
                     section[key] = {Shape: m[1], Geom1: m[2], Geom2: m[3], Geom3: m[4], Geom4: m[5], Barrels: m[6]};
                 }
             },
             POLLUTANTS: function(section, key, line) {
-                var m = [];
-                line = key + line;
-                m.push(line)
-                m.push(line.slice(17,24))
-                m.push(line.slice(24,35))
-                m.push(line.slice(35,46))
-                m.push(line.slice(46,57))
-                m.push(line.slice(57,68))
-                m.push(line.slice(68,79))
-                m.push(line.slice(79,96))
-                m.push(line.slice(96,107))
-                m.push(line.slice(107,118))
-                m.push(line.slice(118,line.length))
+                line = (key + line).trim();
+                let m = line.split(/\b\s+/);
                 if (m && m.length)
                         section[key] = {Units: m[1].trim(), 
                                         Cppt: parseFloat(m[2]), 
@@ -3762,43 +3702,57 @@ d3.inp = function() {
                         section[key] = {Interval: m[1].trim(), Available: m[2].trim(), Cleaned: m[3].trim()};
             },
             COVERAGES: function(section, key, line) {
-                var m = [];
-                line = key + line;
-                m.push(line)
-                m.push(line.slice(17,34))
-                m.push(line.slice(34,line.length))
+                line = (key + line).trim();
+                let m = line.split(/\b\s+/);
                 if (m && m.length)
                         section[key] = {LandUse: m[1].trim(), Percent: parseFloat(m[2])};
             },
             LOADINGS: function(section, key, line) {
-                var m = [];
-                line = key + line;
-                m.push(line)
-                m.push(line.slice(17,34))
-                m.push(line.slice(34,line.length))
+                line = (key + line).trim();
+                let m = line.split(/\b\s+/);
                 if (m && m.length)
                         section[key] = {Pollutant: m[1].trim(), InitLoad: parseFloat(m[2])};
             },
             BUILDUP: function(section, key, line) {
-                var m = [];
-                line = key + line;
-                m.push(line)
-                m.push(line.slice(0, 17))
-                m.push(line.slice(17,34))
-                m.push(line.slice(34,45))
-                m.push(line.slice(45,56))
-                m.push(line.slice(56,67))
-                m.push(line.slice(67,78))
-                m.push(line.slice(78,line.length))
-                if (m && m.length)
-                        section[Object.keys(section).length] = {
-                                        LandUse: m[1].trim(), 
-                                        Pollutant: m[2].trim(), 
-                                        Function: m[3].trim(),
-                                        Coeff1: parseFloat(m[4]) || 0,
-                                        Coeff2: parseFloat(m[5]) || 0,
-                                        Coeff3: parseFloat(m[6]) || 0,
-                                        Normalizer: m[7].trim()};
+                line = (key + line).trim();
+                let m = line.split(/\b\s+/);
+                if (m && m.length){
+                    let thisObj = { LandUse: m[1], 
+                                    Pollutant: m[2]
+                    }
+                    if(m.length > 3){thisObj.Function = m[3];}
+                    else {thisObj.Function = null;}
+                    if(thisObj.Function === BuildupTypeWords[0] || thisObj.Function === null) { // NONE
+                        thisObj.Coeff1     = null;
+                        thisObj.Coeff2     = null;
+                        thisObj.Coeff3     = null;
+                        thisObj.Normalizer = null;
+                    }
+                    if(thisObj.Function === BuildupTypeWords[1]) { // POW
+                        thisObj.Coeff1     = parseFloat(m[4]);
+                        thisObj.Coeff2     = parseFloat(m[5]);
+                        thisObj.Coeff3     = parseFloat(m[6]);
+                        thisObj.Normalizer = m[7];
+                    }
+                    if(thisObj.Function === BuildupTypeWords[2]) { // EXP
+                        thisObj.Coeff1     = parseFloat(m[4]);
+                        thisObj.Coeff2     = parseFloat(m[5]);
+                        thisObj.Coeff3     = parseFloat(m[6]);
+                        thisObj.Normalizer = m[7];
+                    }
+                    if(thisObj.Function === BuildupTypeWords[3]) { // SAT
+                        thisObj.Coeff1     = parseFloat(m[4]);
+                        thisObj.Coeff2     = parseFloat(m[5]);
+                        thisObj.Coeff3     = parseFloat(m[6]);
+                        thisObj.Normalizer = m[7];
+                    }
+                    if(thisObj.Function === BuildupTypeWords[4]) { // EXT
+                        thisObj.Coeff1     = null;
+                        thisObj.Coeff2     = null;
+                        thisObj.Coeff3     = null;
+                        thisObj.Normalizer = m[7];
+                    }
+                }
             },  
             WASHOFF: function(section, key, line) {
                 var m = [];
@@ -3843,8 +3797,7 @@ d3.inp = function() {
 ;;Node             Parameter        Time Series      /Mass    Factor    
             */
             TIMESERIES: function(section, key, line) {
-                line = key + line;
-                line = line.trim();
+                line = (key + line).trim();
                 let m = line.split(/\b\s+/);
                 if (m && m.length === 4){
                     section[Object.keys(section).length] = {
@@ -3860,6 +3813,23 @@ d3.inp = function() {
                                     Value: parseFloat(m[2])};
                 }
             },  
+            CURVES: function(section, key, line) {
+                line = (key + line).trim();
+                let m = line.split(/\b\s+/);
+                if (m && m.length === 4){
+                    section[Object.keys(section).length] = {
+                                    Name: key.trim(),
+                                    Type: m[1], 
+                                    XValue: parseFloat(m[2]),
+                                    YValue: parseFloat(m[3])};
+                } else {
+                    section[Object.keys(section).length] = {
+                                    Name: key.trim(),
+                                    Type: null, 
+                                    XValue: parseFloat(m[1]),
+                                    YValue: parseFloat(m[2])};
+                }
+            },
             VERTICES: function(section, key, line) {
                 line = key + line;
                 let m = line.split(/\b\s+/)
@@ -4660,7 +4630,7 @@ var swmmjs = function() {
         secStr = 'TEMPERATURE';
         inpString +='[TEMPERATURE]\n;;Temp/Wind/Snow   Source/Data\n'
         for (let entry in model[secStr]) {
-            inpString += entry.padEnd(19, ' ');
+            inpString += entry.padEnd(19, ' ') + ' ';
             inpString += model[secStr][entry].Value;
             inpString += '\n';
         }
@@ -4702,15 +4672,15 @@ var swmmjs = function() {
         secStr = 'SUBAREAS';
         inpString +='[SUBAREAS]\n;;Subcatchment   N-Imperv   N-Perv     S-Imperv   S-Perv     PctZero    RouteTo    PctRouted \n;;-------------- ---------- ---------- ---------- ---------- ---------- ---------- ----------\n'
         for (let entry in model[secStr]) {
-            inpString += entry.padEnd(17, ' ');
-            inpString += model[secStr][entry].NImperv.toString().padEnd(11, ' ');
-            inpString += model[secStr][entry].NPerv.toString().padEnd(11, ' ');
-            inpString += model[secStr][entry].SImperv.toString().padEnd(11, ' ');
-            inpString += model[secStr][entry].SPerv.toString().padEnd(11, ' ');
-            inpString += model[secStr][entry].PctZero.toString().padEnd(11, ' ');
-            inpString += model[secStr][entry].RouteTo.padEnd(11, ' ');
+            inpString += entry.padEnd(17, ' ') + ' ';
+            inpString += model[secStr][entry].NImperv.toString().padEnd(11, ' ') + ' ';
+            inpString += model[secStr][entry].NPerv.toString().padEnd(11, ' ') + ' ';
+            inpString += model[secStr][entry].SImperv.toString().padEnd(11, ' ') + ' ';
+            inpString += model[secStr][entry].SPerv.toString().padEnd(11, ' ') + ' ';
+            inpString += model[secStr][entry].PctZero.toString().padEnd(11, ' ') + ' ';
+            inpString += model[secStr][entry].RouteTo.padEnd(11, ' ') + ' ';
             if (model[secStr][entry].PctRouted){
-                inpString += model[secStr][entry].PctRouted.toString().padEnd(11, ' ');
+                inpString += model[secStr][entry].PctRouted.toString().padEnd(11, ' ') + ' ';
             }
             inpString += '\n';
         }
@@ -4719,12 +4689,12 @@ var swmmjs = function() {
         secStr = 'INFILTRATION';
         inpString +='[INFILTRATION]\n;;Subcatchment   MaxRate    MinRate    Decay      DryTime    MaxInfil  \n;;-------------- ---------- ---------- ---------- ---------- ----------\n'        
         for (let entry in model[secStr]) {
-            inpString += entry.padEnd(17, ' ');
-            inpString += model[secStr][entry].MaxRate.toString().padEnd(11, ' ');
-            inpString += model[secStr][entry].MinRate.toString().padEnd(11, ' ');
-            inpString += model[secStr][entry].Decay.toString().padEnd(11, ' ');
-            inpString += model[secStr][entry].DryTime.toString().padEnd(11, ' ');
-            inpString += model[secStr][entry].MaxInfil.toString().padEnd(11, ' ');
+            inpString += entry.padEnd(17, ' ') + ' ';
+            inpString += model[secStr][entry].MaxRate.toString().padEnd(11, ' ') + ' ';
+            inpString += model[secStr][entry].MinRate.toString().padEnd(11, ' ') + ' ';
+            inpString += model[secStr][entry].Decay.toString().padEnd(11, ' ') + ' ';
+            inpString += model[secStr][entry].DryTime.toString().padEnd(11, ' ') + ' ';
+            inpString += model[secStr][entry].MaxInfil.toString().padEnd(11, ' ') + ' ';
             inpString += '\n';
         }
         inpString += '\n';
@@ -4736,12 +4706,12 @@ var swmmjs = function() {
             if(typeof model[secStr][entry].Description !== 'undefined' && model[secStr][entry].Description.length > 0){
                 inpString += ';' + model[secStr][entry].Description + '\n';
             }
-            inpString += entry.padEnd(17, ' ');
-            inpString += model[secStr][entry].Invert.toString().padEnd(11, ' ');
-            inpString += model[secStr][entry].Dmax.toString().padEnd(11, ' ');
-            inpString += model[secStr][entry].Dinit.toString().padEnd(11, ' ');
-            inpString += model[secStr][entry].Dsurch.toString().padEnd(11, ' ');
-            inpString += model[secStr][entry].Aponded.toString().padEnd(11, ' ');
+            inpString += entry.padEnd(17, ' ') + ' ';
+            inpString += model[secStr][entry].Invert.toString().padEnd(11, ' ') + ' ';
+            inpString += model[secStr][entry].Dmax.toString().padEnd(11, ' ') + ' ';
+            inpString += model[secStr][entry].Dinit.toString().padEnd(11, ' ') + ' ';
+            inpString += model[secStr][entry].Dsurch.toString().padEnd(11, ' ') + ' ';
+            inpString += model[secStr][entry].Aponded.toString().padEnd(11, ' ') + ' ';
             inpString += '\n';
         }
         inpString += '\n';
@@ -4753,11 +4723,11 @@ var swmmjs = function() {
             if(typeof model[secStr][entry].Description !== 'undefined' && model[secStr][entry].Description.length > 0){
                 inpString += ';' + model[secStr][entry].Description + '\n';
             }
-            inpString += entry.padEnd(17, ' ');
-            inpString += model[secStr][entry].Invert.toString().padEnd(11, ' ');
-            inpString += model[secStr][entry].Type.padEnd(11, ' ');
-            inpString += model[secStr][entry].StageData.padEnd(17, ' ');
-            inpString += model[secStr][entry].Gated.padEnd(9, ' ');
+            inpString += entry.padEnd(17, ' ') + ' ';
+            inpString += model[secStr][entry].Invert.toString().padEnd(11, ' ') + ' ';
+            inpString += model[secStr][entry].Type.padEnd(11, ' ') + ' ';
+            inpString += model[secStr][entry].StageData.padEnd(17, ' ') + ' ';
+            inpString += model[secStr][entry].Gated.padEnd(9, ' ') + ' ';
             inpString += '\n';
         }
         inpString += '\n';
@@ -4769,23 +4739,23 @@ var swmmjs = function() {
             if(typeof model[secStr][entry].Description !== 'undefined' && model[secStr][entry].Description.length > 0){
                 inpString += ';' + model[secStr][entry].Description + '\n';
             }
-            inpString += entry.padEnd(17, ' ');
-            inpString += model[secStr][entry].Invert.toString().padEnd(11, ' ');
-            inpString += model[secStr][entry].DivertedLink.padEnd(17, ' ');
-            inpString += model[secStr][entry].Type.padEnd(11, ' ');
+            inpString += entry.padEnd(17, ' ') + ' ';
+            inpString += model[secStr][entry].Invert.toString().padEnd(11, ' ') + ' ';
+            inpString += model[secStr][entry].DivertedLink.padEnd(17, ' ') + ' ';
+            inpString += model[secStr][entry].Type.padEnd(11, ' ') + ' ';
             if(model[secStr][entry].Type === 'TABULAR'){
-                inpString += model[secStr][entry].P1.padEnd(17, ' ');
+                inpString += model[secStr][entry].P1.padEnd(17, ' ') + ' ';
             } else if(model[secStr][entry].Type !== 'OVERFLOW'){
-                inpString += model[secStr][entry].P1.toString().padEnd(11, ' ');
+                inpString += model[secStr][entry].P1.toString().padEnd(11, ' ') + ' ';
             }
             if(model[secStr][entry].Type === 'WEIR'){
-                inpString += model[secStr][entry].P2.toString().padEnd(11, ' ');
-                inpString += model[secStr][entry].P3.toString().padEnd(11, ' ');
+                inpString += model[secStr][entry].P2.toString().padEnd(11, ' ') + ' ';
+                inpString += model[secStr][entry].P3.toString().padEnd(11, ' ') + ' ';
             }
-            inpString += model[secStr][entry].Dmax.toString().padEnd(11, ' ');
-            inpString += model[secStr][entry].Dinit.toString().padEnd(11, ' ');
-            inpString += model[secStr][entry].Dsurch.toString().padEnd(11, ' ');
-            inpString += model[secStr][entry].Aponded.toString().padEnd(11, ' ');
+            inpString += model[secStr][entry].Dmax.toString().padEnd(11, ' ') + ' ';
+            inpString += model[secStr][entry].Dinit.toString().padEnd(11, ' ') + ' ';
+            inpString += model[secStr][entry].Dsurch.toString().padEnd(11, ' ') + ' ';
+            inpString += model[secStr][entry].Aponded.toString().padEnd(11, ' ') + ' ';
             inpString += '\n';
         }
         inpString += '\n';
@@ -4797,23 +4767,23 @@ var swmmjs = function() {
             if(typeof model[secStr][entry].Description !== 'undefined' && model[secStr][entry].Description.length > 0){
                 inpString += ';' + model[secStr][entry].Description + '\n';
             }
-            inpString += entry.padEnd(17, ' ');
-            inpString += model[secStr][entry].Invert.toString().padEnd(9, ' ');
-            inpString += model[secStr][entry].Dmax.toString().padEnd(9, ' ');
-            inpString += model[secStr][entry].Dinit.toString().padEnd(9, ' ');
-            inpString += model[secStr][entry].Curve.padEnd(11, ' ');
+            inpString += entry.padEnd(17, ' ') + ' ';
+            inpString += model[secStr][entry].Invert.toString().padEnd(9, ' ') + ' ';
+            inpString += model[secStr][entry].Dmax.toString().padEnd(9, ' ') + ' ';
+            inpString += model[secStr][entry].Dinit.toString().padEnd(9, ' ') + ' ';
+            inpString += model[secStr][entry].Curve.padEnd(11, ' ') + ' ';
 
 
             if(model[secStr][entry].Curve === 'TABULAR'){
-                inpString += model[secStr][entry].CurveName.padEnd(29, ' ');
+                inpString += model[secStr][entry].CurveName.padEnd(29, ' ') + ' ';
             } else if(model[secStr][entry].Curve === 'FUNCTIONAL'){
-                inpString += model[secStr][entry].Coefficient.toString().padEnd(10, ' ');
-                inpString += model[secStr][entry].Exponent.toString().padEnd(10, ' ');
-                inpString += model[secStr][entry].Constant.toString().padEnd(9, ' ');
+                inpString += model[secStr][entry].Coefficient.toString().padEnd(10, ' ') + ' ';
+                inpString += model[secStr][entry].Exponent.toString().padEnd(10, ' ') + ' ';
+                inpString += model[secStr][entry].Constant.toString().padEnd(9, ' ') + ' ';
             }
-            inpString += model[secStr][entry].Aponded.toString().padEnd(9, ' ');
-            inpString += model[secStr][entry].Fevap.toString().padEnd(9, ' ');
-            inpString += model[secStr][entry].SeepRate.toString().padEnd(9, ' ');
+            inpString += model[secStr][entry].Aponded.toString().padEnd(9, ' ') + ' ';
+            inpString += model[secStr][entry].Fevap.toString().padEnd(9, ' ') + ' ';
+            inpString += model[secStr][entry].SeepRate.toString().padEnd(9, ' ') + ' ';
             inpString += '\n';
         }
         inpString += '\n';
@@ -4822,18 +4792,20 @@ var swmmjs = function() {
         inpString +='[CONDUITS]\n;;Conduit        From Node        To Node          Length     Roughness  InOffset   OutOffset  InitFlow   MaxFlow   \n;;-------------- ---------------- ---------------- ---------- ---------- ---------- ---------- ---------- ----------\n'        
         for (let entry in model[secStr]) {
             // If there is a description, save it.
-            if(typeof model[secStr][entry].Description !== 'undefined' && model[secStr][entry].Description.length > 0){
+            if(typeof model[secStr][entry].DescSription !== 'undefined' && model[secStr][entry].Description.length > 0){
                 inpString += ';' + model[secStr][entry].Description + '\n';
             }
-            inpString += entry.padEnd(17, ' ');
-            inpString += model[secStr][entry].FromNode.toString().padEnd(17, ' ');
-            inpString += model[secStr][entry].ToNode.toString().padEnd(17, ' ');
-            inpString += model[secStr][entry].Length.toString().padEnd(11, ' ');
-            inpString += model[secStr][entry].Roughness.toString().padEnd(11, ' ');
-            inpString += model[secStr][entry].InOffset.toString().padEnd(11, ' ');
-            inpString += model[secStr][entry].OutOffset.toString().padEnd(11, ' ');
-            inpString += model[secStr][entry].InitFlow.toString().padEnd(11, ' ');
-            inpString += model[secStr][entry].MaxFlow.toString().padEnd(11, ' ');
+            inpString += entry.padEnd(17, ' ') + ' ';
+            inpString += model[secStr][entry].FromNode.toString().padEnd(17, ' ') + ' ';
+            inpString += model[secStr][entry].ToNode.toString().padEnd(17, ' ') + ' ';
+            inpString += model[secStr][entry].Length.toString().padEnd(11, ' ') + ' ';
+            inpString += model[secStr][entry].Roughness.toString().padEnd(11, ' ') + ' ';
+            inpString += model[secStr][entry].InOffset.toString().padEnd(11, ' ') + ' ';
+            inpString += model[secStr][entry].OutOffset.toString().padEnd(11, ' ') + ' ';
+            inpString += model[secStr][entry].InitFlow.toString().padEnd(11, ' ') + ' ';
+            if(model[secStr][entry].MaxFlow){
+                inpString += model[secStr][entry].MaxFlow.toString().padEnd(11, ' ');
+            }
             inpString += '\n';
         }
         inpString += '\n';
@@ -4845,13 +4817,15 @@ var swmmjs = function() {
             if(typeof model[secStr][entry].Description !== 'undefined' && model[secStr][entry].Description.length > 0){
                 inpString += ';' + model[secStr][entry].Description + '\n';
             }
-            inpString += entry.padEnd(17, ' ');
-            inpString += model[secStr][entry].Node1.toString().padEnd(17, ' ');
-            inpString += model[secStr][entry].Node2.toString().padEnd(17, ' ');
-            inpString += model[secStr][entry].Curve.padEnd(17, ' ');
-            inpString += model[secStr][entry].Status.padEnd(9, ' ');
-            inpString += model[secStr][entry].Dstart.toString().padEnd(9, ' ');
-            inpString += model[secStr][entry].Doff.toString().padEnd(9, ' ');
+            inpString += entry.padEnd(17, ' ') + ' ';
+            inpString += model[secStr][entry].Node1.toString().padEnd(17, ' ') + ' ';
+            inpString += model[secStr][entry].Node2.toString().padEnd(17, ' ') + ' ';
+            inpString += model[secStr][entry].Curve.padEnd(17, ' ') + ' ';
+            inpString += model[secStr][entry].Status.padEnd(9, ' ') + ' ';
+            if(model[secStr][entry].Dstart !== null && model[secStr][entry].Doff !== null){
+                inpString += model[secStr][entry].Dstart.toString().padEnd(9, ' ') + ' ';
+                inpString += model[secStr][entry].Doff.toString().padEnd(9, ' ') + ' ';
+            }
             inpString += '\n';
         }
         inpString += '\n';
@@ -4869,14 +4843,14 @@ var swmmjs = function() {
             if(typeof model[secStr][entry].Description !== 'undefined' && model[secStr][entry].Description.length > 0){
                 inpString += ';' + model[secStr][entry].Description + '\n';
             }
-            inpString += entry.padEnd(17, ' ');
-            inpString += model[secStr][entry].FromNode.toString().padEnd(17, ' ');
-            inpString += model[secStr][entry].ToNode.toString().padEnd(17, ' ');
-            inpString += model[secStr][entry].Type.padEnd(13, ' ');
-            inpString += model[secStr][entry].InletOffset.toString().padEnd(11, ' ');
-            inpString += model[secStr][entry].Qcoeff.toString().padEnd(11, ' ');
-            inpString += model[secStr][entry].Gated.padEnd(9, ' ');
-            inpString += model[secStr][entry].CloseTime.toString().padEnd(10, ' ');
+            inpString += entry.padEnd(17, ' ') + ' ';
+            inpString += model[secStr][entry].FromNode.toString().padEnd(17, ' ') + ' ';
+            inpString += model[secStr][entry].ToNode.toString().padEnd(17, ' ') + ' ';
+            inpString += model[secStr][entry].Type.padEnd(13, ' ') + ' ';
+            inpString += model[secStr][entry].InletOffset.toString().padEnd(11, ' ') + ' ';
+            inpString += model[secStr][entry].Qcoeff.toString().padEnd(11, ' ') + ' ';
+            inpString += model[secStr][entry].Gated.padEnd(9, ' ') + ' ';
+            inpString += model[secStr][entry].CloseTime.toString().padEnd(10, ' ') + ' ';
             inpString += '\n';
         }
         inpString += '\n';
@@ -4894,15 +4868,15 @@ var swmmjs = function() {
             if(typeof model[secStr][entry].Description !== 'undefined' && model[secStr][entry].Description.length > 0){
                 inpString += ';' + model[secStr][entry].Description + '\n';
             }
-            inpString += entry.padEnd(17, ' ');
-            inpString += model[secStr][entry].FromNode.toString().padEnd(17, ' ');
-            inpString += model[secStr][entry].ToNode.toString().padEnd(17, ' ');
-            inpString += model[secStr][entry].Type.padEnd(13, ' ');
-            inpString += model[secStr][entry].InletOffset.toString().padEnd(11, ' ');
-            inpString += model[secStr][entry].Qcoeff.toString().padEnd(11, ' ');
-            inpString += model[secStr][entry].Gated.toString().padEnd(9, ' ');
-            inpString += model[secStr][entry].EndCon.toString().padEnd(9, ' ');
-            inpString += model[secStr][entry].EndCoeff.toString().padEnd(10, ' ');
+            inpString += entry.padEnd(17, ' ') + ' ';
+            inpString += model[secStr][entry].FromNode.toString().padEnd(17, ' ') + ' ';
+            inpString += model[secStr][entry].ToNode.toString().padEnd(17, ' ') + ' ';
+            inpString += model[secStr][entry].Type.padEnd(13, ' ') + ' ';
+            inpString += model[secStr][entry].InletOffset.toString().padEnd(11, ' ') + ' ';
+            inpString += model[secStr][entry].Qcoeff.toString().padEnd(11, ' ') + ' ';
+            inpString += model[secStr][entry].Gated.toString().padEnd(9, ' ') + ' ';
+            inpString += model[secStr][entry].EndCon.toString().padEnd(9, ' ') + ' ';
+            inpString += model[secStr][entry].EndCoeff.toString().padEnd(10, ' ') + ' ';
             inpString += '\n';
         }
         inpString += '\n';
@@ -4922,19 +4896,19 @@ var swmmjs = function() {
             if(typeof model[secStr][entry].Description !== 'undefined' && model[secStr][entry].Description.length > 0){
                 inpString += ';' + model[secStr][entry].Description + '\n';
             }
-            inpString += entry.padEnd(17, ' ');
-            inpString += model[secStr][entry].FromNode.toString().padEnd(17, ' ');
-            inpString += model[secStr][entry].ToNode.toString().padEnd(17, ' ');
-            inpString += model[secStr][entry].InletOffset.toString().padEnd(11, ' ');
-            inpString += model[secStr][entry].Type.toString().padEnd(16, ' ');
+            inpString += entry.padEnd(17, ' ') + ' ';
+            inpString += model[secStr][entry].FromNode.toString().padEnd(17, ' ') + ' ';
+            inpString += model[secStr][entry].ToNode.toString().padEnd(17, ' ') + ' ';
+            inpString += model[secStr][entry].InletOffset.toString().padEnd(11, ' ') + ' ';
+            inpString += model[secStr][entry].Type.toString().padEnd(16, ' ') + ' ';
             // If the type is TABULAR/DEPTH or TABULAR/HEAD, then QTable is in QTable/Qcoeff, else, Qcoeff is in QTable/Qcoeff
             if(model[secStr][entry].Type === 'TABULAR/DEPTH' || model[secStr][entry].Type === 'TABULAR/HEAD'){
-                inpString += model[secStr][entry].QTable.toString().padEnd(17, ' ');
+                inpString += model[secStr][entry].QTable.toString().padEnd(17, ' ') + ' ';
             } else {
-                inpString += model[secStr][entry].Qcoeff.toString().padEnd(17, ' ');
+                inpString += model[secStr][entry].Qcoeff.toString().padEnd(17, ' ') + ' ';
             }
-            inpString += model[secStr][entry].Qexpon.toString().padEnd(11, ' ');
-            inpString += model[secStr][entry].Gated.toString().padEnd(8, ' ');
+            inpString += model[secStr][entry].Qexpon.toString().padEnd(11, ' ') + ' ';
+            inpString += model[secStr][entry].Gated.toString().padEnd(8, ' ') + ' ';
             inpString += '\n';
         }
         inpString += '\n';
@@ -4942,13 +4916,13 @@ var swmmjs = function() {
         secStr = 'XSECTIONS';
         inpString +='[XSECTIONS]\n;;Link           Shape        Geom1            Geom2      Geom3      Geom4      Barrels   \n;;-------------- ------------ ---------------- ---------- ---------- ---------- ----------\n'        
         for (let entry in model[secStr]) {
-            inpString += entry.padEnd(17, ' ');
+            inpString += entry.padEnd(17, ' ') + ' ';
             inpString += model[secStr][entry].Shape.padEnd(13, ' ');
-            inpString += model[secStr][entry].Geom1.toString().padEnd(17, ' ');
-            inpString += model[secStr][entry].Geom2.toString().padEnd(11, ' ');
-            inpString += model[secStr][entry].Geom3.toString().padEnd(11, ' ');
-            inpString += model[secStr][entry].Geom4.toString().padEnd(11, ' ');
-            inpString += model[secStr][entry].Barrels.toString().padEnd(11, ' ');
+            inpString += model[secStr][entry].Geom1.toString().padEnd(17, ' ') + ' ';
+            inpString += model[secStr][entry].Geom2.toString().padEnd(11, ' ') + ' ';
+            inpString += model[secStr][entry].Geom3.toString().padEnd(11, ' ') + ' ';
+            inpString += model[secStr][entry].Geom4.toString().padEnd(11, ' ') + ' ';
+            inpString += model[secStr][entry].Barrels.toString().padEnd(11, ' ') + ' ';
             inpString += '\n';
         }
         inpString += '\n';
@@ -4956,12 +4930,12 @@ var swmmjs = function() {
         secStr = 'LOSSES';
         inpString +='[LOSSES]\n;;Link           Kin        Kout       Kavg       Flap Gate  SeepRate  \n;;-------------- ---------- ---------- ---------- ---------- ----------\n'        
         for (let entry in model[secStr]) {
-            inpString += entry.padEnd(17, ' ');
-            inpString += model[secStr][entry].Kin.toString().padEnd(11, ' ');
-            inpString += model[secStr][entry].Kout.toString().padEnd(11, ' ');
-            inpString += model[secStr][entry].Kavg.toString().padEnd(11, ' ');
-            inpString += model[secStr][entry].FlapGate.padEnd(11, ' ');
-            inpString += model[secStr][entry].SeepRate.toString().padEnd(11, ' ');
+            inpString += entry.padEnd(17, ' ') + ' ';
+            inpString += model[secStr][entry].Kin.toString().padEnd(11, ' ') + ' ';
+            inpString += model[secStr][entry].Kout.toString().padEnd(11, ' ') + ' ';
+            inpString += model[secStr][entry].Kavg.toString().padEnd(11, ' ') + ' ';
+            inpString += model[secStr][entry].FlapGate.padEnd(11, ' ') + ' ';
+            inpString += model[secStr][entry].SeepRate.toString().padEnd(11, ' ') + ' ';
             inpString += '\n';
         }
         inpString += '\n';
@@ -4969,17 +4943,17 @@ var swmmjs = function() {
         secStr = 'POLLUTANTS';
         inpString +='[POLLUTANTS]\n;;Pollutant      Units  Cppt       Cgw        Crdii      Kdecay     SnowOnly   Co-Pollutant     Co-Frac    Cdwf       Cinit     \n;;-------------- ------ ---------- ---------- ---------- ---------- ---------- ---------------- ---------- ---------- ----------\n'        
         for (let entry in model[secStr]) {
-            inpString += entry.padEnd(17, ' ');
-            inpString += model[secStr][entry].Units.padEnd(7, ' ');
-            inpString += model[secStr][entry].Cppt.toString().padEnd(11, ' ');
-            inpString += model[secStr][entry].Cgw.toString().padEnd(11, ' ');
-            inpString += model[secStr][entry].Crdii.toString().padEnd(11, ' ');
-            inpString += model[secStr][entry].Kdecay.toString().padEnd(11, ' ');
-            inpString += model[secStr][entry].SnowOnly.toString().padEnd(11, ' ');
-            inpString += model[secStr][entry].CoPollutant.padEnd(17, ' ');
-            inpString += model[secStr][entry].CoFrac.toString().padEnd(11, ' ');
-            inpString += model[secStr][entry].Cdwf.toString().padEnd(11, ' ');
-            inpString += model[secStr][entry].Cinit.toString().padEnd(11, ' ');
+            inpString += entry.padEnd(17, ' ') + ' ';
+            inpString += model[secStr][entry].Units.padEnd(7, ' ') + ' ';
+            inpString += model[secStr][entry].Cppt.toString().padEnd(11, ' ') + ' ';
+            inpString += model[secStr][entry].Cgw.toString().padEnd(11, ' ') + ' ';
+            inpString += model[secStr][entry].Crdii.toString().padEnd(11, ' ') + ' ';
+            inpString += model[secStr][entry].Kdecay.toString().padEnd(11, ' ') + ' ';
+            inpString += model[secStr][entry].SnowOnly.toString().padEnd(11, ' ') + ' ';
+            inpString += model[secStr][entry].CoPollutant.padEnd(17, ' ') + ' ';
+            inpString += model[secStr][entry].CoFrac.toString().padEnd(11, ' ') + ' ';
+            inpString += model[secStr][entry].Cdwf.toString().padEnd(11, ' ') + ' ';
+            inpString += model[secStr][entry].Cinit.toString().padEnd(11, ' ') + ' ';
             inpString += '\n';
         }
         inpString += '\n';
@@ -4987,10 +4961,10 @@ var swmmjs = function() {
         secStr = 'LANDUSES';
         inpString +='[LANDUSES]\n;;               Cleaning   Fraction   Last      \n;;Land Use       Interval   Available  Cleaned   \n;;-------------- ---------- ---------- ----------\n'        
         for (let entry in model[secStr]) {
-            inpString += entry.padEnd(17, ' ');
-            inpString += model[secStr][entry].Interval.padEnd(11, ' ');
-            inpString += model[secStr][entry].Available.toString().padEnd(11, ' ');
-            inpString += model[secStr][entry].Cleaned.padEnd(11, ' ');
+            inpString += entry.padEnd(17, ' ') + ' ';
+            inpString += model[secStr][entry].Interval.padEnd(11, ' ') + ' ';
+            inpString += model[secStr][entry].Available.toString().padEnd(11, ' ') + ' ';
+            inpString += model[secStr][entry].Cleaned.padEnd(11, ' ') + ' ';
             inpString += '\n';
         }
         inpString += '\n';
@@ -4998,9 +4972,9 @@ var swmmjs = function() {
         secStr = 'COVERAGES';
         inpString +='[COVERAGES]\n;;Subcatchment   Land Use         Percent   \n;;-------------- ---------------- ----------\n'        
         for (let entry in model[secStr]) {
-            inpString += entry.padEnd(17, ' ');
-            inpString += model[secStr][entry].LandUse.padEnd(17, ' ');
-            inpString += model[secStr][entry].Percent.toString().padEnd(11, ' ');
+            inpString += entry.padEnd(17, ' ') + ' ';
+            inpString += model[secStr][entry].LandUse.padEnd(17, ' ') + ' ';
+            inpString += model[secStr][entry].Percent.toString().padEnd(11, ' ') + ' ';
             inpString += '\n';
         }
         inpString += '\n';
@@ -5008,9 +4982,9 @@ var swmmjs = function() {
         secStr = 'LOADINGS';
         inpString +='[LOADINGS]\n;;Subcatchment   Pollutant        InitLoad  \n;;-------------- ---------------- ----------\n'        
         for (let entry in model[secStr]) {
-            inpString += entry.padEnd(17, ' ');
-            inpString += model[secStr][entry].Pollutant.padEnd(17, ' ');
-            inpString += model[secStr][entry].InitLoad.toString().padEnd(11, ' ');
+            inpString += entry.padEnd(17, ' ') + ' ';
+            inpString += model[secStr][entry].Pollutant.padEnd(17, ' ') + ' ';
+            inpString += model[secStr][entry].InitLoad.toString().padEnd(11, ' ') + ' ';
             inpString += '\n';
         }
         inpString += '\n';
@@ -5018,13 +4992,13 @@ var swmmjs = function() {
         secStr = 'BUILDUP';
         inpString +='[BUILDUP]\n;;Land Use       Pollutant        Function   Coeff1     Coeff2     Coeff3     Normalizer\n;;-------------- ---------------- ---------- ---------- ---------- ---------- ----------\n'        
         for (let entry in model[secStr]) {
-            inpString += model[secStr][entry].LandUse.padEnd(17, ' ');
-            inpString += model[secStr][entry].Pollutant.padEnd(17, ' ');
-            inpString += model[secStr][entry].Function.padEnd(11, ' ');
-            inpString += model[secStr][entry].Coeff1.toString().padEnd(11, ' ');
-            inpString += model[secStr][entry].Coeff2.toString().padEnd(11, ' ');
-            inpString += model[secStr][entry].Coeff3.toString().padEnd(11, ' ');
-            inpString += model[secStr][entry].Normalizer.padEnd(11, ' ');
+            inpString += model[secStr][entry].LandUse.padEnd(17, ' ') + ' ';
+            inpString += model[secStr][entry].Pollutant.padEnd(17, ' ') + ' ';
+            inpString += model[secStr][entry].Function.padEnd(11, ' ') + ' ';
+            inpString += model[secStr][entry].Coeff1.toString().padEnd(11, ' ') + ' ';
+            inpString += model[secStr][entry].Coeff2.toString().padEnd(11, ' ') + ' ';
+            inpString += model[secStr][entry].Coeff3.toString().padEnd(11, ' ') + ' ';
+            inpString += model[secStr][entry].Normalizer.padEnd(11, ' ') + ' ';
             inpString += '\n';
         }
         inpString += '\n';
@@ -5032,13 +5006,13 @@ var swmmjs = function() {
         secStr = 'WASHOFF';
         inpString +='[WASHOFF]\n;;Land Use       Pollutant        Function   Coeff1     Coeff2     Ecleaning  Ebmp      \n;;-------------- ---------------- ---------- ---------- ---------- ---------- ----------\n'        
         for (let entry in model[secStr]) {
-            inpString += model[secStr][entry].LandUse.padEnd(17, ' ');
-            inpString += model[secStr][entry].Pollutant.padEnd(17, ' ');
-            inpString += model[secStr][entry].Function.padEnd(11, ' ');
-            inpString += model[secStr][entry].Coeff1.toString().padEnd(11, ' ');
-            inpString += model[secStr][entry].Coeff2.toString().padEnd(11, ' ');
-            inpString += model[secStr][entry].Ecleaning.toString().padEnd(11, ' ');
-            inpString += model[secStr][entry].Ebmp.padEnd(11, ' ');
+            inpString += model[secStr][entry].LandUse.padEnd(17, ' ') + ' ';
+            inpString += model[secStr][entry].Pollutant.padEnd(17, ' ') + ' ';
+            inpString += model[secStr][entry].Function.padEnd(11, ' ') + ' ';
+            inpString += model[secStr][entry].Coeff1.toString().padEnd(11, ' ') + ' ';
+            inpString += model[secStr][entry].Coeff2.toString().padEnd(11, ' ') + ' ';
+            inpString += model[secStr][entry].Ecleaning.toString().padEnd(11, ' ') + ' ';
+            inpString += model[secStr][entry].Ebmp.padEnd(11, ' ') + ' ';
             inpString += '\n';
         }
         inpString += '\n';
@@ -5046,11 +5020,11 @@ var swmmjs = function() {
         secStr = 'INFLOWS';
         inpString +='[INFLOWS]\n;;                                                   Concen   Conversion\n;;Node             Parameter        Time Series      /Mass    Factor    \n;;----------------------------------------------------------------------\n'        
         for (let entry in model[secStr]) {
-            inpString += model[secStr][entry].Node.padEnd(17, ' ');
-            inpString += model[secStr][entry].Parameter.padEnd(17, ' ');
-            inpString += model[secStr][entry].TimeSeries.padEnd(17, ' ');
-            inpString += model[secStr][entry].ConcenMass.toString().padEnd(9, ' ');
-            inpString += model[secStr][entry].Factor.toString().padEnd(9, ' ');
+            inpString += model[secStr][entry].Node.padEnd(17, ' ') + ' ';
+            inpString += model[secStr][entry].Parameter.padEnd(17, ' ') + ' ';
+            inpString += model[secStr][entry].TimeSeries.padEnd(17, ' ') + ' ';
+            inpString += model[secStr][entry].ConcenMass.toString().padEnd(9, ' ') + ' ';
+            inpString += model[secStr][entry].Factor.toString().padEnd(9, ' ') + ' ';
             inpString += '\n';
         }
         /*
@@ -5076,18 +5050,32 @@ INFLOWS: function(section, key, line) {
         secStr = 'TIMESERIES';
         inpString +='[TIMESERIES]\n;;Time Series    Date       Time       Value     \n;;-------------- ---------- ---------- ----------\n'        
         for (let entry in model[secStr]) {
-            inpString += model[secStr][entry].TimeSeries.padEnd(17, ' ');
-            inpString += model[secStr][entry].Date.padEnd(11, ' ');
-            inpString += model[secStr][entry].Time.padEnd(11, ' ');
-            inpString += model[secStr][entry].Value.toString().padEnd(11, ' ');
+            inpString += model[secStr][entry].TimeSeries.padEnd(17, ' ') + ' ';
+            inpString += model[secStr][entry].Date.padEnd(11, ' ') + ' ';
+            inpString += model[secStr][entry].Time.padEnd(11, ' ') + ' ';
+            inpString += model[secStr][entry].Value.toString().padEnd(11, ' ') + ' ';
             inpString += '\n';
         }
         inpString += '\n';
 
+        secStr = 'CURVES';
+        inpString +='[CURVES]\n;;Curve          Type       X-Value    Y-Value   \n;;-------------- ---------- ---------- ----------\n'        
+        for (let entry in model[secStr]) {
+            inpString += model[secStr][entry].Name.padEnd(17, ' ') + ' ';
+            if(model[secStr][entry].Type){
+                inpString += model[secStr][entry].Type.padEnd(11, ' ') + ' ';
+            } 
+            inpString += model[secStr][entry].XValue.toString().padEnd(11, ' ') + ' ';
+            inpString += model[secStr][entry].YValue.toString().padEnd(11, ' ') + ' ';
+            inpString += '\n';
+        }
+        inpString += '\n';
+
+
         secStr = 'REPORT';
         inpString +='[REPORT]\n;;Reporting Options\n'
         for (let entry in model[secStr]) {
-            inpString += entry.padEnd(21, ' ');
+            inpString += entry.padEnd(21, ' ') + ' ';
             inpString += model[secStr][entry].Value;
             inpString += '\n';
         }
@@ -5096,8 +5084,8 @@ INFLOWS: function(section, key, line) {
         secStr = 'TAGS';
         inpString +='[TAGS]\n'
         for (let entry in Object.values(model[secStr])) {
-            inpString += model[secStr][entry].Type.padEnd(11, ' ');
-            inpString += model[secStr][entry].ID.padEnd(17, ' ');
+            inpString += model[secStr][entry].Type.padEnd(11, ' ') + ' ';
+            inpString += model[secStr][entry].ID.padEnd(17, ' ') + ' ';
             inpString += model[secStr][entry].Tag;
             inpString += '\n';
         }
@@ -5115,9 +5103,9 @@ INFLOWS: function(section, key, line) {
         secStr = 'COORDINATES';
         inpString +='[COORDINATES]\n;;Node           X-Coord            Y-Coord           \n;;-------------- ------------------ ------------------\n'        
         for (let entry in model[secStr]) {
-            inpString += entry.padEnd(17, ' ');
-            inpString += parseFloat(model[secStr][entry].x).toFixed(2).padEnd(19, ' ');
-            inpString += parseFloat(model[secStr][entry].y).toFixed(2).padEnd(19, ' ');
+            inpString += entry.padEnd(17, ' ') + ' ';
+            inpString += parseFloat(model[secStr][entry].x).toFixed(2).padEnd(19, ' ') + ' ';
+            inpString += parseFloat(model[secStr][entry].y).toFixed(2).padEnd(19, ' ') + ' ';
             inpString += '\n';
         }
         inpString += '\n';
@@ -5126,9 +5114,9 @@ INFLOWS: function(section, key, line) {
         inpString +='[VERTICES]\n;;Link           X-Coord            Y-Coord           \n;;-------------- ------------------ ------------------\n'        
         for (let entry in model[secStr]) {
             for (let point in model[secStr][entry]){
-                inpString += entry.padEnd(17, ' ');
-                inpString += parseFloat(model[secStr][entry][point].x).toFixed(2).padEnd(19, ' ');
-                inpString += parseFloat(model[secStr][entry][point].y).toFixed(2).padEnd(19, ' ');
+                inpString += entry.padEnd(17, ' ') + ' ';
+                inpString += parseFloat(model[secStr][entry][point].x).toFixed(2).padEnd(19, ' ') + ' ';
+                inpString += parseFloat(model[secStr][entry][point].y).toFixed(2).padEnd(19, ' ') + ' ';
                 inpString += '\n';
             }
         }
@@ -5138,9 +5126,9 @@ INFLOWS: function(section, key, line) {
         inpString +='[Polygons]\n;;Subcatchment   X-Coord            Y-Coord           \n;;-------------- ------------------ ------------------\n'        
         for (let entry in model[secStr]) {
             for (let point in model[secStr][entry]){
-                inpString += entry.padEnd(17, ' ');
-                inpString += parseFloat(model[secStr][entry][point].x).toFixed(2).padEnd(19, ' ');
-                inpString += parseFloat(model[secStr][entry][point].y).toFixed(2).padEnd(19, ' ');
+                inpString += entry.padEnd(17, ' ') + ' ';
+                inpString += parseFloat(model[secStr][entry][point].x).toFixed(2).padEnd(19, ' ') + ' ';
+                inpString += parseFloat(model[secStr][entry][point].y).toFixed(2).padEnd(19, ' ') + ' ';
                 inpString += '\n';
             }
         }
@@ -5149,9 +5137,9 @@ INFLOWS: function(section, key, line) {
         secStr = 'SYMBOLS';
         inpString +='[SYMBOLS]\n;;Gage           X-Coord            Y-Coord           \n;;-------------- ------------------ ------------------\n'        
         for (let entry in model[secStr]) {
-            inpString += entry.padEnd(17, ' ');
-            inpString += parseFloat(model[secStr][entry].XCoord).toFixed(2).padEnd(19, ' ');
-            inpString += parseFloat(model[secStr][entry].YCoord).toFixed(2).padEnd(19, ' ');
+            inpString += entry.padEnd(17, ' ') + ' ';
+            inpString += parseFloat(model[secStr][entry].XCoord).toFixed(2).padEnd(19, ' ') + ' ';
+            inpString += parseFloat(model[secStr][entry].YCoord).toFixed(2).padEnd(19, ' ') + ' ';
             inpString += '\n';
         }
         inpString += '\n';
@@ -5264,7 +5252,7 @@ INFLOWS: function(section, key, line) {
                             .attr('title', polygon)
                             .attr('onmouseover', 'swmmjs.svg.tooltip(evt.target)')
                             .attr('onmouseout', 'swmmjs.svg.clearTooltips(evt.target)')
-                            .attr('onclick', 'modalEditSubcatchments('+polygon+');')
+                            .attr('onclick', 'modalEditSubcatchments("'+polygon+'");')
                             .attr('class', 'polygon')
                             .attr('fill', 'transparent')
                             .attr("stroke-width", 7)
@@ -5458,7 +5446,7 @@ INFLOWS: function(section, key, line) {
                     .attr('r', swmmjs.svg.nodeSize)
                     .attr('data-x', c.x)
                     .attr('data-y', swmmjs.svg.top - c.y)
-                    .attr('onclick', 'modalEditJunctions('+coordinate+');')
+                    .attr('onclick', 'modalEditJunctions("'+coordinate+'");')
                     .attr('title', coordinate)
                     .attr('onmouseover', 'swmmjs.svg.tooltip(evt.target)')
                     .attr('onmouseout', 'swmmjs.svg.clearTooltips(evt.target)')
