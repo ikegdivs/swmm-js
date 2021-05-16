@@ -3369,9 +3369,10 @@ d3.inp = function() {
                                         SeepRate: m[5].trim()};
             },
             // TITLE Title/Notes needs to consume all of the lines until the next section.
-            // Older code just takes in a single line.
             TITLE: function(section, key, line) {
-                return;
+                var m = line.match(/(.*)+/);
+                if (m && m.length > 1)
+                    section[Object.keys(section).length] = {TitleNotes: key + line};
             },
             OPTIONS: function(section, key, line) {
                 var m = line.match(/\s+([//\-:a-zA-Z0-9\.]+)/);
@@ -3675,6 +3676,21 @@ d3.inp = function() {
                 if (m && m.length && 7 === m.length) {
                     section[key] = {Shape: m[1], Geom1: m[2], Geom2: m[3], Geom3: m[4], Geom4: m[5], Barrels: m[6]};
                 }
+            },
+            CONTROLS: function(section, key, line) {
+                var m = line.match(/(.*)+/);
+                if (m && m.length > 1)
+                    section[Object.keys(section).length] = {ControlText: key + line};
+            },
+            DWF: function(section, key, line) {
+                var m = line.match(/(.*)+/);
+                if (m && m.length > 1)
+                    section[Object.keys(section).length] = {DWFText: key + line};
+            },
+            PATTERNS: function(section, key, line) {
+                var m = line.match(/(.*)+/);
+                if (m && m.length > 1)
+                    section[Object.keys(section).length] = {PatternText: key + line};
             },
             POLLUTANTS: function(section, key, line) {
                 line = (key + line).trim();
@@ -4046,10 +4062,11 @@ d3.inp = function() {
                 var s = line.match(regex.section);
                 // If the section has not yet been created, create one.
                 if ('undefined' === typeof model[s[1]])
-                    //model[s[1]] = {};
                     model[s[1]] = [];
                 section = s[1];
             } else if (regex.value.test(line)) {
+                // Remove everything after the first semicolon:
+                line = line.split(';')[0];
                 var v = line.match(regex.value);
                 if (parser[section])
                     parser[section](model[section], v[1], v[2], curDesc);
@@ -4783,7 +4800,9 @@ var swmmjs = function() {
             }
             inpString += model[secStr][entry].Aponded.toString().padEnd(9, ' ') + ' ';
             inpString += model[secStr][entry].Fevap.toString().padEnd(9, ' ') + ' ';
-            inpString += model[secStr][entry].SeepRate.toString().padEnd(9, ' ') + ' ';
+            if(model[secStr][entry].SeepRate){
+                inpString += model[secStr][entry].SeepRate.toString().padEnd(9, ' ') + ' ';
+            }
             inpString += '\n';
         }
         inpString += '\n';
@@ -4926,6 +4945,27 @@ var swmmjs = function() {
             inpString += '\n';
         }
         inpString += '\n';
+
+        secStr = 'CONTROLS';
+        inpString += '[CONTROLS]\n'
+        for (let entry in model[secStr]) {
+            inpString += model[secStr][entry].ControlText;
+            inpString += '\n';
+        }
+
+        secStr = 'DWF';
+        inpString += '[DWF]\n'
+        for (let entry in model[secStr]) {
+            inpString += model[secStr][entry].DWFText;
+            inpString += '\n';
+        }
+
+        secStr = 'PATTERNS';
+        inpString += '[PATTERNS]\n'
+        for (let entry in model[secStr]) {
+            inpString += model[secStr][entry].PatternText;
+            inpString += '\n';
+        }
 
         secStr = 'LOSSES';
         inpString +='[LOSSES]\n;;Link           Kin        Kout       Kavg       Flap Gate  SeepRate  \n;;-------------- ---------- ---------- ---------- ---------- ----------\n'        
