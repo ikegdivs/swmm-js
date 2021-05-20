@@ -1620,8 +1620,8 @@ d3.inp = function() {
             let listVals = []
 
             // Create the structure of the subselect list.
-            if(!!swmmjs.model.TIMEPATTERNS){
-                Object.entries(swmmjs.model.TIMEPATTERNS).forEach(item => {
+            if(!!swmmjs.model.PATTERNS){
+                Object.entries(swmmjs.model.PATTERNS).forEach(item => {
                     // If this time pattern isn't in the list yet, add it to listJSON
                     if(listVals.indexOf(item[1].TimePattern) === -1){
                         listVals.push(item[1].TimePattern)
@@ -2146,10 +2146,18 @@ d3.inp = function() {
             // If the value of any of these options matches the one in the model,
             // then mark that option as selected.
             // Make sure to check if the TEMPERATURE object exists.
-            if(typeof swmmjs.model['TEMPERATURE'] === 'undefined'){
+            /*if(typeof swmmjs.model['TEMPERATURE'] === 'undefined'){
                 swmmjs.model['TEMPERATURE'] = [];
                 swmmjs.model['TEMPERATURE'].TimeSeries = [];
-                swmmjs.model['TEMPERATURE'].TimeSeries.Value = ''
+                swmmjs.model['TEMPERATURE'].TimeSeries.Value = '';
+            }*/
+
+            if(swmmjs.model['TEMPERATURE']['TimeSeries']){
+                $('#temperature-timeseries').prop('checked', true);
+                $('#temperature-nodata').prop('checked', false);
+            } else {
+                $('#temperature-timeseries').prop('checked', false);
+                $('#temperature-nodata').prop('checked', true);
             }
 
             // Foreach el in swmmjs.model['TIMESERIES']
@@ -2157,7 +2165,8 @@ d3.inp = function() {
                 // Get the value el.TimeSeries
                 if(tsNames.indexOf(el[1].TimeSeries) === -1){
                     let selected = '';
-                    if(swmmjs.model['TEMPERATURE'].TimeSeries.Value === el[1].TimeSeries){
+                    if(swmmjs.model['TEMPERATURE'].TimeSeries &&
+                        swmmjs.model['TEMPERATURE'].TimeSeries.Value === el[1].TimeSeries){
                         selected = 'selected'
                     }
                     tsNames.push(el[1].TimeSeries)
@@ -2179,19 +2188,20 @@ d3.inp = function() {
             // If no data is checked, remove the temperature timeseries from the model
             if(document.getElementById('temperature-nodata').checked === true){
                 // If there is no TEMPERATURE data interface, make one
-                if(typeof swmmjs.model['TEMPERATURE'] === 'undefined'){
+                /*if(typeof swmmjs.model['TEMPERATURE'] === 'undefined'){
                     swmmjs.model['TEMPERATURE'] = [];
                     swmmjs.model['TEMPERATURE'].TimeSeries = ''
-                }
+                }*/
                 swmmjs.model['TEMPERATURE']['TimeSeries'] = null;
             } else if(document.getElementById('temperature-timeseries').checked === true){
                 // If there is no TEMPERATURE data interface, make one
-                if(typeof swmmjs.model['TEMPERATURE'] === 'undefined'){
+                /*if(typeof swmmjs.model['TEMPERATURE'] === 'undefined'){
                     swmmjs.model['TEMPERATURE'] = [];
-                }
-                swmmjs.model['TEMPERATURE']['TimeSeries'] = [];
+                }*/
+                //swmmjs.model['TEMPERATURE']['TimeSeries'] = [];
                 // Use the selected option from the timeseries window
-                let thisEl = document.getElementById('temperature-ts')
+                let thisEl = document.getElementById('temperature-ts');
+                swmmjs.model['TEMPERATURE']['TimeSeries'] = {};
                 swmmjs.model['TEMPERATURE']['TimeSeries'].Value = thisEl.options[thisEl.selectedIndex].value;
             } 
         }
@@ -3358,16 +3368,6 @@ d3.inp = function() {
             comment: /^\s*;;.*$/
         },
         parser = {
-            LOSSES: function(section, key, line) {
-                line = (key + line).trim();
-                let m = line.split(/\b\s+/);
-                if (m && m.length)
-                        section[key] = {Kin: parseFloat(m[1]), 
-                                        Kout: m[2].trim(), 
-                                        Kavg: m[3].trim(), 
-                                        FlapGate: m[4].trim(), 
-                                        SeepRate: m[5].trim()};
-            },
             // TITLE Title/Notes needs to consume all of the lines until the next section.
             TITLE: function(section, key, line) {
                 var m = line.match(/(.*)+/);
@@ -3380,11 +3380,8 @@ d3.inp = function() {
                         section[key] = {Value: m[1]};
                 return;
             },
-            EVAPORATION: function(section, key, line) {
-                var m = line.match(/\s+([//\-:a-zA-Z0-9\.]+)/);
-                    if (m && m.length)
-                        section[key] = {Value: m[1]};
-                return;
+            RAINGAGES: function(section, key, line) {
+                return
             },
             TEMPERATURE: function(section, key, line) {
                 line = (key + line).trim();
@@ -3393,8 +3390,35 @@ d3.inp = function() {
                         section[key] = {Value: m[1].trim()};
                 return;
             },
-            RAINGAGES: function(section, key, line) {
-                return
+            EVAPORATION: function(section, key, line) {
+                var m = line.match(/\s+([//\-:a-zA-Z0-9\.]+)/);
+                    if (m && m.length)
+                        section[key] = {Value: m[1]};
+                return;
+            },
+            SUBCATCHMENTS: function(section, key, line) {
+                line = key + line;
+                line = line.trim();
+                m = line.split(/\b\s+/)
+                if (m && m.length){
+                    section[key].Area = parseFloat(m[3]);
+                    section[key].Width = parseFloat(m[5]);
+                }
+                return;
+            },
+            SUBAREAS: function(section, key, line) {
+                line = key + line;
+                line = line.trim();
+                m = line.split(/\b\s+/)
+                if (m && m.length)
+                        section[key] = {NImperv: parseFloat(m[1]), 
+                                        NPerv: parseFloat(m[2]), 
+                                        SImperv: parseFloat(m[3]), 
+                                        SPerv: parseFloat(m[4]), 
+                                        PctZero: parseFloat(m[5]), 
+                                        RouteTo: m[6].trim(), 
+                                        PctRouted: m.length === 8 ? m[7].trim() : null};
+                return;
             },
             INFILTRATION: function(section, key, line) {
                     var m = line.match(/\s+([0-9\.]+)\s+([0-9\.]+)\s+([0-9\.]+)\s+([0-9\.]+)\s+([0-9\.]+)/);
@@ -3404,6 +3428,21 @@ d3.inp = function() {
                                         Decay: parseFloat(m[3]), 
                                         DryTime: parseFloat(m[4]), 
                                         MaxInfil: parseFloat(m[5])};
+            },
+            AQUIFERS: function(section, key, line) {
+                var m = line.match(/(.*)+/);
+                if (m && m.length > 1)
+                    section[Object.keys(section).length] = {Value: key + line};
+            },
+            GROUNDWATER: function(section, key, line) {
+                var m = line.match(/(.*)+/);
+                if (m && m.length > 1)
+                    section[Object.keys(section).length] = {Value: key + line};
+            },
+            SNOWPACKS: function(section, key, line) {
+                var m = line.match(/(.*)+/);
+                if (m && m.length > 1)
+                    section[Object.keys(section).length] = {Value: key + line};
             },
             JUNCTIONS: function(section, key, line, curDesc) {
                 line = (key + line).trim();
@@ -3424,6 +3463,41 @@ d3.inp = function() {
                 else
                     section[key].StageData = '';
                 return;
+            },
+            STORAGE: function(section, key, line) {
+                line = (key + line).trim();
+                let m = line.split(/\b\s+/);
+
+                if (m && m.length){
+                        if(m[4].trim() === 'FUNCTIONAL'){
+                            section[key] = {Invert: parseFloat(m[1]), 
+                                            Dmax: parseFloat(m[2]), 
+                                            Dinit: parseFloat(m[3]), 
+                                            Curve: m[4].trim(), 
+                                            Coefficient: parseFloat(m[5]), 
+                                            Exponent: parseFloat(m[6]), 
+                                            Constant: parseFloat(m[7]),
+                                            CurveName: '',
+                                            Aponded: parseFloat(m[8]), 
+                                            Fevap: parseFloat(m[9]), 
+                                            SeepRate: parseFloat(m[10]), 
+                                            Description: curDesc}
+                        } else if (m[4].trim() === 'TABULAR'){
+                            section[key] = {Invert: parseFloat(m[1]), 
+                                            Dmax: parseFloat(m[2]), 
+                                            Dinit: parseFloat(m[3]), 
+                                            Curve: m[4].trim(),
+                                            Coefficient: 0, 
+                                            Exponent: 0, 
+                                            Constant: 0,
+                                            CurveName: m[5].trim(),
+                                            Aponded: parseFloat(m[6]), 
+                                            Fevap: parseFloat(m[7]), 
+                                            SeepRate: parseFloat(m[8]), 
+                                            Description: curDesc}
+                        }
+                }
+
             },
             DIVIDERS: function(section, key, line) {
                 line = (key + line).trim();
@@ -3481,66 +3555,6 @@ d3.inp = function() {
                 }
 
             },
-            STORAGE: function(section, key, line) {
-                line = (key + line).trim();
-                let m = line.split(/\b\s+/);
-
-                if (m && m.length){
-                        if(m[4].trim() === 'FUNCTIONAL'){
-                            section[key] = {Invert: parseFloat(m[1]), 
-                                            Dmax: parseFloat(m[2]), 
-                                            Dinit: parseFloat(m[3]), 
-                                            Curve: m[4].trim(), 
-                                            Coefficient: parseFloat(m[5]), 
-                                            Exponent: parseFloat(m[6]), 
-                                            Constant: parseFloat(m[7]),
-                                            CurveName: '',
-                                            Aponded: parseFloat(m[8]), 
-                                            Fevap: parseFloat(m[9]), 
-                                            SeepRate: parseFloat(m[10]), 
-                                            Description: curDesc}
-                        } else if (m[4].trim() === 'TABULAR'){
-                            section[key] = {Invert: parseFloat(m[1]), 
-                                            Dmax: parseFloat(m[2]), 
-                                            Dinit: parseFloat(m[3]), 
-                                            Curve: m[4].trim(),
-                                            Coefficient: 0, 
-                                            Exponent: 0, 
-                                            Constant: 0,
-                                            CurveName: m[5].trim(),
-                                            Aponded: parseFloat(m[6]), 
-                                            Fevap: parseFloat(m[7]), 
-                                            SeepRate: parseFloat(m[8]), 
-                                            Description: curDesc}
-                        }
-                }
-
-            },
-            COORDINATES: function(section, key, line) {
-                line = (key + line).trim();
-                let m = line.split(/\b\s+/)
-                if (m && m.length)
-                    section[key] = {x: parseFloat(m[1]), y: parseFloat(m[2])};
-            },
-            Polygons: function(section, key, line) {
-                line = key + line;
-                m = line.split(/\b\s+/)
-                if (!section[key]) 
-                    section[key] = [];
-                    
-                if (Object.keys(section[key]).length === 0)
-                    section[key] = [];
-
-                if (m && m.length) {
-                    var coord = {x: parseFloat(m[1]), y: parseFloat(m[2])};
-                    section[key].push(coord);
-                }
-            },
-            LABELS: function(section, key, line) {
-                var m = line.match(/\s+([-?[0-9\.]+)\s+"([^"]+)"/);
-                if (m && m.length && 3 === m.length)
-                    section[Object.keys(section).length] = {x: parseFloat(key), y: parseFloat(m[1]), label: m[2]};
-            },
             CONDUITS: function(section, key, line) {
                 line = (key + line).trim();
                 let m = line.split(/\b\s+/);
@@ -3557,32 +3571,7 @@ d3.inp = function() {
                                 };
                 }
             },
-            SUBCATCHMENTS: function(section, key, line) {
-                line = key + line;
-                line = line.trim();
-                m = line.split(/\b\s+/)
-                if (m && m.length){
-                    section[key].Area = parseFloat(m[3]);
-                    section[key].Width = parseFloat(m[5]);
-                }
-                return;
-            },
-            SUBAREAS: function(section, key, line) {
-                line = key + line;
-                line = line.trim();
-                m = line.split(/\b\s+/)
-                if (m && m.length)
-                        section[key] = {NImperv: parseFloat(m[1]), 
-                                        NPerv: parseFloat(m[2]), 
-                                        SImperv: parseFloat(m[3]), 
-                                        SPerv: parseFloat(m[4]), 
-                                        PctZero: parseFloat(m[5]), 
-                                        RouteTo: m[6].trim(), 
-                                        PctRouted: m.length === 8 ? m[7].trim() : null};
-                return;
-            },
             PUMPS: function(section, key, line) {
-                //var m = line.match(/\s*([^\s;]+)\s+([^\s;]+)\s+([^\s;]+)\s+([^\s;]+).*/);
                 line = (key + line).trim();
                 let m = line.split(/\b\s+/);
                 if (m && m.length)
@@ -3599,12 +3588,6 @@ d3.inp = function() {
                     section[key].Doff = parseFloat(m[6]);
                 }
             },
-            /*
-            [ORIFICES]
-            ;;Orifice        From Node        To Node          Type         CrestHt    Qcoeff     Gated    CloseTime 
-            ;;-------------- ---------------- ---------------- ------------ ---------- ---------- -------- ----------
-            3                9                19               SIDE         3          0.65       NO       4         
-            */
             ORIFICES: function(section, key, line) {
                 line = (key + line).trim();
                 let m = line.split(/\b\s+/);
@@ -3619,12 +3602,6 @@ d3.inp = function() {
                                         Description: curDesc
                 }
             },
-            /*
-            [WEIRS]
-            ;;Weir           From Node        To Node          Type         CrestHt    Qcoeff     Gated    EndCon   EndCoeff  
-            ;;-------------- ---------------- ---------------- ------------ ---------- ---------- -------- -------- ----------
-            9                20               24               SIDEFLOW     4          3.33       YES      1        6         
-            */
             WEIRS: function(section, key, line) {
                 line = (key + line).trim();
                 let m = line.split(/\b\s+/);
@@ -3640,13 +3617,6 @@ d3.inp = function() {
                                         Description: curDesc
                 }
             },
-
-            /*
-            [OUTLETS]
-            ;;Outlet         From Node        To Node          CrestHt    Type            QTable/Qcoeff    Qexpon     Gated   
-            ;;-------------- ---------------- ---------------- ---------- --------------- ---------------- ---------- --------
-            17               21               16               1          TABULAR/DEPTH   curve22                     YES     
-            */
             OUTLETS: function(section, key, line) {
                 line = (key + line).trim();
                 let m = line.split(/\b\s+/);
@@ -3677,20 +3647,20 @@ d3.inp = function() {
                     section[key] = {Shape: m[1], Geom1: m[2], Geom2: m[3], Geom3: m[4], Geom4: m[5], Barrels: m[6]};
                 }
             },
-            CONTROLS: function(section, key, line) {
+            TRANSECTS: function(section, key, line) {
                 var m = line.match(/(.*)+/);
                 if (m && m.length > 1)
-                    section[Object.keys(section).length] = {ControlText: key + line};
+                    section[Object.keys(section).length] = {Value: key + line};
             },
-            DWF: function(section, key, line) {
-                var m = line.match(/(.*)+/);
-                if (m && m.length > 1)
-                    section[Object.keys(section).length] = {DWFText: key + line};
-            },
-            PATTERNS: function(section, key, line) {
-                var m = line.match(/(.*)+/);
-                if (m && m.length > 1)
-                    section[Object.keys(section).length] = {PatternText: key + line};
+            LOSSES: function(section, key, line) {
+                line = (key + line).trim();
+                let m = line.split(/\b\s+/);
+                if (m && m.length)
+                        section[key] = {Kin: parseFloat(m[1]), 
+                                        Kout: m[2].trim(), 
+                                        Kavg: m[3].trim(), 
+                                        FlapGate: m[4].trim(), 
+                                        SeepRate: m[5].trim()};
             },
             POLLUTANTS: function(section, key, line) {
                 line = (key + line).trim();
@@ -3716,18 +3686,6 @@ d3.inp = function() {
                 m.push(line.slice(39,line.length))
                 if (m && m.length)
                         section[key] = {Interval: m[1].trim(), Available: m[2].trim(), Cleaned: m[3].trim()};
-            },
-            COVERAGES: function(section, key, line) {
-                line = (key + line).trim();
-                let m = line.split(/\b\s+/);
-                if (m && m.length)
-                        section[key] = {LandUse: m[1].trim(), Percent: parseFloat(m[2])};
-            },
-            LOADINGS: function(section, key, line) {
-                line = (key + line).trim();
-                let m = line.split(/\b\s+/);
-                if (m && m.length)
-                        section[key] = {Pollutant: m[1].trim(), InitLoad: parseFloat(m[2])};
             },
             BUILDUP: function(section, key, line) {
                 line = (key + line).trim();
@@ -3791,6 +3749,12 @@ d3.inp = function() {
                                         Ecleaning: parseFloat(m[6]) || 0,
                                         Ebmp: m[7].trim()};
             },  
+            COVERAGES: function(section, key, line) {
+                line = (key + line).trim();
+                let m = line.split(/\b\s+/);
+                if (m && m.length)
+                        section[key] = {LandUse: m[1].trim(), Percent: parseFloat(m[2])};
+            },
             INFLOWS: function(section, key, line) {
                 var m = [];
                 line = key + line;
@@ -3806,29 +3770,38 @@ d3.inp = function() {
                                         TimeSeries: m[2].trim(),
                                         ConcenMass: m[3].trim(),
                                         Factor: parseFloat(m[4]) || ""};
-            },    
-            /*
-[INFLOWS]
-;;                                                   Concen   Conversion
-;;Node             Parameter        Time Series      /Mass    Factor    
-            */
-            TIMESERIES: function(section, key, line) {
+            }, 
+            DWF: function(section, key, line) {
+                var m = line.match(/(.*)+/);
+                if (m && m.length > 1)
+                    section[Object.keys(section).length] = {DWFText: key + line};
+            },
+            PATTERNS: function(section, key, line) {
+                var m = line.match(/(.*)+/);
+                if (m && m.length > 1)
+                    section[Object.keys(section).length] = {PatternText: key + line};
+            },
+            RDII: function(section, key, line) {
+                var m = line.match(/(.*)+/);
+                if (m && m.length > 1)
+                    section[Object.keys(section).length] = {Value: key + line};
+            },
+            HYDROGRAPHS: function(section, key, line) {
+                var m = line.match(/(.*)+/);
+                if (m && m.length > 1)
+                    section[Object.keys(section).length] = {Value: key + line};
+            },
+            LOADINGS: function(section, key, line) {
                 line = (key + line).trim();
                 let m = line.split(/\b\s+/);
-                if (m && m.length === 4){
-                    section[Object.keys(section).length] = {
-                                    TimeSeries: key.trim(),
-                                    Date: m[1].trim(), 
-                                    Time: m[2].trim(),
-                                    Value: parseFloat(m[3])};
-                } else {
-                    section[Object.keys(section).length] = {
-                                    TimeSeries: key.trim(),
-                                    Date: '', 
-                                    Time: m[1].trim(),
-                                    Value: parseFloat(m[2])};
-                }
+                if (m && m.length)
+                        section[key] = {Pollutant: m[1].trim(), InitLoad: parseFloat(m[2])};
             },  
+            TREATMENT: function(section, key, line) {
+                var m = line.match(/(.*)+/);
+                if (m && m.length > 1)
+                    section[Object.keys(section).length] = {Value: key + line};
+            },
             CURVES: function(section, key, line) {
                 line = (key + line).trim();
                 let m = line.split(/\b\s+/);
@@ -3846,6 +3819,44 @@ d3.inp = function() {
                                     YValue: parseFloat(m[2])};
                 }
             },
+            TIMESERIES: function(section, key, line) {
+                line = (key + line).trim();
+                let m = line.split(/\b\s+/);
+                if (m && m.length === 4){
+                    section[Object.keys(section).length] = {
+                                    TimeSeries: key.trim(),
+                                    Date: m[1].trim(), 
+                                    Time: m[2].trim(),
+                                    Value: parseFloat(m[3])};
+                } else {
+                    section[Object.keys(section).length] = {
+                                    TimeSeries: key.trim(),
+                                    Date: '', 
+                                    Time: m[1].trim(),
+                                    Value: parseFloat(m[2])};
+                }
+            },  
+            CONTROLS: function(section, key, line) {
+                var m = line.match(/(.*)+/);
+                if (m && m.length > 1)
+                    section[Object.keys(section).length] = {ControlText: key + line};
+            },
+            REPORT: function(section, key, line) {
+                var m = line.match(/\s+([//\-:a-zA-Z0-9\.]+)/);
+                if (m && m.length)
+                    section[key] = {Value: m[1]};
+            },
+            MAP: function(section, key, line) {
+                var m = line.match(/(.*)+/);
+                if (m && m.length > 1)
+                    section[Object.keys(section).length] = {Value: key + line};
+            },
+            COORDINATES: function(section, key, line) {
+                line = (key + line).trim();
+                let m = line.split(/\b\s+/)
+                if (m && m.length)
+                    section[key] = {x: parseFloat(m[1]), y: parseFloat(m[2])};
+            },
             VERTICES: function(section, key, line) {
                 line = key + line;
                 let m = line.split(/\b\s+/)
@@ -3858,11 +3869,37 @@ d3.inp = function() {
                 v[v.length] = c;
                 section[key] = v;
             },
-            REPORT: function(section, key, line) {
-                var m = line.match(/\s+([//\-:a-zA-Z0-9\.]+)/);
-                if (m && m.length)
-                    section[key] = {Value: m[1]};
+            Polygons: function(section, key, line) {
+                line = key + line;
+                m = line.split(/\b\s+/)
+                if (!section[key]) 
+                    section[key] = [];
+                    
+                if (Object.keys(section[key]).length === 0)
+                    section[key] = [];
+
+                if (m && m.length) {
+                    var coord = {x: parseFloat(m[1]), y: parseFloat(m[2])};
+                    section[key].push(coord);
+                }
             },
+            SYMBOLS: function(section, key, line) {
+                line = key + line;
+                let m = line.split(/\b\s+/)
+                if (m && m.length)
+                        section[key] = {XCoord: parseFloat(m[1]), 
+                                        YCoord: parseFloat(m[2])};
+            },  
+            LABELS: function(section, key, line) {
+                var m = line.match(/\s+([-?[0-9\.]+)\s+"([^"]+)"/);
+                if (m && m.length && 3 === m.length)
+                    section[Object.keys(section).length] = {x: parseFloat(key), y: parseFloat(m[1]), label: m[2]};
+            },
+            BACKDROP: function(section, key, line) {
+                var m = line.match(/(.*)+/);
+                if (m && m.length > 1)
+                    section[Object.keys(section).length] = {Value: key + line};
+            }, 
             TAGS: function(section, key, line) {
                 line = key + line;
                 let m = line.split(/\b\s+/)
@@ -3872,32 +3909,55 @@ d3.inp = function() {
                                 ID: m[1].trim(), 
                                 Tag: m[2].trim()});
             },
-            SYMBOLS: function(section, key, line) {
-                line = key + line;
-                let m = line.split(/\b\s+/)
-                if (m && m.length)
-                        section[key] = {XCoord: parseFloat(m[1]), 
-                                        YCoord: parseFloat(m[2])};
-            },  
-            TIMES: function(section, key, line) { // to do: check
-                var m = line.match(/(CLOCKTIME|START|TIMESTEP)\s+([^\s].*[^\s])\s*/i);
-                if (m && m.length && 3 === m.length) {
-                    section[(key + ' ' + m[1]).toUpperCase()] = m[2];
-                }
-                else {
-                    section[key.toUpperCase()] = line.replace(/^\s+/, '').replace(/\s+$/, '');
-                }
-            }
+            PROFILE: function(section, key, line) {
+                var m = line.match(/(.*)+/);
+                if (m && m.length > 1)
+                    section[Object.keys(section).length] = {Value: key + line};
+            }, 
+            FILE: function(section, key, line) {
+                var m = line.match(/(.*)+/);
+                if (m && m.length > 1)
+                    section[Object.keys(section).length] = {Value: key + line};
+            },
+            LID_CONTROLS: function(section, key, line) {
+                var m = line.match(/(.*)+/);
+                if (m && m.length > 1)
+                    section[Object.keys(section).length] = {Value: key + line};
+            }, 
+            LID_USAGE: function(section, key, line) {
+                var m = line.match(/(.*)+/);
+                if (m && m.length > 1)
+                    section[Object.keys(section).length] = {Value: key + line};
+            }, 
+            EVENT: function(section, key, line) {
+                var m = line.match(/(.*)+/);
+                if (m && m.length > 1)
+                    section[Object.keys(section).length] = {Value: key + line};
+            },
         },
 
         model = {   // Input file model variables. Related to a header in .inp file.
-                    EVAPORATION: [], SUBCATCHMENTS: [], SUBAREAS: [], CONDUITS: [], XSECTIONS: [], LOSSES: [],  PUMPS: [], ORIFICES: [], WEIRS: [], OUTLETS: [], 
-                    TRANSECTS: [], CONTROLS: [], COORDINATES: [], Polygons: [], LABELS: [], SYMBOLS: [],
-                    JUNCTIONS: [], STORAGE: [], OUTFALLS: [], DIVIDERS: [], RAINGAGES: [], TIMESERIES: [], TAGS: [],
-                    INFLOWS: [], TIMEPATTERNS: [], ADJUSTMENTS: [],
+                    TITLE: [],              OPTIONS: [],            RAINGAGES: [],
+                    TEMPERATURE: [],        EVAPORATION: [],        
+                    SUBCATCHMENTS: [],      SUBAREAS: [],           INFILTRATION: [],
+                    AQUIFERS: [],           GROUNDWATER: [],        
+                    SNOWPACKS: [],          JUNCTIONS: [],          OUTFALLS: [],
+                    STORAGE: [],            DIVIDERS: [],           CONDUITS: [],
+                    PUMPS: [],              ORIFICES: [],           WEIRS: [],
+                    OUTLETS: [],            XSECTIONS: [],          TRANSECTS: [],
+                    LOSSES: [],             POLLUTANTS: [],         LANDUSES: [],
+                    BUILDUP: [],            WASHOFF: [],            COVERAGES: [],
+                    INFLOWS: [],            DWF: [],                PATTERNS: [],
+                    RDII: [],               HYDROGRAPHS: [],        LOADINGS: [],
+                    TREATMENT: [],          CURVES: [],             TIMESERIES: [],
+                    CONTROLS: [],           REPORT: [],             MAP: [],
+                    COORDINATES: [],        VERTICES: [],           Polygons: [],
+                    SYMBOLS: [],            LABELS: [],             BACKDROP: [],
+                    TAGS: [],               PROFILE: [],            FILE: [],
+                    LID_CONTROLS: [],       LID_USAGE: [],          EVENT: [],
 
                     // Loose model variables. Can refer to interface or input file.
-                    Fclimate, Snow, Temp, Tseries: [], Wind,
+                    Fclimate, Snow, Temp, Wind,
 
                     // Interface model variables
                     clickEffect: 'edit'},
@@ -3927,10 +3987,10 @@ d3.inp = function() {
 
         // Translate the Title
         // TITLE
-        model['TITLE'] = [];
+        /*model['TITLE'] = [];
         JX.Title.forEach(function(line){
             model['TITLE'].push({TitleNotes: line})
-        })
+        })*/
 
         ///////////////////////////////////////////////////////
         // raw swmm-js translations
@@ -3939,9 +3999,9 @@ d3.inp = function() {
         else                                UnitSystem = SI;
 
         // Get base data (time patterns, time series, etc) first
-        JX.Pattern.forEach(function(el){
-            model['TIMEPATTERNS'].push({ID: el.ID, count: el.count, factor: el.factor, type: el.type})
-        })
+        /*JX.Pattern.forEach(function(el){
+            model['PATTERNS'].push({ID: el.ID, count: el.count, factor: el.factor, type: el.type})
+        })*/
 
         /*JX.Tseries.forEach(function(el){
             el.Table.forEach(function(en){
@@ -3957,24 +4017,6 @@ d3.inp = function() {
                     lastDate: el.lastDate})
             })
         })*/
-
-        // For each element in the evaporationtable object, create a new model['evap']['key'] = {Value: m[1]}
-        model['EVAPORATION']['dryOnly']         = {Value: JX.Evap.dryOnly}        
-        model['EVAPORATION']['monthlyEvap']     = {Value: JX.Evap.monthlyEvap}    
-        model['EVAPORATION']['panCoeff']        = {Value: JX.Evap.panCoeff}       
-        model['EVAPORATION']['recoveryFactor']  = {Value: JX.Evap.recoveryFactor} 
-        model['EVAPORATION']['recoveryPattern'] = {Value: JX.Evap.recoveryPattern}
-        model['EVAPORATION']['tSeries']         = {Value: JX.Evap.tSeries}  
-        model['EVAPORATION']['type']            = {Value: JX.Evap.type}          
-        model['EVAPORATION']['rate']            = {Value: JX.Evap.rate}           
-        
-
-        model['ADJUSTMENTS']['temp']            = {Value: JX.Adjust.temp};       
-        model['ADJUSTMENTS']['evap']            = {Value: JX.Adjust.evap};        
-        model['ADJUSTMENTS']['rain']            = {Value: JX.Adjust.rain};          
-        model['ADJUSTMENTS']['hydcon']          = {Value: JX.Adjust.hydcon};
-        model['ADJUSTMENTS']['rainFactor']      = {Value: JX.Adjust.rainFactor};
-        model['ADJUSTMENTS']['hydconFactor']    = {Value: JX.Adjust.hydconFactor};
         
         //  [RAINGAGES]
         //
@@ -3992,23 +4034,6 @@ d3.inp = function() {
                 coGage: el.coGage                     // index of gage with same rain timeseries
             };
         })
-        
-        //  [TEMPERATURE]
-        model.Temp.datasource = JX.Temp.dataSource;  
-        model.Temp.tSeries = JX.Temp.tSeries;
-        //model.Tseries[model.Temp.tSeries].refersTo = TSERIES_TEMP;
-        model.Fclimate.mode = JX.Fclimate.mode;
-        model.Fclimate.name = JX.Fclimate.name || '';
-        model.Temp.fileStartDate = JX.Temp.fileStartDate;
-        model.Wind.type   = JX.Wind.type;
-        model.Wind.aws    = JX.Wind.aws;
-        model.Snow.snotmp = JX.Snow.snotmp;
-        model.Snow.tipm   = JX.Snow.tipm;
-        model.Snow.rnm    = JX.Snow.rnm;
-        model.Temp.elev   = JX.Temp.elev;
-        model.Temp.anglat = JX.Temp.anglat;
-        model.Temp.dtlong = JX.Temp.dtlong;
-        model.Snow.adc    = JX.Snow.adc;    // adc[0] = IMPERVIOUS, adc[1] = PERVIOUS
         
         //  [SUBCATCHMENTS]
         //
@@ -4608,6 +4633,24 @@ var swmmjs = function() {
         }
         inpString += '\n';
 
+        secStr = 'RAINGAGES';
+        inpString +='[RAINGAGES]\n;;Gage           Format    Interval SCF      Source\n;;-------------- --------- ------ ------ ----------\n'
+        for (let entry in model[secStr]) {
+            // If there is a description, save it.
+            if(typeof model[secStr][entry].Description !== 'undefined' && model[secStr][entry].Description.length > 0){
+                inpString += ';' + model[secStr][entry].Description + '\n';
+            }
+            inpString += entry.padEnd(17, ' ') + ' ';
+            inpString += model[secStr][entry].Format.padEnd(10, ' ') + ' ';
+            inpString += translateTohM(model[secStr][entry].Interval).toString().padEnd(7, ' ') + ' ';
+            inpString += model[secStr][entry].SCF.toString().padEnd(7, ' ') + ' ';
+            inpString += model[secStr][entry].Source.padEnd(11, ' ') + ' ';
+            inpString += model[secStr][entry].SeriesName.padEnd(11, ' ');
+            inpString += '\n';
+        }
+        inpString += '\n';
+        
+        /*
         secStr = 'EVAPORATION';
         inpString +='[EVAPORATION]\n;;Evap Data      Parameters\n;;-------------- ----------------\n'
         if(model['EVAPORATION'].dryOnly.Value.toString() === '1'){
@@ -4631,41 +4674,22 @@ var swmmjs = function() {
             case 'RECOVERTY':
                 inpString += 'RECOVERY'.padEnd(16, ' ') + ' ' + model['EVAPORATION'].recoveryPattern.Value + '\n';
                 break;
-        }
-
-        /*model['EVAPORATION']['dryOnly']         = {Value: (Evap.dryOnly        !== undefined) ? Evap.dryOnly        : false};
-        model['EVAPORATION']['monthlyEvap']     = {Value: (Evap.monthlyEvap    !== undefined) ? Evap.monthlyEvap    : []};
-        model['EVAPORATION']['panCoeff']        = {Value: (Evap.panCoeff       !== undefined) ? Evap.panCoeff       : []};
-        model['EVAPORATION']['recoveryFactor']  = {Value: (Evap.recoveryFactor !== undefined) ? Evap.recoveryFactor : 0};
-        model['EVAPORATION']['recoveryPattern'] = {Value: (Evap.recoveryPattern >= 0) ? model['TIMEPATTERNS'][Evap.recoveryPattern].ID : ''};
-        model['EVAPORATION']['tSeries']         = {Value: (Evap.tSeries >= 0)         ? model['TIMESERIES'][Evap.tSeries].ID : ''};
-        model['EVAPORATION']['type']            = {Value: (Evap.type           !== undefined) ? Evap.type           : 0};
-        model['EVAPORATION']['rate']            = {Value: (Evap.rate           !== undefined) ? Evap.rate           : 0};
-        */
-        inpString += '\n';
+        }*/
 
         secStr = 'TEMPERATURE';
         inpString +='[TEMPERATURE]\n;;Temp/Wind/Snow   Source/Data\n'
         for (let entry in model[secStr]) {
-            inpString += entry.padEnd(19, ' ') + ' ';
+            inpString += entry.toString() + ' ';
             inpString += model[secStr][entry].Value;
             inpString += '\n';
         }
         inpString += '\n';
 
-        secStr = 'RAINGAGES';
-        inpString +='[RAINGAGES]\n;;Gage           Format    Interval SCF      Source\n;;-------------- --------- ------ ------ ----------\n'
+        secStr = 'EVAPORATION';
+        inpString +='[EVAPORATION]\n;;Evap Data      Parameters\n;;-------------- ----------------\n'
         for (let entry in model[secStr]) {
-            // If there is a description, save it.
-            if(typeof model[secStr][entry].Description !== 'undefined' && model[secStr][entry].Description.length > 0){
-                inpString += ';' + model[secStr][entry].Description + '\n';
-            }
-            inpString += entry.padEnd(17, ' ') + ' ';
-            inpString += model[secStr][entry].Format.padEnd(10, ' ') + ' ';
-            inpString += translateTohM(model[secStr][entry].Interval).toString().padEnd(7, ' ') + ' ';
-            inpString += model[secStr][entry].SCF.toString().padEnd(7, ' ') + ' ';
-            inpString += model[secStr][entry].Source.padEnd(11, ' ') + ' ';
-            inpString += model[secStr][entry].SeriesName.padEnd(11, ' ');
+            inpString += entry.padEnd(21, ' ');
+            inpString += model[secStr][entry].Value;
             inpString += '\n';
         }
         inpString += '\n';
@@ -4716,6 +4740,30 @@ var swmmjs = function() {
         }
         inpString += '\n';
 
+        secStr = 'AQUIFERS';
+        inpString +='[AQUIFERS]\n;;-------------- ----------------\n'
+        for (let entry in model[secStr]) {
+            inpString += model[secStr][entry].Value;
+            inpString += '\n';
+        }
+        inpString += '\n';
+
+        secStr = 'GROUNDWATER';
+        inpString +='[GROUNDWATER]\n;;-------------- ----------------\n'
+        for (let entry in model[secStr]) {
+            inpString += model[secStr][entry].Value;
+            inpString += '\n';
+        }
+        inpString += '\n';
+        
+        secStr = 'SNOWPACKS';
+        inpString +='[SNOWPACKS]\n;;-------------- ----------------\n'
+        for (let entry in model[secStr]) {
+            inpString += model[secStr][entry].Value;
+            inpString += '\n';
+        }
+        inpString += '\n';
+
         secStr = 'JUNCTIONS';
         inpString +='[JUNCTIONS]\n;;Junction       Invert     Dmax       Dinit      Dsurch     Aponded   \n;;-------------- ---------- ---------- ---------- ---------- ----------\n'        
         for (let entry in model[secStr]) {
@@ -4748,35 +4796,7 @@ var swmmjs = function() {
             inpString += '\n';
         }
         inpString += '\n';
-
-        secStr = 'DIVIDERS';
-        inpString +='[DIVIDERS]\n;;Divider        Invert     Diverted Link    Type       Parameters\n;;-------------- ---------- ---------------- ---------- ----------\n'        
-        for (let entry in model[secStr]) {
-            // If there is a description, save it.
-            if(typeof model[secStr][entry].Description !== 'undefined' && model[secStr][entry].Description.length > 0){
-                inpString += ';' + model[secStr][entry].Description + '\n';
-            }
-            inpString += entry.padEnd(17, ' ') + ' ';
-            inpString += model[secStr][entry].Invert.toString().padEnd(11, ' ') + ' ';
-            inpString += model[secStr][entry].DivertedLink.padEnd(17, ' ') + ' ';
-            inpString += model[secStr][entry].Type.padEnd(11, ' ') + ' ';
-            if(model[secStr][entry].Type === 'TABULAR'){
-                inpString += model[secStr][entry].P1.padEnd(17, ' ') + ' ';
-            } else if(model[secStr][entry].Type !== 'OVERFLOW'){
-                inpString += model[secStr][entry].P1.toString().padEnd(11, ' ') + ' ';
-            }
-            if(model[secStr][entry].Type === 'WEIR'){
-                inpString += model[secStr][entry].P2.toString().padEnd(11, ' ') + ' ';
-                inpString += model[secStr][entry].P3.toString().padEnd(11, ' ') + ' ';
-            }
-            inpString += model[secStr][entry].Dmax.toString().padEnd(11, ' ') + ' ';
-            inpString += model[secStr][entry].Dinit.toString().padEnd(11, ' ') + ' ';
-            inpString += model[secStr][entry].Dsurch.toString().padEnd(11, ' ') + ' ';
-            inpString += model[secStr][entry].Aponded.toString().padEnd(11, ' ') + ' ';
-            inpString += '\n';
-        }
-        inpString += '\n';
-
+        
         secStr = 'STORAGE';
         inpString +='[STORAGE]\n;;Storage Node   Invert   Dmax     Dinit     Curve      Name/Params                  Aponded  Fevap    SeepRate\n;;-------------- -------- -------- --------- ---------- ---------------------------- -------- -------- --------\n'        
         for (let entry in model[secStr]) {
@@ -4803,6 +4823,34 @@ var swmmjs = function() {
             if(model[secStr][entry].SeepRate){
                 inpString += model[secStr][entry].SeepRate.toString().padEnd(9, ' ') + ' ';
             }
+            inpString += '\n';
+        }
+        inpString += '\n';
+
+        secStr = 'DIVIDERS';
+        inpString +='[DIVIDERS]\n;;Divider        Invert     Diverted Link    Type       Parameters\n;;-------------- ---------- ---------------- ---------- ----------\n'        
+        for (let entry in model[secStr]) {
+            // If there is a description, save it.
+            if(typeof model[secStr][entry].Description !== 'undefined' && model[secStr][entry].Description.length > 0){
+                inpString += ';' + model[secStr][entry].Description + '\n';
+            }
+            inpString += entry.padEnd(17, ' ') + ' ';
+            inpString += model[secStr][entry].Invert.toString().padEnd(11, ' ') + ' ';
+            inpString += model[secStr][entry].DivertedLink.padEnd(17, ' ') + ' ';
+            inpString += model[secStr][entry].Type.padEnd(11, ' ') + ' ';
+            if(model[secStr][entry].Type === 'TABULAR'){
+                inpString += model[secStr][entry].P1.padEnd(17, ' ') + ' ';
+            } else if(model[secStr][entry].Type !== 'OVERFLOW'){
+                inpString += model[secStr][entry].P1.toString().padEnd(11, ' ') + ' ';
+            }
+            if(model[secStr][entry].Type === 'WEIR'){
+                inpString += model[secStr][entry].P2.toString().padEnd(11, ' ') + ' ';
+                inpString += model[secStr][entry].P3.toString().padEnd(11, ' ') + ' ';
+            }
+            inpString += model[secStr][entry].Dmax.toString().padEnd(11, ' ') + ' ';
+            inpString += model[secStr][entry].Dinit.toString().padEnd(11, ' ') + ' ';
+            inpString += model[secStr][entry].Dsurch.toString().padEnd(11, ' ') + ' ';
+            inpString += model[secStr][entry].Aponded.toString().padEnd(11, ' ') + ' ';
             inpString += '\n';
         }
         inpString += '\n';
@@ -4848,13 +4896,7 @@ var swmmjs = function() {
             inpString += '\n';
         }
         inpString += '\n';
-
-        /*
-        [ORIFICES]
-        ;;Orifice        From Node        To Node          Type         CrestHt    Qcoeff     Gated    CloseTime 
-        ;;-------------- ---------------- ---------------- ------------ ---------- ---------- -------- ----------
-        3                9                19               SIDE         3          0.65       NO       4         
-        */
+        
         secStr = 'ORIFICES';
         inpString +='[ORIFICES]\n;;Orifice        From Node        To Node          Type         CrestHt    Qcoeff     Gated    CloseTime \n;;-------------- ---------------- ---------------- ------------ ---------- ---------- -------- ----------\n'        
         for (let entry in model[secStr]) {
@@ -4873,12 +4915,6 @@ var swmmjs = function() {
             inpString += '\n';
         }
         inpString += '\n';
-        /*
-        [WEIRS]
-        ;;Weir           From Node        To Node          Type         CrestHt    Qcoeff     Gated    EndCon   EndCoeff  
-        ;;-------------- ---------------- ---------------- ------------ ---------- ---------- -------- -------- ----------
-        9                20               24               SIDEFLOW     4          3.33       YES      1        6         
-        */
 
         secStr = 'WEIRS';
         inpString +='[WEIRS]\n;;Weir           From Node        To Node          Type         CrestHt    Qcoeff     Gated    EndCon   EndCoeff  \n;;-------------- ---------------- ---------------- ------------ ---------- ---------- -------- -------- ----------\n'        
@@ -4899,15 +4935,7 @@ var swmmjs = function() {
             inpString += '\n';
         }
         inpString += '\n';
-
-            /*
-            [OUTLETS]
-            ;;Outlet         From Node        To Node          CrestHt    Type            QTable/Qcoeff    Qexpon     Gated   
-            ;;-------------- ---------------- ---------------- ---------- --------------- ---------------- ---------- --------
-            17               21               16               1          TABULAR/DEPTH   curve22                     YES     
-
-            */
-
+        
         secStr = 'OUTLETS';
         inpString +='[OUTLETS]\n;;Outlet         From Node        To Node          CrestHt    Type            QTable/Qcoeff    Qexpon     Gated   \n;;-------------- ---------------- ---------------- ---------- --------------- ---------------- ---------- --------\n'        
         for (let entry in model[secStr]) {
@@ -4945,27 +4973,14 @@ var swmmjs = function() {
             inpString += '\n';
         }
         inpString += '\n';
-
-        secStr = 'CONTROLS';
-        inpString += '[CONTROLS]\n'
+        
+        secStr = 'TRANSECTS';
+        inpString +='[TRANSECTS]\n;;-------------- ----------------\n'
         for (let entry in model[secStr]) {
-            inpString += model[secStr][entry].ControlText;
+            inpString += model[secStr][entry].Value;
             inpString += '\n';
         }
-
-        secStr = 'DWF';
-        inpString += '[DWF]\n'
-        for (let entry in model[secStr]) {
-            inpString += model[secStr][entry].DWFText;
-            inpString += '\n';
-        }
-
-        secStr = 'PATTERNS';
-        inpString += '[PATTERNS]\n'
-        for (let entry in model[secStr]) {
-            inpString += model[secStr][entry].PatternText;
-            inpString += '\n';
-        }
+        inpString += '\n';
 
         secStr = 'LOSSES';
         inpString +='[LOSSES]\n;;Link           Kin        Kout       Kavg       Flap Gate  SeepRate  \n;;-------------- ---------- ---------- ---------- ---------- ----------\n'        
@@ -4979,7 +4994,7 @@ var swmmjs = function() {
             inpString += '\n';
         }
         inpString += '\n';
-
+        
         secStr = 'POLLUTANTS';
         inpString +='[POLLUTANTS]\n;;Pollutant      Units  Cppt       Cgw        Crdii      Kdecay     SnowOnly   Co-Pollutant     Co-Frac    Cdwf       Cinit     \n;;-------------- ------ ---------- ---------- ---------- ---------- ---------- ---------------- ---------- ---------- ----------\n'        
         for (let entry in model[secStr]) {
@@ -5005,26 +5020,6 @@ var swmmjs = function() {
             inpString += model[secStr][entry].Interval.padEnd(11, ' ') + ' ';
             inpString += model[secStr][entry].Available.toString().padEnd(11, ' ') + ' ';
             inpString += model[secStr][entry].Cleaned.padEnd(11, ' ') + ' ';
-            inpString += '\n';
-        }
-        inpString += '\n';
-
-        secStr = 'COVERAGES';
-        inpString +='[COVERAGES]\n;;Subcatchment   Land Use         Percent   \n;;-------------- ---------------- ----------\n'        
-        for (let entry in model[secStr]) {
-            inpString += entry.padEnd(17, ' ') + ' ';
-            inpString += model[secStr][entry].LandUse.padEnd(17, ' ') + ' ';
-            inpString += model[secStr][entry].Percent.toString().padEnd(11, ' ') + ' ';
-            inpString += '\n';
-        }
-        inpString += '\n';
-
-        secStr = 'LOADINGS';
-        inpString +='[LOADINGS]\n;;Subcatchment   Pollutant        InitLoad  \n;;-------------- ---------------- ----------\n'        
-        for (let entry in model[secStr]) {
-            inpString += entry.padEnd(17, ' ') + ' ';
-            inpString += model[secStr][entry].Pollutant.padEnd(17, ' ') + ' ';
-            inpString += model[secStr][entry].InitLoad.toString().padEnd(11, ' ') + ' ';
             inpString += '\n';
         }
         inpString += '\n';
@@ -5056,7 +5051,17 @@ var swmmjs = function() {
             inpString += '\n';
         }
         inpString += '\n';
-
+        
+        secStr = 'COVERAGES';
+        inpString +='[COVERAGES]\n;;Subcatchment   Land Use         Percent   \n;;-------------- ---------------- ----------\n'        
+        for (let entry in model[secStr]) {
+            inpString += entry.padEnd(17, ' ') + ' ';
+            inpString += model[secStr][entry].LandUse.padEnd(17, ' ') + ' ';
+            inpString += model[secStr][entry].Percent.toString().padEnd(11, ' ') + ' ';
+            inpString += '\n';
+        }
+        inpString += '\n';
+        
         secStr = 'INFLOWS';
         inpString +='[INFLOWS]\n;;                                                   Concen   Conversion\n;;Node             Parameter        Time Series      /Mass    Factor    \n;;----------------------------------------------------------------------\n'        
         for (let entry in model[secStr]) {
@@ -5067,37 +5072,53 @@ var swmmjs = function() {
             inpString += model[secStr][entry].Factor.toString().padEnd(9, ' ') + ' ';
             inpString += '\n';
         }
-        /*
-INFLOWS: function(section, key, line) {
-                var m = [];
-                line = key + line;
-                m.push(line)
-                m.push(line.slice(19,36))
-                m.push(line.slice(36,53))
-                m.push(line.slice(53,62))
-                m.push(line.slice(62,line.length))
-                if (m && m.length)
-                        section[Object.keys(section).length] = {
-                                        Node: key.trim(),
-                                        Parameter: m[1].trim(), 
-                                        TimeSeries: m[2].trim(),
-                                        ConcenMass: m[3].trim(),
-                                        CF: parseFloat(m[4])};
-            },    
-        */
         inpString += '\n';
 
-        secStr = 'TIMESERIES';
-        inpString +='[TIMESERIES]\n;;Time Series    Date       Time       Value     \n;;-------------- ---------- ---------- ----------\n'        
+        secStr = 'DWF';
+        inpString += '[DWF]\n'
         for (let entry in model[secStr]) {
-            inpString += model[secStr][entry].TimeSeries.padEnd(17, ' ') + ' ';
-            inpString += model[secStr][entry].Date.padEnd(11, ' ') + ' ';
-            inpString += model[secStr][entry].Time.padEnd(11, ' ') + ' ';
-            inpString += model[secStr][entry].Value.toString().padEnd(11, ' ') + ' ';
+            inpString += model[secStr][entry].DWFText;
+            inpString += '\n';
+        }
+
+        secStr = 'PATTERNS';
+        inpString += '[PATTERNS]\n'
+        for (let entry in model[secStr]) {
+            inpString += model[secStr][entry].PatternText;
+            inpString += '\n';
+        }
+        
+        secStr = 'RDII';
+        inpString += '[RDII]\n'
+        for (let entry in model[secStr]) {
+            inpString += model[secStr][entry].PatternText;
+            inpString += '\n';
+        }
+        
+        secStr = 'HYDROGRAPHS';
+        inpString += '[HYDROGRAPHS]\n'
+        for (let entry in model[secStr]) {
+            inpString += model[secStr][entry].PatternText;
+            inpString += '\n';
+        }
+        
+        secStr = 'LOADINGS';
+        inpString +='[LOADINGS]\n;;Subcatchment   Pollutant        InitLoad  \n;;-------------- ---------------- ----------\n'        
+        for (let entry in model[secStr]) {
+            inpString += entry.padEnd(17, ' ') + ' ';
+            inpString += model[secStr][entry].Pollutant.padEnd(17, ' ') + ' ';
+            inpString += model[secStr][entry].InitLoad.toString().padEnd(11, ' ') + ' ';
             inpString += '\n';
         }
         inpString += '\n';
-
+        
+        secStr = 'TREATMENT';
+        inpString += '[TREATMENT]\n'
+        for (let entry in model[secStr]) {
+            inpString += model[secStr][entry].ControlText;
+            inpString += '\n';
+        }
+        
         secStr = 'CURVES';
         inpString +='[CURVES]\n;;Curve          Type       X-Value    Y-Value   \n;;-------------- ---------- ---------- ----------\n'        
         for (let entry in model[secStr]) {
@@ -5110,7 +5131,24 @@ INFLOWS: function(section, key, line) {
             inpString += '\n';
         }
         inpString += '\n';
+        
+        secStr = 'TIMESERIES';
+        inpString +='[TIMESERIES]\n;;Time Series    Date       Time       Value     \n;;-------------- ---------- ---------- ----------\n'        
+        for (let entry in model[secStr]) {
+            inpString += model[secStr][entry].TimeSeries.padEnd(17, ' ') + ' ';
+            inpString += model[secStr][entry].Date.padEnd(11, ' ') + ' ';
+            inpString += model[secStr][entry].Time.padEnd(11, ' ') + ' ';
+            inpString += model[secStr][entry].Value.toString().padEnd(11, ' ') + ' ';
+            inpString += '\n';
+        }
+        inpString += '\n';
 
+        secStr = 'CONTROLS';
+        inpString += '[CONTROLS]\n'
+        for (let entry in model[secStr]) {
+            inpString += model[secStr][entry].ControlText;
+            inpString += '\n';
+        }
 
         secStr = 'REPORT';
         inpString +='[REPORT]\n;;Reporting Options\n'
@@ -5120,21 +5158,10 @@ INFLOWS: function(section, key, line) {
             inpString += '\n';
         }
         inpString += '\n';
-
-        secStr = 'TAGS';
-        inpString +='[TAGS]\n'
-        for (let entry in Object.values(model[secStr])) {
-            inpString += model[secStr][entry].Type.padEnd(11, ' ') + ' ';
-            inpString += model[secStr][entry].ID.padEnd(17, ' ') + ' ';
-            inpString += model[secStr][entry].Tag;
-            inpString += '\n';
-        }
-        inpString += '\n';
-
+        
         secStr = 'MAP';
         inpString +='[MAP]\n'
         for (let entry in model[secStr]) {
-            inpString += entry.padEnd(21, ' ');
             inpString += model[secStr][entry].Value;
             inpString += '\n';
         }
@@ -5183,6 +5210,61 @@ INFLOWS: function(section, key, line) {
             inpString += '\n';
         }
         inpString += '\n';
+
+        secStr = 'LABELS';
+        inpString +='[LABELS]\n;;-------------- ------------------ ------------------\n'        
+        for (let entry in model[secStr]) {
+            inpString += entry.x.padEnd(17, ' ') + ' ';
+            inpString += parseFloat(model[secStr][entry].XCoord).toFixed(2).padEnd(19, ' ') + ' ';
+            inpString += parseFloat(model[secStr][entry].YCoord).toFixed(2).padEnd(19, ' ') + ' ';
+            inpString += '\n';
+        }
+        inpString += '\n';
+
+        secStr = 'BACKDROP';
+        inpString += '[BACKDROP]\n'
+        for (let entry in model[secStr]) {
+            inpString += model[secStr][entry].ControlText;
+            inpString += '\n';
+        }
+
+        secStr = 'TAGS';
+        inpString +='[TAGS]\n'
+        for (let entry in Object.values(model[secStr])) {
+            inpString += model[secStr][entry].Type.padEnd(11, ' ') + ' ';
+            inpString += model[secStr][entry].ID.padEnd(17, ' ') + ' ';
+            inpString += model[secStr][entry].Tag;
+            inpString += '\n';
+        }
+        inpString += '\n';
+        
+        secStr = 'PROFILE';
+        inpString += '[PROFILE]\n'
+        for (let entry in model[secStr]) {
+            inpString += model[secStr][entry].ControlText;
+            inpString += '\n';
+        }
+        
+        secStr = 'FILE';
+        inpString += '[FILE]\n'
+        for (let entry in model[secStr]) {
+            inpString += model[secStr][entry].ControlText;
+            inpString += '\n';
+        }
+        
+        secStr = 'LID_CONTROLS';
+        inpString += '[LID_CONTROLS]\n'
+        for (let entry in model[secStr]) {
+            inpString += model[secStr][entry].ControlText;
+            inpString += '\n';
+        }
+        
+        secStr = 'LID_USAGE';
+        inpString += '[LID_USAGE]\n'
+        for (let entry in model[secStr]) {
+            inpString += model[secStr][entry].ControlText;
+            inpString += '\n';
+        }
 
         return inpString;
     }
