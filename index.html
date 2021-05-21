@@ -1108,13 +1108,10 @@
                                 <div class="form-check">
                                     <input class="form-check-input" type="radio" name="temperature-source" id="temperature-timeseries">
                                     <label class="form-check-label" for="temperature-timeseries">Time Series</label>
-
-                                    
                                     <select class="form-control selectpicker form-select-lg mb-3" id="temperature-ts" aria-label="Time Series">
                                         <option selected value="">None</option>
                                     </select>
                                     <div class="valid-tooltip">Valid entry</div>
-
                                 </div>
                                 <div class="form-check">
                                     <input class="form-check-input" type="radio" name="temperature-source" id="temperature-external" disabled>
@@ -1153,31 +1150,139 @@
                     <div class="form-row">
                         <div class="col-md-12 mb-12">
                             <legend>Source of Evaporation Rates</legend>
-                            <div style="border: 3px solid rgba(0, 0, 0, 0.15); border-radius: 3px; padding: 5px;">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="evaporation-source" id="evaporation-constant">
-                                    <label class="form-check-label" for="evaporation-constant">Constant Value</label>
+                            <select class="form-control selectpicker form-select-lg mb-3" id="evaporation-select" aria-label="Time Series">
+                                <option selected value="Constant">Constant Value</option>
+                                <option value="TimeSeries">Time Series</option>
+                                <option value="ClimateFile">Climate File</option>
+                                <option value="MonthlyAverages">Monthly Averages</option>
+                                <option value="Temperatures" disabled>Temperatures</option>
+                            </select>
+                            <div id="evaporation-utility" style="border: 3px solid rgba(0, 0, 0, 0.15); border-radius: 3px; padding: 5px;">
+                                <div class="evaporation-input" id="evaporation-constant" style="display:none;">
+                                    <label class="modallabel" id="evaporation-constant-label" for="evaporation-constant-val">Daily average evaporation, in/day</label>
+                                    <input class="form-control modaledit" id="evaporation-constant-val" name="evaporation-constant-val" type="number">
+                                    <div class="valid-tooltip">Valid entry</div>
                                 </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="evaporation-source" id="evaporation-timeseries">
-                                    <label class="form-check-label" for="evaporation-timeseries">Time Series</label>
+                                <div class="evaporation-input" id="evaporation-timeseries" style="display:none;">
+                                    <select class="form-control selectpicker form-select-lg mb-3" id="evaporation-timeseries-val" aria-label="Time Series">
+                                        <option selected value="">None</option>
+                                    </select>
                                 </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="evaporation-source" id="evaporation-climatefile">
-                                    <label class="form-check-label" for="evaporation-climatefile">Climate File</label>
+                                <div class="evaporation-input" id="evaporation-climatefile" style="display:none;">
+                                    <legend>Pan Coefficients</legend>
+                                    <div class="row">
+                                        <div class="col-md-3 mb-3">
+                                            <label class="modallabel" id="evaporation-climatejan-label" for="evaporation-climatejan-val">Jan</label>
+                                            <input class="form-control modaledit" id="evaporation-climatejan-val" name="evaporation-climatejan-val" type="number" value=1.0>
+                                        </div>
+                                        <div class="col-md-3 mb-3">
+                                            <label class="modallabel" id="evaporation-climatefeb-label" for="evaporation-climatefeb-val">Feb</label>
+                                            <input class="form-control modaledit" id="evaporation-climatefeb-val" name="evaporation-climatefeb-val" type="number" value=1.0>
+                                        </div>
+                                        <div class="col-md-3 mb-3">
+                                            <label class="modallabel" id="evaporation-climatemar-label" for="evaporation-climatemar-val">Mar</label>
+                                            <input class="form-control modaledit" id="evaporation-climatemar-val" name="evaporation-climatemar-val" type="number" value=1.0>
+                                        </div>
+                                        <div class="col-md-3 mb-3">
+                                            <label class="modallabel" id="evaporation-climateapr-label" for="evaporation-climateapr-val">Apr</label>
+                                            <input class="form-control modaledit" id="evaporation-climateapr-val" name="evaporation-climateapr-val" type="number" value=1.0>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-3 mb-3">
+                                            <label class="modallabel" id="evaporation-climatemay-label" for="evaporation-climatemay-val">May</label>
+                                            <input class="form-control modaledit" id="evaporation-climatemay-val" name="evaporation-climatemay-val" type="number" value=1.0>
+                                        </div>
+                                        <div class="col-md-3 mb-3">
+                                            <label class="modallabel" id="evaporation-climatejun-label" for="evaporation-climatejun-val">Jun</label>
+                                            <input class="form-control modaledit" id="evaporation-climatejun-val" name="evaporation-climatejun-val" type="number" value=1.0>
+                                        </div>
+                                        <div class="col-md-3 mb-3">
+                                            <label class="modallabel" id="evaporation-climatejul-label" for="evaporation-climatejul-val">Jul</label>
+                                            <input class="form-control modaledit" id="evaporation-climatejul-val" name="evaporation-climatejul-val" type="number" value=1.0>
+                                        </div>
+                                        <div class="col-md-3 mb-3">
+                                            <label class="modallabel" id="evaporation-climateaug-label" for="evaporation-climateaug-val">Aug</label>
+                                            <input class="form-control modaledit" id="evaporation-climateaug-val" name="evaporation-climateaug-val" type="number" value=1.0>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-3 mb-3">
+                                            <label class="modallabel" id="evaporation-climatesep-label" for="evaporation-climatesep-val">Sep</label>
+                                            <input class="form-control modaledit" id="evaporation-climatesep-val" name="evaporation-climatesep-val" type="number" value=1.0>
+                                        </div>
+                                        <div class="col-md-3 mb-3">
+                                            <label class="modallabel" id="evaporation-climateoct-label" for="evaporation-climateoct-val">Oct</label>
+                                            <input class="form-control modaledit" id="evaporation-climateoct-val" name="evaporation-climateoct-val" type="number" value=1.0>
+                                        </div>
+                                        <div class="col-md-3 mb-3">
+                                            <label class="modallabel" id="evaporation-climatenov-label" for="evaporation-climatenov-val">Nov</label>
+                                            <input class="form-control modaledit" id="evaporation-climatenov-val" name="evaporation-climatenov-val" type="number" value=1.0>
+                                        </div>
+                                        <div class="col-md-3 mb-3">
+                                            <label class="modallabel" id="evaporation-climatedec-label" for="evaporation-climatedec-val">Dec</label>
+                                            <input class="form-control modaledit" id="evaporation-climatedec-val" name="evaporation-climatedec-val" type="number" value=1.0>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="evaporation-source" id="evaporation-monthlyaverages">
-                                    <label class="form-check-label" for="evaporation-monthlyaverages">Monthly Averages</label>
+                                <div class="evaporation-input" id="evaporation-averages" style="display:none;">
+                                    <legend>Monthly Averages</legend>
+                                    <div class="row">
+                                        <div class="col-md-3 mb-3">
+                                            <label class="modallabel" id="evaporation-averagesjan-label" for="evaporation-averagesjan-val">Jan</label>
+                                            <input class="form-control modaledit" id="evaporation-averagesjan-val" name="evaporation-averagesjan-val" type="number" value=0>
+                                        </div>
+                                        <div class="col-md-3 mb-3">
+                                            <label class="modallabel" id="evaporation-averagesfeb-label" for="evaporation-averagesfeb-val">Feb</label>
+                                            <input class="form-control modaledit" id="evaporation-averagesfeb-val" name="evaporation-averagesfeb-val" type="number" value=0>
+                                        </div>
+                                        <div class="col-md-3 mb-3">
+                                            <label class="modallabel" id="evaporation-averagesmar-label" for="evaporation-averagesmar-val">Mar</label>
+                                            <input class="form-control modaledit" id="evaporation-averagesmar-val" name="evaporation-averagesmar-val" type="number" value=0>
+                                        </div>
+                                        <div class="col-md-3 mb-3">
+                                            <label class="modallabel" id="evaporation-averagesapr-label" for="evaporation-averagesapr-val">Apr</label>
+                                            <input class="form-control modaledit" id="evaporation-averagesapr-val" name="evaporation-averagesapr-val" type="number" value=0>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-3 mb-3">
+                                            <label class="modallabel" id="evaporation-averagesmay-label" for="evaporation-averagesmay-val">May</label>
+                                            <input class="form-control modaledit" id="evaporation-averagesmay-val" name="evaporation-averagesmay-val" type="number" value=0>
+                                        </div>
+                                        <div class="col-md-3 mb-3">
+                                            <label class="modallabel" id="evaporation-averagesjun-label" for="evaporation-averagesjun-val">Jun</label>
+                                            <input class="form-control modaledit" id="evaporation-averagesjun-val" name="evaporation-averagesjun-val" type="number" value=0>
+                                        </div>
+                                        <div class="col-md-3 mb-3">
+                                            <label class="modallabel" id="evaporation-averagesjul-label" for="evaporation-averagesjul-val">Jul</label>
+                                            <input class="form-control modaledit" id="evaporation-averagesjul-val" name="evaporation-averagesjul-val" type="number" value=0>
+                                        </div>
+                                        <div class="col-md-3 mb-3">
+                                            <label class="modallabel" id="evaporation-averagesaug-label" for="evaporation-averagesaug-val">Aug</label>
+                                            <input class="form-control modaledit" id="evaporation-averagesaug-val" name="evaporation-averagesaug-val" type="number" value=0>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-3 mb-3">
+                                            <label class="modallabel" id="evaporation-averagessep-label" for="evaporation-averagessep-val">Sep</label>
+                                            <input class="form-control modaledit" id="evaporation-averagessep-val" name="evaporation-averagessep-val" type="number" value=0>
+                                        </div>
+                                        <div class="col-md-3 mb-3">
+                                            <label class="modallabel" id="evaporation-averagesoct-label" for="evaporation-averagesoct-val">Oct</label>
+                                            <input class="form-control modaledit" id="evaporation-averagesoct-val" name="evaporation-averagesoct-val" type="number" value=0>
+                                        </div>
+                                        <div class="col-md-3 mb-3">
+                                            <label class="modallabel" id="evaporation-averagesnov-label" for="evaporation-averagesnov-val">Nov</label>
+                                            <input class="form-control modaledit" id="evaporation-averagesnov-val" name="evaporation-averagesnov-val" type="number" value=0>
+                                        </div>
+                                        <div class="col-md-3 mb-3">
+                                            <label class="modallabel" id="evaporation-averagesdec-label" for="evaporation-averagesdec-val">Dec</label>
+                                            <input class="form-control modaledit" id="evaporation-averagesdec-val" name="evaporation-averagesdec-val" type="number" value=0>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="evaporation-source" id="evaporation-temperatures">
-                                    <label class="form-check-label" for="evaporation-termperatures">Temperatures</label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="evaporation-source" id="evaporation-external" disabled>
-                                    <label class="form-check-label" for="evaporation-external">Monthly Soil Recovery Pattern - in testing</label>
-                                </div>
+                                <div class="evaporation-input" id="evaporation-Temperatures" style="display:none;">Temperatures</div>
                             </div>
                         </div>
                     </div>

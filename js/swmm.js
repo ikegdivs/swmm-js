@@ -2211,12 +2211,41 @@ d3.inp = function() {
         /////////////////////////////////////////////////////////////
 
         var modalEditEvaporation = function(id){
+            // Array to hold names of TimeSeries
+            let tsNames = [];
+            
             // Show the modal.
             $('#modalEvaporation').modal('toggle');
 
             // Make sure to check if the EVAPORATION object exists.
             if(typeof swmmjs.model['EVAPORATION'] === 'undefined'){
                 swmmjs.model['EVAPORATION'] = [];
+            }
+            // If the model already has a value for the evaporation constant, show it.
+            if(swmmjs.model['EVAPORATION'].CONSTANT &&
+                swmmjs.model['EVAPORATION'].CONSTANT.Value){
+                    $('#evaporation-select').val('Constant');
+                    $('#evaporation-constant').show();
+                    $('#evaporation-constant-val').val(swmmjs.model['EVAPORATION'].CONSTANT.Value);
+            }
+            if(swmmjs.model['EVAPORATION'].TIMESERIES &&
+                swmmjs.model['EVAPORATION'].TIMESERIES.Value){
+                    $('#evaporation-select').val('TimeSeries');
+                    Object.entries(swmmjs.model.TIMESERIES).forEach(el => {
+                        // Get the value el.TimeSeries
+                        if(tsNames.indexOf(el[1].TimeSeries) === -1){
+                            let selected = '';
+                            if(swmmjs.model['EVAPORATION'].TIMESERIES &&
+                                swmmjs.model['EVAPORATION'].TIMESERIES.Value === el[1].TimeSeries){
+                                selected = 'selected'
+                            }
+                            tsNames.push(el[1].TimeSeries)
+                            // Use tsNames to populate #temperature-ts with <option> elements
+                            $('#evaporation-timeseries-val').append('<option value="'+el[1].TimeSeries+'" '+selected+'>'+el[1].TimeSeries+'</option>')
+                        }
+                    })
+                    $('#evaporation-timeseries').show();
+                    $('#evaporation-timeseries-val').val(swmmjs.model['EVAPORATION'].TIMESERIES.Value);
             }
         }
 
@@ -2228,6 +2257,46 @@ d3.inp = function() {
             // Show the modal.
             //$('#modalEvaporation').modal('toggle');
         }
+
+        // When modalEditEvaporation select happens, update the input structures
+        $('#evaporation-select').on('change', function(){
+            // hide all the evaporation-input classes
+            $('.evaporation-input').hide();
+            if(this.value === 'Constant'){
+                $('#evaporation-constant').show();
+                $('#evaporation-constant-val').val(0);
+            }
+            if(this.value === 'TimeSeries'){
+                // Array to hold names of TimeSeries
+                let tsNames = [];
+                // Empty the timeseries select options
+                $('#evaporation-timeseries-val').empty();
+
+                // Add a default empty 'None' option to the timeseries select options.
+                $('#evaporation-timeseries-val').append('<option value="None">None</option>')
+
+                // Foreach el in swmmjs.model['TIMESERIES']
+                Object.entries(swmmjs.model.TIMESERIES).forEach(el => {
+                    // Get the value el.TimeSeries
+                    if(tsNames.indexOf(el[1].TimeSeries) === -1){
+                        let selected = '';
+                        if(swmmjs.model['EVAPORATION'].TIMESERIES &&
+                            swmmjs.model['EVAPORATION'].TIMESERIES.Value === el[1].TimeSeries){
+                            selected = 'selected'
+                        }
+                        tsNames.push(el[1].TimeSeries)
+                        // Use tsNames to populate #temperature-ts with <option> elements
+                        $('#evaporation-timeseries-val').append('<option value="'+el[1].TimeSeries+'" '+selected+'>'+el[1].TimeSeries+'</option>')
+                    }
+                })
+
+                $('#evaporation-timeseries').show();
+            }
+            if(this.value === 'ClimateFile')
+                $('#evaporation-climatefile').show();
+            if(this.value === 'MonthlyAverages')
+                $('#evaporation-averages').show();
+        });
 
         /////////////////////////////////////////////////////////////
         // Windspeed Modal 

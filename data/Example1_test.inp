@@ -42,7 +42,7 @@ LAT_FLOW_TOL         5
 [EVAPORATION]
 ;;Evap Data      Parameters
 ;;-------------- ----------------
-TIMESERIES       TS2
+CONSTANT         0.69
 DRY_ONLY         NO
 
 [RAINGAGES]
