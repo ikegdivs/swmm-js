@@ -3450,30 +3450,114 @@ d3.inp = function() {
                 return;
             },
             RAINGAGES: function(section, key, line) {
-                return
+                    var m = line.match(/\s+([a-zA-Z0-9\.]+)\s+([:0-9\.]+)\s+([0-9\.]+)\s+([A-Za-z0-9\.]+)\s+([A-Za-z0-9\.]+)/);
+                    if (m && m.length)
+                        section[key] = {Format: m[1], Interval: m[2], SCF: m[3], Source: m[4], SeriesName: m[5], Description: curDesc};
+                        //swmmjs.model.RAINGAGES[id] = {Description: '', Format: 'INTENSITY', Interval: '1:00', SCF: 1.0, Source: 'TIMESERIES', SeriesName: '*', FileName: '*', StationID: '*', RainUnits: 'IN'}
             },
+            /* TEMPERATURE is an object, not an array. */
+            /* Each key of TEMPERATURE is an individual object/array. */
             TEMPERATURE: function(section, key, line) {
                 line = (key + line).trim();
-                let m = line.split(/\b\s+/);
-                if (m && m.length)
-                        section[key] = {Value: m[1].trim()};
+                let m = line.split(/\s+/);
+
+                if (m && m.length){
+                    switch(key){
+                        case 'TIMESERIES':
+                            model.TEMPERATURE.TimeSeries = m[1].trim();
+                            break;
+                        case 'FILE':
+                            model.TEMPERATURE.File = m[1].trim();
+                            if(m[2]) model.TEMPERATURE.FileStart = m[2].trim();
+                            else model.TEMPERATURE.FileStart = null;
+                            break;
+                        case 'WINDSPEED':
+                            switch(m[1].trim()){
+                                case 'MONTHLY':
+                                    // Read in 12 numbers
+                                    model.TEMPERATURE.WINDSPEED = {Type: 'MONTHLY', AWS: []};
+                                    for(let i = 0; i < 12; i++){
+                                        model.TEMPERATURE.WINDSPEED.AWS[i] = parseFloat(m[i+2]);
+                                    }
+                                    break;
+                                case 'FILE':
+                                    // Actual file name is in model.TEMPERATURE.File
+                                    model.TEMPERATURE.WINDSPEED = {Type: 'FILE'};
+                                    break;
+                            }
+                        case 'SNOWMELT':
+                             // Read in 6 numbers
+                             model.TEMPERATURE.SNOWMELT = [];
+                             for(let i = 0; i < 6; i++){
+                                 model.TEMPERATURE.SNOWMELT[i] = parseFloat(m[i+1]);
+                             }
+                             break;
+                        case 'ADC':
+                            if(!model.TEMPERATURE.ADC) model.TEMPERATURE.ADC = {};
+                            switch(m[1].trim()){
+                                case 'IMPERVIOUS':
+                                    model.TEMPERATURE.ADC.IMPERVIOUS = [];
+                                    for(let i = 0; i < 10; i++){
+                                        model.TEMPERATURE.ADC.IMPERVIOUS[i] = parseFloat(m[i+2]);
+                                    }
+                                    break;
+                                case 'PERVIOUS':
+                                    model.TEMPERATURE.ADC.PERVIOUS = [];
+                                    for(let i = 0; i < 10; i++){
+                                        model.TEMPERATURE.ADC.PERVIOUS[i] = parseFloat(m[i+2]);
+                                    }
+                                    break;
+                            }
+                    }
+                }
                 return;
             },
+            
             EVAPORATION: function(section, key, line) {
-                var m = line.match(/\s+([//\-:a-zA-Z0-9\.]+)/);
-                    if (m && m.length)
-                        section[key] = {Value: m[1]};
+                line = (key + line).trim();
+                let m = line.split(/\s+/);
+
+                if (m && m.length){
+                    switch(key){
+                        case 'CONSTANT':
+                            model.EVAPORATION.Constant = parseFloat(m[1]);
+                            break;
+                        case 'MONTHLY':
+                            // Read in 12 numbers
+                            model.EVAPORATION.MONTHLY = [];
+                            for(let i = 0; i < 12; i++){
+                                model.EVAPORATION.MONTHLY[i] = parseFloat(m[i+1]);
+                            }
+                            break;
+                        case 'TIMESERIES':
+                            model.EVAPORATION.TimeSeries = m[1].trim();
+                            break;
+                        case 'TEMPERATURE':
+                            model.EVAPORATION.Temperature = m[1].trim();
+                            break;
+                        case 'FILE':
+                            model.EVAPORATION.FILE = [];
+                            for(let i = 0; i < 12; i++){
+                                model.EVAPORATION.FILE[i] = parseFloat(m[i+1]);
+                            }
+                            break;
+                        case 'RECOVERY':
+                            model.EVAPORATION.Recovery = m[1].trim();
+                            break;
+                        case 'DRY_ONLY':
+                            model.EVAPORATION.DryOnly = m[1].trim();
+                            break;
+                    }
+                }
                 return;
             },
             SUBCATCHMENTS: function(section, key, line) {
-                line = key + line;
-                line = line.trim();
-                m = line.split(/\b\s+/)
-                if (m && m.length){
-                    section[key].Area = parseFloat(m[3]);
-                    section[key].Width = parseFloat(m[5]);
+                var m = line.match(/\s*([^\s;]+)\s+([0-9\.]+)\s+([0-9\.]+)\s+([0-9\.]+)\s+([0-9\.]+)\s+([0-9\.]+)\s+([0-9\.]+)\s+([^;]).*/);
+                if (m && m.length && 9 === m.length) {
+                    section[key] = {RainGage: m[1], Outlet: parseFloat(m[2]), 
+                    Area: parseFloat(m[3]), PctImperv: parseFloat(m[4]),
+                    Width: parseFloat(m[5]), PctSlope: parseFloat(m[6]), CurbLen: parseFloat(m[7]), SnowPack: m[8], Description: curDesc};
                 }
-                return;
             },
             SUBAREAS: function(section, key, line) {
                 line = key + line;
@@ -3525,13 +3609,15 @@ d3.inp = function() {
                                         Description: curDesc};
             },
             OUTFALLS: function(section, key, line) {
-                line = (key + line).trim();
-                let m = line.split(/\b\s+/);
-                if (m && m.length >= 5)
-                    section[key].StageData = m[3].trim();
-                else
-                    section[key].StageData = '';
-                return;
+                var m = [];
+                line = key + line;
+                m.push(line)
+                m.push(line.slice(17,28))
+                m.push(line.slice(28,39))
+                m.push(line.slice(39,56))
+                m.push(line.slice(56,line.length))
+                if (m && m.length)
+                        section[key] = {Invert: parseFloat(m[1]), Type: m[2].trim(), StageData: m[3].trim(), Gated: m[4].trim()};
             },
             STORAGE: function(section, key, line) {
                 line = (key + line).trim();
@@ -4007,7 +4093,7 @@ d3.inp = function() {
 
         model = {   // Input file model variables. Related to a header in .inp file.
                     TITLE: [],              OPTIONS: [],            RAINGAGES: [],
-                    TEMPERATURE: [],        EVAPORATION: [],        
+                    TEMPERATURE: {},        EVAPORATION: [],        
                     SUBCATCHMENTS: [],      SUBAREAS: [],           INFILTRATION: [],
                     AQUIFERS: [],           GROUNDWATER: [],        
                     SNOWPACKS: [],          JUNCTIONS: [],          OUTFALLS: [],
@@ -4026,24 +4112,17 @@ d3.inp = function() {
                     LID_CONTROLS: [],       LID_USAGE: [],          EVENT: [],
 
                     // Loose model variables. Can refer to interface or input file.
-                    Fclimate, Snow, Temp, Wind,
+                    Fclimate,
 
                     // Interface model variables
                     clickEffect: 'edit'},
         lines = text.split(/\r\n|\r|\n/),
         section = null;
-
-        // Data Source (file or timeseries) for temperature data
-        // Switches when user clicks on 'External Climate File' in Climatology->Temperature.
-        model.Temp.dataSource = NO_TEMP;
-        model.Temp.fileStartDate = NO_DATE;
-        model.Wind.aws = [];
-        
         
         // Open the files and translate to a model.
         let JSONpointer = inpToJSON();
 
-        let n = 999999;
+        /*let n = 999999;
         let js_array = Module.HEAPU8.subarray(JSONpointer, JSONpointer + n)
         let JX_string = new TextDecoder().decode(js_array)
         JX_string = JX_string.slice(0, JX_string.indexOf('\0') );
@@ -4052,20 +4131,12 @@ d3.inp = function() {
             JX = $.parseJSON(JX_string);
         } catch(e){
             alert(e);
-        }
-
-        // Translate the Title
-        // TITLE
-        /*model['TITLE'] = [];
-        JX.Title.forEach(function(line){
-            model['TITLE'].push({TitleNotes: line})
-        })*/
+        }*/
 
         ///////////////////////////////////////////////////////
         // raw swmm-js translations
         ///////////////////////////////////////////////////////
-        if ( JX.OPTIONS.FLOW_UNITS <= MGD )  UnitSystem = US;
-        else                                UnitSystem = SI;
+        
 
         // Get base data (time patterns, time series, etc) first
         /*JX.Pattern.forEach(function(el){
@@ -4089,7 +4160,7 @@ d3.inp = function() {
         
         //  [RAINGAGES]
         //
-        JX.Gage.forEach(function(el){
+        /*JX.Gage.forEach(function(el){
             model['RAINGAGES'][el.ID.toString()] = {
                 Description: '', 
                 Format: RainTypeWords[el.rainType],   // intensity, volume, cumulative
@@ -4102,11 +4173,11 @@ d3.inp = function() {
                 rainUnits: el.rainUnits,              // rain depth units (US or SI)
                 coGage: el.coGage                     // index of gage with same rain timeseries
             };
-        })
+        })*/
         
         //  [SUBCATCHMENTS]
         //
-        JX.Subcatch.forEach(function(el){
+        /*JX.Subcatch.forEach(function(el){
             model['SUBCATCHMENTS'][el.ID.toString()] = {
                 Description: '', 
                 RainGage: JX.Gage[el.gage].ID,
@@ -4118,13 +4189,10 @@ d3.inp = function() {
                 CurbLen: el.curbLength,
                 SnowPack: ''
             };
-        })
-
-        //  [SUBAREAS]
-        //  SUBAREAS does not utilize the SJX object
+        })*/
 
         // [OUTFALLS]
-        JX.Outfall.forEach(function(el, index){
+        /*JX.Outfall.forEach(function(el, index){
             let thisID = JX.Node.filter(obj => { return obj.type === OUTFALL && obj.subIndex === index; })[0].ID;
             model['OUTFALLS'][thisID] = {
                 Invert: JX.Node.filter(obj => { return obj.ID === thisID; })[0].invertElev,
@@ -4132,9 +4200,7 @@ d3.inp = function() {
                 StageData: null,
                 Gated: NoYesWords[el.hasFlapGate]
             };
-        })
-
-
+        })*/
 
         //////////////////////////////////////////////////////////
         // wasm swmm-js translations
@@ -4169,6 +4235,10 @@ d3.inp = function() {
                 curDesc = '';
             };
         });
+
+        // Maybe this needs to be done during the parse?
+        if ( model['OPTIONS'].FLOW_UNITS <= MGD )   UnitSystem = US;
+        else                                        UnitSystem = SI;
 
         // Set REPORT.elements = 'ALL' in case report does not include them
         if(!model['REPORT']) {model['REPORT'] =  []}
@@ -4702,7 +4772,7 @@ var swmmjs = function() {
         }
         inpString += '\n';
 
-        secStr = 'RAINGAGES';
+        /*secStr = 'RAINGAGES';
         inpString +='[RAINGAGES]\n;;Gage           Format    Interval SCF      Source\n;;-------------- --------- ------ ------ ----------\n'
         for (let entry in model[secStr]) {
             // If there is a description, save it.
@@ -4714,6 +4784,22 @@ var swmmjs = function() {
             inpString += translateTohM(model[secStr][entry].Interval).toString().padEnd(7, ' ') + ' ';
             inpString += model[secStr][entry].SCF.toString().padEnd(7, ' ') + ' ';
             inpString += model[secStr][entry].Source.padEnd(11, ' ') + ' ';
+            inpString += model[secStr][entry].SeriesName.padEnd(11, ' ');
+            inpString += '\n';
+        }
+        inpString += '\n';*/
+        secStr = 'RAINGAGES';
+        inpString +='[RAINGAGES]\n;;Gage           Format    Interval SCF      Source\n;;-------------- --------- ------ ------ ----------\n'
+        for (let entry in model[secStr]) {
+            // If there is a description, save it.
+            if(typeof model[secStr][entry].Description !== 'undefined' && model[secStr][entry].Description.length > 0){
+                inpString += ';' + model[secStr][entry].Description + '\n';
+            }
+            inpString += entry.padEnd(17, ' ');
+            inpString += model[secStr][entry].Format.padEnd(10, ' ');
+            inpString += model[secStr][entry].Interval.padEnd(7, ' ');
+            inpString += model[secStr][entry].SCF.toString().padEnd(7, ' ');
+            inpString += model[secStr][entry].Source.padEnd(11, ' ');
             inpString += model[secStr][entry].SeriesName.padEnd(11, ' ');
             inpString += '\n';
         }
@@ -4745,12 +4831,45 @@ var swmmjs = function() {
                 break;
         }*/
 
-        secStr = 'TEMPERATURE';
-        inpString +='[TEMPERATURE]\n;;Temp/Wind/Snow   Source/Data\n'
-        for (let entry in model[secStr]) {
-            inpString += entry.toString() + ' ';
-            inpString += model[secStr][entry].Value;
-            inpString += '\n';
+        // Temperature is an object, not an array.
+        if(model.TEMPERATURE){
+            secStr = 'TEMPERATURE';
+            inpString +='[TEMPERATURE]\n;;Temp/Wind/Snow   Source/Data\n'
+            if(model.TEMPERATURE.File) inpString += 'FILE ' + model.TEMPERATURE.File + ' ' + model.TEMPERATURE.FileStart || '' + '\n';
+            if(model.TEMPERATURE.TimeSeries) inpString += 'TIMESERIES ' + model.TEMPERATURE.TimeSeries + '\n';
+            if(model.TEMPERATURE.WINDSPEED){
+                inpString += model.TEMPERATURE.WINDSPEED.Type;
+                if(model.TEMPERATURE.WINDSPEED.AWS){
+                    for (let entry in model.TEMPERATURE.WINDSPEED.AWS) {
+                        inpString += ' ' + entry.toString();
+                    }
+                }
+                inpString += '\n';
+            }
+            if(model.TEMPERATURE.SNOWMELT){
+                inpString += 'SNOWMELT';
+                for (let entry in model.TEMPERATURE.SNOWMELT) {
+                    inpString += ' ' + entry.toString();
+                }
+                inpString += '\n';
+            }
+            if(model.TEMPERATURE.AOC){
+                inpString += 'AOC';
+                if(model.TEMPERATURE.AOC.IMPERVIOUS){
+                    inpString += ' IMPERVIOUS';
+                    for (let entry in model.TEMPERATURE.AOC.IMPERVIOUS) {
+                        inpString += ' ' + entry.toString();
+                    }
+                }
+                inpString += '\n';
+                if(model.TEMPERATURE.AOC.PERVIOUS){
+                    inpString += ' PERVIOUS';
+                    for (let entry in model.TEMPERATURE.AOC.PERVIOUS) {
+                        inpString += ' ' + entry.toString();
+                    }
+                }
+                inpString += '\n';
+            }
         }
         inpString += '\n';
 
@@ -4762,7 +4881,7 @@ var swmmjs = function() {
             inpString += '\n';
         }
         inpString += '\n';
-
+/*
         secStr = 'SUBCATCHMENTS';
         inpString +='[SUBCATCHMENTS]\n;;Subcatchment   Rain Gage        Outlet           Area     %Imperv  Width    %Slope   CurbLen  Snow Pack       \n;;-------------- ---------------- ---------------- -------- -------- -------- -------- -------- ----------------\n'
         for (let entry in model[secStr]) {
@@ -4775,6 +4894,22 @@ var swmmjs = function() {
             inpString += model[secStr][entry].PctSlope.toString().padEnd(9, ' ')+ ' ';
             inpString += model[secStr][entry].CurbLen.toString().padEnd(9, ' ')+ ' ';
             inpString += model[secStr][entry].SnowPack.padEnd(17, ' ')+ ' ';
+            inpString += '\n';
+        }
+        inpString += '\n';*/
+        
+        secStr = 'SUBCATCHMENTS';
+        inpString +='[SUBCATCHMENTS]\n;;Subcatchment   Rain Gage        Outlet           Area     %Imperv  Width    %Slope   CurbLen  Snow Pack       \n;;-------------- ---------------- ---------------- -------- -------- -------- -------- -------- ----------------\n'
+        for (let entry in model[secStr]) {
+            inpString += entry.padEnd(17, ' ');
+            inpString += model[secStr][entry].RainGage.padEnd(17, ' ');
+            inpString += model[secStr][entry].Outlet.toString().padEnd(17, ' ');
+            inpString += model[secStr][entry].Area.toString().padEnd(9, ' ');
+            inpString += model[secStr][entry].PctImperv.toString().padEnd(9, ' ');
+            inpString += model[secStr][entry].Width.toString().padEnd(9, ' ');
+            inpString += model[secStr][entry].PctSlope.toString().padEnd(9, ' ');
+            inpString += model[secStr][entry].CurbLen.toString().padEnd(9, ' ');
+            inpString += model[secStr][entry].SnowPack.padEnd(17, ' ');
             inpString += '\n';
         }
         inpString += '\n';
@@ -4850,7 +4985,7 @@ var swmmjs = function() {
         }
         inpString += '\n';
 
-        secStr = 'OUTFALLS';
+        /*secStr = 'OUTFALLS';
         inpString +='[OUTFALLS]\n;;Outfall        Invert     Type       Stage Data       Gated   \n;;-------------- ---------- ---------- ---------------- --------\n'        
         for (let entry in model[secStr]) {
             // If there is a description, save it.
@@ -4862,6 +4997,21 @@ var swmmjs = function() {
             inpString += model[secStr][entry].Type.padEnd(11, ' ') + ' ';
             inpString += model[secStr][entry].StageData.padEnd(17, ' ') + ' ';
             inpString += model[secStr][entry].Gated.padEnd(9, ' ') + ' ';
+            inpString += '\n';
+        }
+        inpString += '\n';*/
+        secStr = 'OUTFALLS';
+        inpString +='[OUTFALLS]\n;;Outfall        Invert     Type       Stage Data       Gated   \n;;-------------- ---------- ---------- ---------------- --------\n'        
+        for (let entry in model[secStr]) {
+            // If there is a description, save it.
+            if(typeof model[secStr][entry].Description !== 'undefined' && model[secStr][entry].Description.length > 0){
+                inpString += ';' + model[secStr][entry].Description + '\n';
+            }
+            inpString += entry.padEnd(17, ' ');
+            inpString += model[secStr][entry].Invert.toString().padEnd(11, ' ');
+            inpString += model[secStr][entry].Type.padEnd(11, ' ');
+            inpString += model[secStr][entry].StageData.padEnd(17, ' ');
+            inpString += model[secStr][entry].Gated.padEnd(9, ' ');
             inpString += '\n';
         }
         inpString += '\n';

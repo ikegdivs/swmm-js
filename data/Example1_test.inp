@@ -42,8 +42,16 @@ LAT_FLOW_TOL         5
 [EVAPORATION]
 ;;Evap Data      Parameters
 ;;-------------- ----------------
-CONSTANT         0.69
+MONTHLY          0.69   0.69   0.69   0.69   0.69   0.69   0.69   0.69   0.69   0.69   0.69   0.69  
 DRY_ONLY         NO
+
+[TEMPERATURE]
+;;Temp/Wind/Snow   Source/Data
+FILE               "C:\Users\issac\Documents\GitHub\swmm-js\xsect.dat"  1/31/1995
+WINDSPEED          MONTHLY    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
+SNOWMELT           34 0.5 0.6 0.0 50.0 0.0
+ADC IMPERVIOUS     1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+ADC PERVIOUS       1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
 
 [RAINGAGES]
 ;;Gage           Format    Interval SCF      Source    
