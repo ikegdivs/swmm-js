@@ -3489,7 +3489,14 @@ d3.inp = function() {
                              // Read in 6 numbers
                              model.TEMPERATURE.SNOWMELT = [];
                              for(let i = 0; i < 6; i++){
-                                 model.TEMPERATURE.SNOWMELT[i] = parseFloat(m[i+1]);
+                                model.TEMPERATURE.SNOWMELT[i] = parseFloat(m[i+1]);
+
+                                model.TEMPERATURE.SNOWMELT.DivideTemp     = parseFloat(m[1]);
+                                model.TEMPERATURE.SNOWMELT.ATIWeight      = parseFloat(m[2]);
+                                model.TEMPERATURE.SNOWMELT.NegMeltRatio   = parseFloat(m[3]);
+                                model.TEMPERATURE.SNOWMELT.MSLElev        = parseFloat(m[4]);
+                                model.TEMPERATURE.SNOWMELT.DegLatitude    = parseFloat(m[5]);
+                                model.TEMPERATURE.SNOWMELT.LongCorrection = parseFloat(m[6]);
                              }
                              break;
                         case 'ADC':
@@ -4848,9 +4855,12 @@ var swmmjs = function() {
             }
             if(model.TEMPERATURE.SNOWMELT){
                 inpString += 'SNOWMELT';
-                for (let entry in model.TEMPERATURE.SNOWMELT) {
-                    inpString += ' ' + entry.toString();
-                }
+                inpString += model.TEMPERATURE.SNOWMELT.DivideTemp     + ' ';
+                inpString += model.TEMPERATURE.SNOWMELT.ATIWeight      + ' ';
+                inpString += model.TEMPERATURE.SNOWMELT.NegMeltRatio   + ' ';
+                inpString += model.TEMPERATURE.SNOWMELT.MSLElev        + ' ';
+                inpString += model.TEMPERATURE.SNOWMELT.DegLatitude    + ' ';
+                inpString += model.TEMPERATURE.SNOWMELT.LongCorrection;
                 inpString += '\n';
             }
             if(model.TEMPERATURE.AOC){
@@ -4876,27 +4886,28 @@ var swmmjs = function() {
         secStr = 'EVAPORATION';
         inpString +='[EVAPORATION]\n;;Evap Data      Parameters\n;;-------------- ----------------\n'
         for (let entry in model[secStr]) {
-            inpString += entry.padEnd(21, ' ');
-            inpString += model[secStr][entry].Value;
-            inpString += '\n';
+            if(model.EVAPORATION.Constant) inpString += 'CONSTANT ' + model.EVAPORATION.Constant + '\n';
+            if(model.EVAPORATION.MONTHLY){
+                inpString += 'MONTHLY ';
+                for (let entry in model.EVAPORATION.MONTHLY) {
+                    inpString += ' ' + entry.toString();
+                }
+                inpString += '\n';
+            }
+            if(model.EVAPORATION.TimeSeries) inpString += 'TIMESERIES ' + model.EVAPORATION.TimeSeries + '\n';
+            if(model.EVAPORATION.Temperature) inpString += 'TEMPERATURE ' + model.EVAPORATION.Temperature + '\n';
+            if(model.EVAPORATION.FILE){
+                inpString += 'FILE ';
+                for (let entry in model.EVAPORATION.FILE) {
+                    inpString += ' ' + entry.toString();
+                }
+                inpString += '\n';
+            }
+            if(model.EVAPORATION.Recovery) inpString += 'RECOVERY ' + model.EVAPORATION.Recovery + '\n';
+            if(model.EVAPORATION.DryOnly) inpString += 'DRY_ONLY ' + model.EVAPORATION.DryOnly + '\n';
+            
         }
         inpString += '\n';
-/*
-        secStr = 'SUBCATCHMENTS';
-        inpString +='[SUBCATCHMENTS]\n;;Subcatchment   Rain Gage        Outlet           Area     %Imperv  Width    %Slope   CurbLen  Snow Pack       \n;;-------------- ---------------- ---------------- -------- -------- -------- -------- -------- ----------------\n'
-        for (let entry in model[secStr]) {
-            inpString += entry.padEnd(17, ' ') + ' ';
-            inpString += model[secStr][entry].RainGage.padEnd(17, ' ') + ' ';
-            inpString += model[secStr][entry].Outlet.toString().padEnd(17, ' ')+ ' ';
-            inpString += model[secStr][entry].Area.toString().padEnd(9, ' ')+ ' ';
-            inpString += model[secStr][entry].PctImperv.toString().padEnd(9, ' ')+ ' ';
-            inpString += model[secStr][entry].Width.toString().padEnd(9, ' ')+ ' ';
-            inpString += model[secStr][entry].PctSlope.toString().padEnd(9, ' ')+ ' ';
-            inpString += model[secStr][entry].CurbLen.toString().padEnd(9, ' ')+ ' ';
-            inpString += model[secStr][entry].SnowPack.padEnd(17, ' ')+ ' ';
-            inpString += '\n';
-        }
-        inpString += '\n';*/
         
         secStr = 'SUBCATCHMENTS';
         inpString +='[SUBCATCHMENTS]\n;;Subcatchment   Rain Gage        Outlet           Area     %Imperv  Width    %Slope   CurbLen  Snow Pack       \n;;-------------- ---------------- ---------------- -------- -------- -------- -------- -------- ----------------\n'
