@@ -185,7 +185,7 @@ d3.inp = function() {
             thisEl.innerText = itemID; 
         }
 
-        //Add input and label elements to modal using an ID structure.
+        // Add input and label elements to modal using an ID structure.
         // For modals that do not use an ID strcture, try populateModal().
         // Input to this function is an array of objects of the format:
         //
