@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="Issac Gardner">
+    <title>swmm-js demo</title>
+
+    <link rel="canonical" href="https://getbootstrap.com/docs/5.0/examples/product/">
+
+    <link rel="stylesheet" href="/node_modules/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/node_modules/bootstrap-icons/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="/node_modules/tabulator-tables/dist/css/tabulator.min.css">
+    <!-- Custom styles for this template -->
+    <!--<link rel="stylesheet" href="dashboard.css">-->
+    <link rel="stylesheet" href="./style.css">
+    <!-- React/Babel -->
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+
+    <style>
+      .bd-placeholder-img {
+        font-size: 1.125rem;
+        text-anchor: middle;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        user-select: none;
+      }
+
+      @media (min-width: 768px) {
+        .bd-placeholder-img-lg {
+          font-size: 3.5rem;
+        }
+      }
+    </style>
+
+    
+    <!-- Custom styles for this template -->
+    <link href="product.css" rel="stylesheet">
+  </head>
+  <body>
+    
+<header class="site-header sticky-top py-1">
+  <nav class="container d-flex flex-column flex-md-row justify-content-center">
+    <a class="py-2 d-none d-md-inline-block" href="www.swmm-js.org">swmm-js</a>
+  </nav>
+</header>
+
+<main>
+  <div class="position-relative overflow-hidden p-3 p-md-5 m-md-3 text-center bg-light">
+      <div class="d3viz demoviz">
+        <svg id="svgSimple"></svg>
+      </div>
+  </div>
+
+
+  <div class="d-md-flex flex-md-equal w-100 my-md-3 ps-md-3">
+    <div class="bg-light me-md-3 pt-3 px-3 pt-md-5 px-md-5 text-center overflow-hidden">
+      <div class="my-3 p-3">
+        <h2 class="display-5">swmm-js demo 002</h2>
+        <p class="lead">This demo utilizes an interactive switch to modify an EPA-SWMM file.</p>
+      </div>
+    </div>
+    <div class="bg-dark me-md-3 pt-3 px-3 pt-md-5 px-md-5 text-center text-white overflow-hidden">
+      <div class="my-3 py-3">
+        <h2 class="display-5">Dashboard Elements</h2>
+        <p class="lead">Utilizing custom dashboards allows for interactive modeling experiences.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="d-md-flex flex-md-equal w-100 my-md-3 ps-md-3">
+    <div class="bg-dark me-md-3 pt-3 px-3 pt-md-5 px-md-5 text-center text-white overflow-hidden">
+      <div class="my-3 py-3">
+        <h2 class="display-5">Control the model dynamically.</h2>
+        <p class="lead text-left">Use the switches below to add 2 cfs flow to the indicated node. The resulting model flow in link 10 is displayed in the chart following.</p>
+        <ul id="demo001-list" style="list-style-type: none; margin-top: 25px; padding-top: 25px; padding-left: -25%;">
+        </ul>
+      </div>
+    </div>
+    <div class="bg-light me-md-3 pt-3 px-3 pt-md-5 px-md-5 text-center overflow-hidden">
+      <div id="demochartspot" class="my-3 p-3">
+        <p class="text-center" style="font-weight:bold">Demo 2: Flow in link 10 (cfs)</p>
+        <svg id="demo_svg_01"></svg>
+      </div>
+    </div>
+  </div>
+
+  <div id="myModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="newModalTitle" aria-hidden="true" data-backdrop="false">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class= "modal-content">
+            <div class="modal-header bg-dark text-white">
+                <h5 class="modal-title" id="newModalTitle">Edit</h5>
+                <button type="button" class="close close-modal" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form class="needs-validation" id="generalModal" novalidate>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary close-modal" data-dismiss="modal">Close</button>
+                <button type="button" id="save-general-modal" class="btn btn-primary">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+</main>
+
+<footer class="container py-5">
+  <div class="row">
+    <div class="col-12 col-md">
+      <a class="py-2 d-none d-md-inline-block" href="www.swmm-js.org">swmm-js</a>
+      <small class="d-block mb-3 text-muted">&copy; 2020–2021</small>
+    </div>
+  </div>
+</footer>
+
+
+<span id="inpFile" hidden></span>
+<span id="rptFile" hidden></span>
+<span id="linkResult" hidden></span>
+<span id="nodeResult" hidden></span>
+<span id="progress" hidden></span>
+<span id="status" hidden></span>
+
+
+<!-- jQuery first, then Popper.js, then Bootstrap JS. -->
+<script src="/node_modules/jquery/dist/jquery.js"></script>
+<script src="/node_modules/popper.js/dist/umd/popper.js"></script>
+<script src="/node_modules/bootstrap/dist/js/bootstrap.js"></script>
+<script src="/node_modules/moment/min/moment.min.js"></script>
+<script src="/node_modules/tabulator-tables/dist/js/tabulator.min.js"></script>
+<script src="/node_modules/d3/dist/d3.min.js"></script>
+
+<script src='./js/text.js'></script>
+<script src='./js/keywords.js'></script>
+<script src='./js/consts.js'></script>
+<script src='./js/macros.js'></script>
+<script src='./js/enums.js'></script>
+
+<script src='./js.js'></script>
+<script src='./js/swmm.js'></script>
+<script src="./script.js"></script>
+<script src='./demo_002.js'></script>
+      
+  </body>
+</html>

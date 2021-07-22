@@ -3918,20 +3918,20 @@ d3.inp = function() {
                         section[key] = {LandUse: m[1].trim(), Percent: parseFloat(m[2])};
             },
             INFLOWS: function(section, key, line) {
-                var m = [];
-                line = key + line;
-                m.push(line)
-                m.push(line.slice(17,34))
-                m.push(line.slice(34,51))
-                m.push(line.slice(51,59))
-                m.push(line.slice(59,line.length))
-                if (m && m.length)
-                        section[Object.keys(section).length] = {
-                                        Node: key.trim(),
-                                        Parameter: m[1].trim(), 
-                                        TimeSeries: m[2].trim(),
-                                        ConcenMass: m[3].trim(),
-                                        Factor: parseFloat(m[4]) || ""};
+                line = (key + line).trim();
+                let m = line.split(/\s+/);
+                if (m && m.length){
+                    section[Object.keys(section).length] = {
+                        Node: key.trim(),
+                        Parameter: m[1].trim(), 
+                        TimeSeries: m[2].trim(),
+                        Type: m[3] ? m[3].trim() : '',
+                        UnitsFactor: m[4] ? parseFloat(m[4]) : 0,
+                        ScaleFactor: m[5] ? parseFloat(m[5]) : 0,
+                        Baseline: m[6] ? parseFloat(m[6]) : 0,
+                        Pattern: m[7] ? m[7].trim() : ''
+                    };
+                }
             }, 
             DWF: function(section, key, line) {
                 var m = line.match(/(.*)+/);
@@ -4118,16 +4118,13 @@ d3.inp = function() {
                     TAGS: [],               PROFILE: [],            FILE: [],
                     LID_CONTROLS: [],       LID_USAGE: [],          EVENT: [],
 
-                    // Loose model variables. Can refer to interface or input file.
-                    Fclimate,
-
                     // Interface model variables
                     clickEffect: 'edit'},
         lines = text.split(/\r\n|\r|\n/),
         section = null;
         
         // Open the files and translate to a model.
-        let JSONpointer = inpToJSON();
+        //let JSONpointer = inpToJSON();
 
         /*let n = 999999;
         let js_array = Module.HEAPU8.subarray(JSONpointer, JSONpointer + n)
@@ -4740,18 +4737,21 @@ var swmmjs = function() {
                     v = (swmmjs.results[$('#time').val()] ? (swmmjs.results[$('#time').val()]['NODE'][text] ? swmmjs.results[$('#time').val()]['NODE'][text][nodeResult] : '') : '');
                 text = fmt(v);
 	    }
-
+        
+        if(document.getElementById('tooltip')){
             document.getElementById('tooltip').style.display = 'block';
             document.getElementById('tooltip').style.backgroundColor = 'white';
             document.getElementById('tooltip').style.position = 'absolute';
             document.getElementById('tooltip').style.left = (swmmjs.currentPosition[0]+10) + 'px';
             document.getElementById('tooltip').style.top = (swmmjs.currentPosition[1]+10) + 'px';
             document.getElementById('tooltip').innerHTML = text;
-
+        }
 	};
 
 	svg.clearTooltips = function(element) {
+        if(document.getElementById('tooltip')){
             document.getElementById('tooltip').style.display = 'none';
+        }
 	};
 
 
@@ -5298,8 +5298,11 @@ var swmmjs = function() {
             inpString += model[secStr][entry].Node.padEnd(17, ' ') + ' ';
             inpString += model[secStr][entry].Parameter.padEnd(17, ' ') + ' ';
             inpString += model[secStr][entry].TimeSeries.padEnd(17, ' ') + ' ';
-            inpString += model[secStr][entry].ConcenMass.toString().padEnd(9, ' ') + ' ';
-            inpString += model[secStr][entry].Factor.toString().padEnd(9, ' ') + ' ';
+            inpString += model[secStr][entry].Type.toString().padEnd(9, ' ') + ' ';
+            inpString += model[secStr][entry].UnitsFactor.toString().padEnd(9, ' ') + ' ';
+            inpString += model[secStr][entry].ScaleFactor.toString().padEnd(9, ' ') + ' ';
+            inpString += model[secStr][entry].Baseline.toString().padEnd(9, ' ') + ' ';
+            inpString += model[secStr][entry].Pattern.toString().padEnd(9, ' ') + ' ';
             inpString += '\n';
         }
         inpString += '\n';
@@ -5860,13 +5863,17 @@ var swmmjs = function() {
             pt.x = event.pageX;
             pt.y = event.pageY;
             let globalPoint = pt.matrixTransform(svgEl.getScreenCTM().inverse());
-            document.getElementById('xy').innerHTML = 'X: ' + (pt.x) + ', Y: ' + (pt.y);
+            if(document.getElementById('xy')){
+                document.getElementById('xy').innerHTML = 'X: ' + (pt.x) + ', Y: ' + (pt.y);
+            }
 
             var xy = d3.pointer(event);
             var transform = d3.zoomTransform(vis.node());
             let xy1 = transform.invert(xy);
             
-            document.getElementById('xy2').innerHTML = 'X: ' + (xy1[0]).toFixed(0) + ', Y: ' + (svg.top - xy1[1]).toFixed(0);
+            if(document.getElementById('xy2')){
+                document.getElementById('xy2').innerHTML = 'X: ' + (xy1[0]).toFixed(0) + ', Y: ' + (svg.top - xy1[1]).toFixed(0);
+            }
         });
 
     };
@@ -6137,6 +6144,7 @@ var swmmjs = function() {
     swmmjs.run = function() {
         FS.quit();
         Module.arguments = ['/input.inp', '/report.txt', '/report.bin'];
+        
         Module.calledRun = false;
         Module.preRun = [function () {
                 try

@@ -81,25 +81,30 @@ document.addEventListener("DOMContentLoaded", function() {
     /////////////////////////////////////////////
     // Cover modal: for project intros, demos, etc.
     /////////////////////////////////////////////
-    $('#modalCover').modal('toggle');
-
-    document.getElementById("defaultModel1").addEventListener('click', 
-                function () {
-                    jQuery.get('./data/Example1.inp', function(contents){
-                        processInput(contents);
-                    })
-                    $('#modalCover').modal('toggle');
-                },
-                false)
-
-    document.getElementById("defaultModel2").addEventListener('click', 
-                function () {
-                    jQuery.get('./data/Example2.inp', function(contents){
-                        processInput(contents);
-                    })
-                    $('#modalCover').modal('toggle');
-                },
-                false)
+    if(document.getElementById("modalCover")){
+        if(document.getElementById("defaultModel1")){
+            document.getElementById("defaultModel1").addEventListener('click', 
+                        function () {
+                            jQuery.get('./data/Example1.inp', function(contents){
+                                processInput(contents);
+                            })
+                            $('#modalCover').modal('toggle');
+                        },
+                        false)
+        }
+    
+        if(document.getElementById("defaultModel2")){
+            document.getElementById("defaultModel2").addEventListener('click', 
+                        function () {
+                            jQuery.get('./data/Example2.inp', function(contents){
+                                processInput(contents);
+                            })
+                            $('#modalCover').modal('toggle');
+                        },
+                        false)
+        }
+        $('#modalCover').modal('toggle');
+    }
 
     /////////////////////////////////////////////
     // Visualization elements - temporary
@@ -125,146 +130,165 @@ document.addEventListener("DOMContentLoaded", function() {
     // Setting up to process input file.
     Module.onRuntimeInitialized = _ => {
         // Process the metadata file
-        // Load info.json
-        fetchRetry('./data/info.json', 500, 20, {headers: {'Content-Type': 'application/json', 'Accept': 'application/json'}});
+        // Load info.json if there is a cover modal
+        if(document.getElementById("modalCover")){
+            fetchRetry('./data/info.json', 500, 20, {headers: {'Content-Type': 'application/json', 'Accept': 'application/json'}});
+        }
     }
 
     // Listen for requests to open the default file.
     const demoElement = document.getElementById("nav-file-demo");
-    demoElement.addEventListener('click', loadDemo, false);
-    function loadDemo() {
-        jQuery.get('./data/Mod.inp', function(contents){
-            processInput(contents);
-        })
+    if(demoElement){
+        demoElement.addEventListener('click', loadDemo, false);
+        function loadDemo() {
+            jQuery.get('./data/Mod.inp', function(contents){
+                processInput(contents);
+            })
+        }
     }
 
     // Listen for requests to create a new file.
     const newFileElement = document.getElementById("nav-file-new");
-    newFileElement.addEventListener('click', createNewFile, false);
-    function createNewFile() {
-        document.getElementById('inpFile').value =
-`[TITLE]
-;;Project Title/Notes
+    if(newFileElement){
+        newFileElement.addEventListener('click', createNewFile, false);
+        function createNewFile() {
+            document.getElementById('inpFile').value =
+                `[TITLE]
+                ;;Project Title/Notes
 
-[OPTIONS]
-;;Option             Value
-FLOW_UNITS           CFS
-INFILTRATION         HORTON
-FLOW_ROUTING         KINWAVE
-LINK_OFFSETS         DEPTH
-MIN_SLOPE            0
-ALLOW_PONDING        NO
-SKIP_STEADY_STATE    NO
+                [OPTIONS]
+                ;;Option             Value
+                FLOW_UNITS           CFS
+                INFILTRATION         HORTON
+                FLOW_ROUTING         KINWAVE
+                LINK_OFFSETS         DEPTH
+                MIN_SLOPE            0
+                ALLOW_PONDING        NO
+                SKIP_STEADY_STATE    NO
 
-START_DATE           03/26/2021
-START_TIME           00:00:00
-REPORT_START_DATE    03/26/2021
-REPORT_START_TIME    00:00:00
-END_DATE             03/26/2021
-END_TIME             06:00:00
-SWEEP_START          1/1
-SWEEP_END            12/31
-DRY_DAYS             0
-REPORT_STEP          00:15:00
-WET_STEP             00:05:00
-DRY_STEP             01:00:00
-ROUTING_STEP         0:00:30 
+                START_DATE           03/26/2021
+                START_TIME           00:00:00
+                REPORT_START_DATE    03/26/2021
+                REPORT_START_TIME    00:00:00
+                END_DATE             03/26/2021
+                END_TIME             06:00:00
+                SWEEP_START          1/1
+                SWEEP_END            12/31
+                DRY_DAYS             0
+                REPORT_STEP          00:15:00
+                WET_STEP             00:05:00
+                DRY_STEP             01:00:00
+                ROUTING_STEP         0:00:30 
 
-INERTIAL_DAMPING     PARTIAL
-NORMAL_FLOW_LIMITED  BOTH
-FORCE_MAIN_EQUATION  H-W
-VARIABLE_STEP        0.75
-LENGTHENING_STEP     0
-MIN_SURFAREA         0
-MAX_TRIALS           0
-HEAD_TOLERANCE       0
-SYS_FLOW_TOL         5
-LAT_FLOW_TOL         5
+                INERTIAL_DAMPING     PARTIAL
+                NORMAL_FLOW_LIMITED  BOTH
+                FORCE_MAIN_EQUATION  H-W
+                VARIABLE_STEP        0.75
+                LENGTHENING_STEP     0
+                MIN_SURFAREA         0
+                MAX_TRIALS           0
+                HEAD_TOLERANCE       0
+                SYS_FLOW_TOL         5
+                LAT_FLOW_TOL         5
 
-[EVAPORATION]
-;;Evap Data      Parameters
-;;-------------- ----------------
-CONSTANT         0.0
-DRY_ONLY         NO
+                [EVAPORATION]
+                ;;Evap Data      Parameters
+                ;;-------------- ----------------
+                CONSTANT         0.0
+                DRY_ONLY         NO
 
-[REPORT]
-;;Reporting Options
-INPUT      NO
-CONTROLS   NO
-SUBCATCHMENTS ALL
-NODES ALL
-LINKS ALL
+                [REPORT]
+                ;;Reporting Options
+                INPUT      NO
+                CONTROLS   NO
+                SUBCATCHMENTS ALL
+                NODES ALL
+                LINKS ALL
 
-[TAGS]
+                [TAGS]
 
-[MAP]
-DIMENSIONS 0.000 0.000 10000.000 10000.000
-Units      None
+                [MAP]
+                DIMENSIONS 0.000 0.000 10000.000 10000.000
+                Units      None
 
-[COORDINATES]
-;;Node           X-Coord            Y-Coord           
-;;-------------- ------------------ ------------------
+                [COORDINATES]
+                ;;Node           X-Coord            Y-Coord           
+                ;;-------------- ------------------ ------------------
 
-[VERTICES]
-;;Link           X-Coord            Y-Coord           
-;;-------------- ------------------ ------------------
-`
-        processInput(document.getElementById('inpFile').value);
+                [VERTICES]
+                ;;Link           X-Coord            Y-Coord           
+                ;;-------------- ------------------ ------------------
+                `
+            processInput(document.getElementById('inpFile').value);
+        }
     }
+    
 
     // Listen for requests to run the simulation.
     const runElement = document.getElementById("nav-project-runsimulation");
-    runElement.addEventListener('click', runSimulation, false);
-    function runSimulation() {
-        //processInput(document.getElementById('inpFile').value);
-        // Pop up the processing modal.
-        $('#modalSpinner').modal('show')
-        runModelClick();
+    if(runElement){
+        runElement.addEventListener('click', runSimulation, false);
+        function runSimulation() {
+            //processInput(document.getElementById('inpFile').value);
+            // Pop up the processing modal.
+            $('#modalSpinner').modal('show')
+            runModelClick();
+        }
     }
 
 
     // Listen for requests to display a project summary.
     const summaryElement = document.getElementById("nav-project-summary");
-    summaryElement.addEventListener('click', displayProjectSummary, false);
-    function displayProjectSummary(){
-        modalProjectSummary();
+    if(summaryElement){
+        summaryElement.addEventListener('click', displayProjectSummary, false);
+        function displayProjectSummary(){
+            modalProjectSummary();
+        }
     }
 
     // Listen for requests to display a report status 
     const reportstatusElement = document.getElementById("nav-report-status");
-    reportstatusElement.addEventListener('click', displayReportStatus, false);
-    function displayReportStatus() {
-        modalReportStatus();
+    if(reportstatusElement){
+        reportstatusElement.addEventListener('click', displayReportStatus, false);
+        function displayReportStatus() {
+            modalReportStatus();
+        }
     }
 
     // Listen for requests to open an .inp file.
     const inputElement = document.getElementById("nav-file-input");
-    inputElement.addEventListener('change', handleFiles, false);
-    function handleFiles() {
-        const fileList = this.files;
-
-        let fr = new FileReader();
-        fr.onload=function(){
-            if(fr.result){inpText = 
-                processInput(fr.result)
+    if(inputElement){
+        inputElement.addEventListener('change', handleFiles, false);
+        function handleFiles() {
+            const fileList = this.files;
+    
+            let fr = new FileReader();
+            fr.onload=function(){
+                if(fr.result){inpText = 
+                    processInput(fr.result)
+                }
             }
+    
+            fr.readAsText(fileList[0]);
         }
-
-        fr.readAsText(fileList[0]);
     }
 
     // Listen for requests to change the language:
     const languageElement = document.getElementById("navbarLanguageLink");
-    languageElement.addEventListener('click', displayLanguageModal, false);
-    function displayLanguageModal() {
-        $('#modalLanguage').modal('toggle');
+    if(languageElement){
+        languageElement.addEventListener('click', displayLanguageModal, false);
+        function displayLanguageModal() {
+            $('#modalLanguage').modal('toggle');
+        }
     }
 
     // Listen for requests to save an .inp file.
     const saveElement = document.getElementById("save");
-    saveElement.addEventListener('click', saveFile, false);
-    function saveFile() {
-        swmmjs.svg.save();
+    if(saveElement){
+        saveElement.addEventListener('click', saveFile, false);
+        function saveFile() {
+            swmmjs.svg.save();
+        }
     }
 })
 
@@ -430,7 +454,7 @@ function fetchRetry(url, delay, tries, fetchOptions = {}){
 }
 
 
-function inpToJSON(){
+/*function inpToJSON(){
     let inpText = document.getElementById('inpFile').value;
     
     try
@@ -456,7 +480,7 @@ function inpToJSON(){
         $('#modalSpinner').modal('hide')
     }
     console.log('runran')
-}
+}*/
 
 function runModelClick(){
     // dataObj is an array of dataElement objects.
@@ -466,15 +490,14 @@ function runModelClick(){
 
     //Get the input file for parsing:
     // Since we are running a model, it would be a good idea to
-    // instead, write the current model objects into a string field,
+    // write the current model objects into a string field,
     // then send that string field to the executable.
-    // --1: How does save translate the model to a string:
-    //   A: Via svg.save() in swmm.js
-    // --2: Can I modify svg.save to instead call a string creation function.
+    // --1: Translate the model to a string vSia svg.save() in swmm.js
+    // --2: Modify svg.save to instead call a string creation function.
     //      This function can then be called by this click event as well, so no files
     //      need to be saved (though it would be a good idea to save a file before you run it, right?)
     // --3: New function is called svg.dataToInpString().
-    // --4: How can I send the inpString to the swmm_run file? it looks like inpText can be used for that.
+    // --4: To send the inpString to the swmm_run file, inpText can be used.
     fetch('data/info.json')
         .then(response => response.text())
         .then((data) => {
