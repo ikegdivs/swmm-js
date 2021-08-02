@@ -102,7 +102,7 @@ function demoChart(){
     // Get the ID and type of the object that will be charted, and get the type of information that is necessary as well.
     let objectName = '10'
     let objectType = 'LINK'
-    let variable = '0'
+    let variable = '1'
     
     // First: Utilize the start and end times of the model, along with the time step in order to create the fully realized chart.
     let reportStartDate = '01/01/1998';
@@ -137,13 +137,13 @@ function demoChart(){
 // After adding the <li>, add a .change() to the <input> that
 // references the name of the node.
 function buildSwitchList(){
-    // For every junction,
-    swmmjs.model.JUNCTIONS.forEach((junc, index) => {
+    // For every conduit,
+    swmmjs.model.CONDUITS.forEach((cond, index) => {
         // Add a <li><div><input><label> to the list
         document.getElementById('demo001-list').insertAdjacentHTML('beforeend', `<li style="margin-top: 5px; padding-top: 5px;">
             <div class="custom-control custom-switch">
             <input class="custom-control-input" type="checkbox" id="option`+ index +`">
-            <label class="custom-control-label" style="transform: scale(1.5)" stylefor="option`+ index +`" for="option`+ index +`">Node `+ index +`</label>
+            <label class="custom-control-label" style="transform: scale(1.5)" stylefor="option`+ index +`" for="option`+ index +`">Link `+ index +`</label>
             </div>
             </li>`)
         // Add a toggle function to new element
@@ -151,19 +151,10 @@ function buildSwitchList(){
         $('#option'+index).change(function(){
             // if the toggle is on, add the node inflow marker to the node.
             if($(this).prop('checked') === true){
-                swmmjs.model.INFLOWS[Object.keys(swmmjs.model.INFLOWS).length] = {
-                    Node: index.toString(),
-                    Parameter: 'FLOW',
-                    TimeSeries: '""',
-                    Type: 'FLOW',
-                    UnitsFactor: 1.0,
-                    ScaleFactor: 1.0,
-                    Baseline: 2,
-                    Pattern: ''
-                }
+                cond.Roughness = 0.024;
             } else {
                 // remove any inflow to the node
-                swmmjs.model.INFLOWS = swmmjs.model.INFLOWS.filter(el => el.Node !== index.toString());
+                cond.Roughness = 0.012;
             }
 
             // Rerun the model:
